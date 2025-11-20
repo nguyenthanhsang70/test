@@ -616,33 +616,3 @@ h1 {
       margin-top: 30%;
 
       margin-left: 80%; } }
-/* =========================
-   1. MOBILE ( ≤ 576px )
-   ========================= */
-@media (max-width: 576px) {
-    .main_container {
-        padding: 10px;
-    }
-
-    .modal-body img {
-        max-width: 90%;
-    }
-}
-
-/* =========================
-   2. TABLET ( 577px – 992px )
-   ========================= */
-@media (min-width: 577px) and (max-width: 992px) {
-    .modal-body img {
-        max-width: 70%;
-    }
-}
-
-/* =========================
-   3. DESKTOP ( ≥ 993px )
-   ========================= */
-@media (min-width: 993px) {
-    .modal-body img {
-        max-width: 500px; /* cố định kích thước tối đa */
-    }
-}
