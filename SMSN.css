@@ -34,7 +34,7 @@ span {
     font-family: "Wendy One", sans-serif;
     
     /* THÊM DÒNG NÀY */
-    left: 40px; /* Số dương là qua phải, số càng lớn qua phải càng nhiều */
+    left: 50px; /* Số dương là qua phải, số càng lớn qua phải càng nhiều */
 }
 .balloon > div {
     width: 104px;
