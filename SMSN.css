@@ -227,11 +227,15 @@ span {
     color: rgba(15, 219, 234, 0.9);
 }
 
-/* Avatar  */
+/* Avatar */
 .avatar {
     cursor: pointer;
     position: absolute;
-    top: 50%;
+    
+    /* SỬA DÒNG NÀY */
+    top: 50%; /* Tăng số này lên để đẩy Avatar xuống dưới (tạo khoảng cách với bong bóng) */
+    /* Bạn có thể thử 65% hoặc 70% nếu muốn xa hơn nữa */
+    
     left: calc(50% - 100px);
 }
 
@@ -252,7 +256,7 @@ span {
     margin-top: -100px;
     
     /* THÊM DÒNG NÀY */
-    margin-left: -90px; /* Số càng nhỏ (âm càng nhiều) thì càng qua trái */
+    margin-left: -100px; /* Số càng nhỏ (âm càng nhiều) thì càng qua trái */
     
     -webkit-animation: balloon1 4s ease-in-out infinite;
     -moz-animation: balloon1 4s ease-in-out infinite;
