@@ -247,6 +247,10 @@ span {
 .avatar__title {
     cursor: pointer;
     margin-top: -100px;
+    
+    /* THÊM DÒNG NÀY */
+    margin-left: -90px; /* Số càng nhỏ (âm càng nhiều) thì càng qua trái */
+    
     -webkit-animation: balloon1 4s ease-in-out infinite;
     -moz-animation: balloon1 4s ease-in-out infinite;
     -o-animation: balloon1 4s ease-in-out infinite;
