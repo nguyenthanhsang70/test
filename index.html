@@ -1,82 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc mừng sinh nhật  Anh ♡</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap');
 
-<html lang="vi"
-    __fvdsurfcanyoninserted="1"
-    class="
-        clickberry-extension
-        clickberry-extension-standalone
-        clickberry-extension
-        clickberry-extension-standalone
-        clickberry-extension
-        clickberry-extension-standalone
-    "
->
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="shortcut icon" type="image/png" href="./birthdayCake.png"/>
-        <title>Happy Birthday</title>
-        <link rel="stylesheet" href="SMSN.css">
-        <script>
-            window.open = function () {};
-            window.print = function () {};
-            // Support hover state for mobile.
-            if (false) {
-                window.ontouchstart = function () {};
-            }
-        </script>
-        <script
-            type="text/javascript"
-            src="chrome-extension://bfbmjmiodbnnpllbbbfblcplfjjepjdn/js/injected.js"
-        ></script>
-        <meta content="clickberry-extension-here" />
-    </head>
+        body {
+            font-family: 'Dancing Script', cursive;
+            background: #FDE3A7;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    <body>
-        <link
-            href="https://fonts.googleapis.com/css?family=Wendy+One"
-            rel="stylesheet"
-            type="text/css"
-        />
-        <div class="pyro">
-            <div class="before">
-                
+        .card {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 300px;
+            height: 400px;
+            background: #e0e1dc;
+            transform: translate(-50%, -50%) perspective(2000px);
+            transform-style: preserve-3d;
+            box-shadow: inset 300px 0 50px rgba(0,0,0,.5), 20px 0 60px rgba(0,0,0,.5);
+            transition: 1s;
+        }
+        .card:hover {
+            transform: translate(-50%, -50%) perspective(2000px) rotate(15deg) scale(1.2);
+            box-shadow: inset 20px 0 50px rgba(0,0,0,.5), 0 10px 100px rgba(0,0,0,.5);
+        }
+        .card:before {
+            content:''; position: absolute; top: -5px; left: 0; width: 100%; height: 5px;
+            background: #BAC1BA; transform: skewX(-45deg); transform-origin: bottom;
+        }
+        .card:after {
+            content:''; position: absolute; top: 0; right: -5px; width: 5px; height: 100%;
+            background: #92A29C; transform: skewY(-45deg); transform-origin: left;
+        }
+
+        .imgBox {
+            width: 100%; height: 100%; position: relative; transform-origin: left; transition: .7s; z-index: 2;
+        }
+        .bark {
+            position: absolute; background: #e0e1dc; width: 100%; height: 100%; opacity: 0; transition: .7s;
+        }
+        .imgBox img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .card:hover .imgBox { transform: rotateY(-135deg); }
+        .card:hover .bark {
+            opacity: 1;
+            box-shadow: 300px 200px 100px rgba(0, 0, 0, .4) inset;
+        }
+
+        .details {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-6deg);
+            width: 270px;
+            padding: 20px 10px;
+            text-align: center;
+            color: #222;
+        }
+
+        .title1 {
+            font-family: 'Amatic SC', cursive;
+            font-size: 14px;
+            color: #16A085;
+            margin: 0 0 4px 0;
+            line-height: 1;
+        }
+        .title2 {
+            font-family: 'Amatic SC', cursive;
+            font-size: 14px;
+            color: #E74C3C;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .content {
+            font-size: 12px;
+            line-height: 1.7;
+            margin: 22px 0 28px 0;
+        }
+        .content p { margin: 8px 0; }
+
+        /* Chỉnh chữ ký lệch hẳn sang PHẢI */
+        .signature {
+            width: 100%;
+            text-align: right;         /* căn phải */
+            padding-right: 15px;       /* đẩy sát mép phải hơn nữa */
+            margin-top: 15px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .signature .heart {
+            font-size: 24px;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="imgBox">
+            <div class="bark"></div>
+            <!-- Thay link ảnh của bạn vào đây nhé -->
+            <img src="anh.jpg" alt=" Anh">
+        </div>
+
+        <div class="details">
+            <h1 class="title1">XIN CHÀO THIÊN THẦN!!!</h1>
+            <h1 class="title2">CHÚC MỪNG SINH NHẬT</h1>
+
+            <div class="content">
+                <p>Gửi Minh Anh,</p>
+                <p>Hmm, xem nói gì cho cute ha...</p>
+                <p>Cảm ơn vì anh đã được sinh ra,</p>
+                <p>Cảm ơn vì anh đã gặp em,</p>
+                <p>Cảm ơn vì năng lượng anh mang lại,</p>
+                <p>Với tất cả tình cảm,</p>
+                <p>Hy vọng mọi điều tốt nhất sẽ đến với anh</p>
+                <p>Hãy thật hạnh phúc, khỏe mạnh và rực rỡ</p>
+                <p>Cháy hết mình ở tuổi 23 nhé!!</p>
             </div>
-            <div class="after">
 
-            </div>
-            <div class="container">
-                <!-- 2. Dòng chữ Happy Birthday
-                Nếu bạn muốn thêm chữ vào thì phải thay đổi css tương ứng cho nó -->
-                <div class="balloon">
-                    <div><span>H</span></div>
-                    <div><span>A</span></div>
-                    <div><span>P</span></div>
-                    <div><span>P</span></div>
-                    <div><span>Y</span></div>
-                    <div><span>B</span></div>
-                    <div><span>I</span></div>
-                    <div><span>R</span></div>
-                    <div><span>T</span></div>
-                    <div><span>H</span></div>
-                    <div><span>D</span></div>
-                    <div><span>A</span></div>
-                    <div><span>Y</span></div>
-                </div>
-                <div class="avatar">
-                    <!-- 3. Avatar của người bạn muốn gởi lời chúc -->
-                    <img src="./MyAvatar.jpg" alt="" class="avatar__img" onclick="showMessage()" />
-                    <!-- 4. Tên của người đó -->
-                    <h1 onclick="showMessage()" class="avatar__title">Nguyễn Thanh Sang</h1>
-                </div>
-                
-                <!-- 5. Phần nhạc -->
-                <!-- <audio id="player" autoplay loop>
-                    <source src="./music.mp3" type="audio/mp3">
-                </audio> -->
+            <div class="signature">
+                <div>Thương Anh nhiều!</div>
+                <div><span class="heart">♥</span> Thanh Sang</div>
             </div>
         </div>
-        
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    </body>
+    </div>
+
+</body>
 </html>
-
-
