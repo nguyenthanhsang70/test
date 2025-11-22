@@ -22,8 +22,9 @@
 
         .card {
             position: relative;
-            width: 300px;
-            height: 400px;
+            /* Đã chỉnh nhỏ kích thước ở đây */
+            width: 250px; 
+            height: 330px;
             background: #e0e1dc;
             transform: perspective(2000px);
             transform-style: preserve-3d;
@@ -74,8 +75,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-6deg);
-            width: 270px;
-            padding: 20px 10px;
+            /* Chỉnh lại chiều rộng nội dung cho vừa thiệp nhỏ */
+            width: 85%; 
+            padding: 10px;
             text-align: center;
             color: #222;
             opacity: 0;
@@ -102,22 +104,23 @@
         }
 
         .content {
-            font-size: 12px;
-            line-height: 1.7;
-            margin: 22px 0 28px 0;
+            /* Giảm font chữ một chút cho cân đối */
+            font-size: 11px; 
+            line-height: 1.6;
+            margin: 15px 0 20px 0;
         }
-        .content p { margin: 8px 0; }
+        .content p { margin: 6px 0; }
 
         .signature {
             width: 100%;
             text-align: right;
-            padding-right: 15px;
-            margin-top: 15px;
-            font-size: 12px;
+            padding-right: 5px;
+            margin-top: 10px;
+            font-size: 11px;
             line-height: 1.4;
         }
         .signature .heart {
-            font-size: 24px;
+            font-size: 20px;
             margin-right: 4px;
         }
 
@@ -163,9 +166,9 @@
             right: 0;
             background: rgba(0,0,0,0.7);
             color: white;
-            padding: 15px;
+            padding: 10px;
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         /* Nút điều hướng */
@@ -175,8 +178,8 @@
             transform: translateY(-50%);
             background: rgba(255,255,255,0.9);
             border: none;
-            font-size: 20px;
-            padding: 10px 15px;
+            font-size: 16px; /* Nút nhỏ lại xíu */
+            padding: 8px 12px;
             cursor: pointer;
             border-radius: 5px;
             transition: 0.3s;
@@ -187,23 +190,23 @@
             background: white;
         }
 
-        .prev { left: 10px; }
-        .next { right: 10px; }
+        .prev { left: 5px; }
+        .next { right: 5px; }
 
         /* Chỉ báo slide */
         .dots {
             position: absolute;
-            bottom: 60px;
+            bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 10;
         }
 
         .dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: rgba(255,255,255,0.5);
             cursor: pointer;
@@ -212,7 +215,7 @@
 
         .dot.active {
             background: white;
-            width: 25px;
+            width: 20px;
             border-radius: 5px;
         }
     </style>
@@ -220,13 +223,11 @@
 <body>
 
     <div class="card" id="card">
-        <!-- Bìa thiệp -->
         <div class="imgBox">
             <div class="bark"></div>
             <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400" alt="Anh">
         </div>
 
-        <!-- Lời chúc ban đầu -->
         <div class="details" id="textContent">
             <h1 class="title1">XIN CHÀO THIÊN THẦN!!!</h1>
             <h1 class="title2">CHÚC MỪNG SINH NHẬT</h1>
@@ -249,7 +250,6 @@
             </div>
         </div>
 
-        <!-- Slideshow ảnh -->
         <div class="slideshow" id="slideshow">
             <div class="slide active">
                 <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800" alt="Ảnh 1">
