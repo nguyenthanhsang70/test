@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thổi Nến Sinh Nhật 3D</title>
+    <style>
+        body {
+            background-color: #222; /* Màu nền tối hơn để tôn ánh nến */
+            background: radial-gradient(circle at center, #333, #111);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            flex-direction: column;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* --- Phần Bánh 3D --- */
+        .cake-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 50px;
+        }
+
+        /* Đĩa bánh */
+        .plate {
+            width: 320px;
+            height: 140px;
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: radial-gradient(ellipse at center, #eee 0%, #ccc 70%, #999 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 5px 0 #888, 
+                0 10px 30px rgba(0, 0, 0, 0.8); /* Bóng đổ xuống bàn */
+            z-index: 1;
+        }
+
+        /* Thân bánh (Sponge) */
+        .cake-body {
+            position: absolute;
+            bottom: 15px;
+            width: 280px;
+            height: 120px;
+            background: linear-gradient(to right, #6d4c41 0%, #8d6e63 20%, #a1887f 50%, #8d6e63 80%, #6d4c41 100%);
+            border-radius: 50% 50% 10px 10px / 30px 30px 10px 10px;
+            z-index: 2;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3); /* Tạo độ sâu phía dưới */
+        }
+        
+        /* Lớp kem phủ bên trên mặt bánh */
+        .cake-top {
+            position: absolute;
+            top: -40px; /* Đẩy lên trên thân bánh */
+            left: 0;
+            width: 280px;
+            height: 80px;
+            background: radial-gradient(ellipse at center, #ffcdd2 0%, #ef9a9a 100%);
+            border-radius: 50%;
+            z-index: 4;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Hiệu ứng kem chảy (Drips) */
+        .icing-drips {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            z-index: 3;
+        }
+        
+        .drip {
+            position: absolute;
+            background: #ef9a9a;
+            width: 30px;
+            height: 50px;
+            border-radius: 0 0 15px 15px;
+            top: 0;
+            box-shadow: inset 2px -2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Bố trí các giọt kem chảy ngẫu nhiên */
+        .drip:nth-child(1) { left: 20px; height: 45px; width: 35px; }
+        .drip:nth-child(2) { left: 60px; height: 35px; width: 25px; }
+        .drip:nth-child(3) { left: 90px; height: 55px; width: 30px; }
+        .drip:nth-child(4) { left: 130px; height: 40px; width: 35px; }
+        .drip:nth-child(5) { left: 170px; height: 50px; width: 28px; }
+        .drip:nth-child(6) { left: 210px; height: 35px; width: 30px; }
+        .drip:nth-child(7) { left: 245px; height: 45px; width: 25px; }
+
+        /* Hạt cốm trang trí (Sprinkles) */
+        .sprinkle {
+            position: absolute;
+            width: 8px;
+            height: 3px;
+            border-radius: 2px;
+            z-index: 5;
+            opacity: 0.8;
+        }
+
+        /* --- Phần Nến Realistic --- */
+        .candle-container {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .candle {
+            width: 20px;
+            height: 70px;
+            background: repeating-linear-gradient(
+                45deg,
+                #e3f2fd,
+                #e3f2fd 5px,
+                #2196f3 5px,
+                #2196f3 10px
+            );
+            border-radius: 4px;
+            box-shadow: 
+                inset -3px 0 5px rgba(0,0,0,0.2), /* Bóng tròn của nến */
+                2px 5px 5px rgba(0,0,0,0.3); /* Bóng nến đổ xuống bánh */
+            position: relative;
+        }
+
+        /* Tim nến */
+        .wick {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background: #333;
+        }
+
+        /* Ngọn lửa thực tế */
+        .flame {
+            position: absolute;
+            width: 16px;
+            height: 36px;
+            background: radial-gradient(ellipse at bottom, #ffff00 0%, #ff9800 60%, rgba(255,100,0,0) 100%);
+            border-radius: 50% 50% 20% 20%;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 
+                0 0 15px #ffeb3b, 
+                0 0 30px #ff9800,
+                0 0 50px #ff5722;
+            animation: flicker 0.1s infinite alternate;
+            transform-origin: center bottom;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Lớp bao ngoài của lửa để tạo quầng sáng */
+        .flame::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) skewX(-2deg) scaleY(1); opacity: 1; }
+            100% { transform: translateX(-50%) skewX(2deg) scaleY(1.05); opacity: 0.9; }
+        }
+
+        .flame.out {
+            opacity: 0;
+            animation: none;
+        }
+
+        /* --- Khói --- */
+        .smoke {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 10px;
+            background: rgba(150, 150, 150, 0.2);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 11;
+            filter: blur(3px);
+        }
+
+        @keyframes smoke-rise {
+            0% { opacity: 0.6; transform: translateX(-50%) translateY(0) scale(1); }
+            40% { opacity: 0.4; transform: translateX(-60%) translateY(-30px) scale(3); }
+            100% { opacity: 0; transform: translateX(-40%) translateY(-80px) scale(6); }
+        }
+
+        .smoke.active { animation: smoke-rise 2s ease-out forwards; }
+
+        /* --- Controls UI --- */
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            z-index: 20;
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #ff4081, #f50057);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(245, 0, 87, 0.4);
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+        
+        button:hover { transform: scale(1.05); }
+        button:disabled { background: #666; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        #status { margin-top: 10px; font-size: 14px; color: #ddd; font-style: italic; }
+
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s;
+            z-index: 100;
+        }
+        #overlay.active { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+    <div class="cake-container">
+        <div class="plate"></div>
+
+        <div class="cake-body">
+            <div class="cake-top">
+                 <div class="candle-container">
+                    <div class="candle">
+                        <div class="wick"></div>
+                        <div class="flame" id="flame"></div>
+                        <div class="smoke" id="smoke"></div>
+                    </div>
+                </div>
+                
+                <div class="sprinkle" style="top: 20px; left: 40px; background: red; transform: rotate(45deg);"></div>
+                <div class="sprinkle" style="top: 50px; left: 80px; background: blue; transform: rotate(-20deg);"></div>
+                <div class="sprinkle" style="top: 30px; left: 120px; background: yellow; transform: rotate(90deg);"></div>
+                <div class="sprinkle" style="top: 60px; left: 160px; background: green; transform: rotate(15deg);"></div>
+                <div class="sprinkle" style="top: 25px; left: 200px; background: orange; transform: rotate(-45deg);"></div>
+                <div class="sprinkle" style="top: 55px; left: 230px; background: purple; transform: rotate(10deg);"></div>
+            </div>
+
+            <div class="icing-drips">
+                <div class="drip"></div>
+                <div class="drip"></div>
+                <div class="drip"></div>
+                <div class="drip"></div>
+                <div class="drip"></div>
+                <div class="drip"></div>
+                <div class="drip"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="startBtn">🎙️ Bật Mic để thổi nến</button>
+        <div id="status">Vui lòng cho phép truy cập micro</div>
+    </div>
+    
+    <div id="overlay"></div>
+
+    <script>
+        // --- CẤU HÌNH LINK TRANG MỚI Ở ĐÂY ---
+        const LINK_CHUYEN_HUONG = "https://nguyenthanhsang70.github.io/test/"; 
+        // --------------------------------------
+
+        const startBtn = document.getElementById('startBtn');
+        const statusText = document.getElementById('status');
+        const flame = document.getElementById('flame');
+        const smoke = document.getElementById('smoke');
+        const overlay = document.getElementById('overlay');
+        
+        let audioContext;
+        let analyser;
+        let microphone;
+        let isBlowOut = false;
+
+        startBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                analyser.fftSize = 256;
+                
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                statusText.innerText = "Đang lắng nghe... Hãy thổi mạnh vào mic! 🌬️";
+                startBtn.innerText = "Đang chờ thổi nến...";
+                startBtn.disabled = true;
+
+                function detectBlow() {
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for(let i = 0; i < bufferLength; i++) { sum += dataArray[i]; }
+                    let average = sum / bufferLength;
+
+                    // Ngưỡng âm thanh để phát hiện tiếng thổi (có thể chỉnh số 40 này)
+                    if (average > 45 && !isBlowOut) {
+                        blowOutCandle();
+                    }
+
+                    if (!isBlowOut) {
+                        requestAnimationFrame(detectBlow);
+                    }
+                }
+                detectBlow();
+            } catch (err) {
+                console.error(err);
+                statusText.innerText = "Lỗi: Không tìm thấy hoặc không được phép dùng mic.";
+            }
+        });
+
+        function blowOutCandle() {
+            isBlowOut = true;
+            
+            // 1. Tắt nến và hiện khói
+            flame.classList.add('out');
+            smoke.classList.add('active');
+            statusText.innerText = "Chúc mừng sinh nhật! Đang mở quà... 🎁";
+            
+            // 2. Ngắt mic để tiết kiệm tài nguyên
+            if (audioContext) {
+                audioContext.close();
+            }
+
+            // 3. Chờ hiệu ứng và chuyển trang
+            setTimeout(() => {
+                overlay.classList.add('active');
+                
+                setTimeout(() => {
+                    window.location.href = LINK_CHUYEN_HUONG;
+                }, 1500); // Chờ màn hình đen 1.5s rồi chuyển
+                
+            }, 2000); // Chờ 2s sau khi thổi tắt
+        }
+    </script>
+</body>
+</html>
