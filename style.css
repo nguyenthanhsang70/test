@@ -1,0 +1,50 @@
+body {
+    background: url("kitty.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Container căn giữa */
+.main_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+/* Ảnh trong modal */
+.modal-body img {
+    width: 100%;       /* luôn co giãn theo chiều ngang */
+    height: auto;      /* giữ tỉ lệ ảnh */
+    margin-bottom: 10px;
+}
+
+/* =========================
+   1. MOBILE ( ≤ 576px )
+   ========================= */
+@media (max-width: 576px) {
+    .main_container {
+        padding: 10px;
+    }
+
+    .modal-body img {
+        max-width: 90%;
+    }
+}
+
+/* =========================
+   2. TABLET ( 577px – 992px )
+   ========================= */
+@media (min-width: 577px) and (max-width: 992px) {
+    .modal-body img {
+        max-width: 70%;
+    }
+}
+
+/* =========================
+   3. DESKTOP ( ≥ 993px )
+   ========================= */
+@media (min-width: 993px) {
+    .modal-body img {
+        max-width: 500px; /* cố định kích thước tối đa */
+    }
+}
