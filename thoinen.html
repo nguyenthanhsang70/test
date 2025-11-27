@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thổi Nến Sinh Nhật 3D</title>
+    <title>Thổi Nến Sinh Nhật 3D - Hoạt Động Mọi Thiết Bị</title>
     <style>
         body {
-            background-color: #222; /* Màu nền tối hơn để tôn ánh nến */
             background: radial-gradient(circle at center, #333, #111);
             display: flex;
             justify-content: center;
@@ -17,9 +16,10 @@
             flex-direction: column;
             color: white;
             overflow: hidden;
+            touch-action: manipulation;
         }
 
-        /* --- Phần Bánh 3D --- */
+        /* --- Bánh sinh nhật 3D --- */
         .cake-container {
             position: relative;
             width: 300px;
@@ -28,9 +28,9 @@
             justify-content: center;
             align-items: flex-end;
             margin-bottom: 50px;
+            perspective: 1000px;
         }
 
-        /* Đĩa bánh */
         .plate {
             width: 320px;
             height: 140px;
@@ -40,13 +40,10 @@
             transform: translateX(-50%);
             background: radial-gradient(ellipse at center, #eee 0%, #ccc 70%, #999 100%);
             border-radius: 50%;
-            box-shadow: 
-                0 5px 0 #888, 
-                0 10px 30px rgba(0, 0, 0, 0.8); /* Bóng đổ xuống bàn */
+            box-shadow: 0 5px 0 #888, 0 10px 30px rgba(0,0,0,0.8);
             z-index: 1;
         }
 
-        /* Thân bánh (Sponge) */
         .cake-body {
             position: absolute;
             bottom: 15px;
@@ -55,13 +52,12 @@
             background: linear-gradient(to right, #6d4c41 0%, #8d6e63 20%, #a1887f 50%, #8d6e63 80%, #6d4c41 100%);
             border-radius: 50% 50% 10px 10px / 30px 30px 10px 10px;
             z-index: 2;
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3); /* Tạo độ sâu phía dưới */
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
         }
-        
-        /* Lớp kem phủ bên trên mặt bánh */
+
         .cake-top {
             position: absolute;
-            top: -40px; /* Đẩy lên trên thân bánh */
+            top: -40px;
             left: 0;
             width: 280px;
             height: 80px;
@@ -71,7 +67,6 @@
             box-shadow: inset 0 -5px 10px rgba(0,0,0,0.1);
         }
 
-        /* Hiệu ứng kem chảy (Drips) */
         .icing-drips {
             position: absolute;
             top: 0;
@@ -80,7 +75,7 @@
             height: 40px;
             z-index: 3;
         }
-        
+
         .drip {
             position: absolute;
             background: #ef9a9a;
@@ -90,8 +85,6 @@
             top: 0;
             box-shadow: inset 2px -2px 5px rgba(0,0,0,0.1);
         }
-        
-        /* Bố trí các giọt kem chảy ngẫu nhiên */
         .drip:nth-child(1) { left: 20px; height: 45px; width: 35px; }
         .drip:nth-child(2) { left: 60px; height: 35px; width: 25px; }
         .drip:nth-child(3) { left: 90px; height: 55px; width: 30px; }
@@ -100,17 +93,16 @@
         .drip:nth-child(6) { left: 210px; height: 35px; width: 30px; }
         .drip:nth-child(7) { left: 245px; height: 45px; width: 25px; }
 
-        /* Hạt cốm trang trí (Sprinkles) */
         .sprinkle {
             position: absolute;
             width: 8px;
             height: 3px;
             border-radius: 2px;
             z-index: 5;
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
-        /* --- Phần Nến Realistic --- */
+        /* --- Nến siêu thực --- */
         .candle-container {
             position: absolute;
             top: -60px;
@@ -122,21 +114,12 @@
         .candle {
             width: 20px;
             height: 70px;
-            background: repeating-linear-gradient(
-                45deg,
-                #e3f2fd,
-                #e3f2fd 5px,
-                #2196f3 5px,
-                #2196f3 10px
-            );
+            background: repeating-linear-gradient(45deg, #e3f2fd, #e3f2fd 5px, #2196f3 5px, #2196f3 10px);
             border-radius: 4px;
-            box-shadow: 
-                inset -3px 0 5px rgba(0,0,0,0.2), /* Bóng tròn của nến */
-                2px 5px 5px rgba(0,0,0,0.3); /* Bóng nến đổ xuống bánh */
+            box-shadow: inset -3px 0 5px rgba(0,0,0,0.2), 2px 5px 5px rgba(0,0,0,0.3);
             position: relative;
         }
 
-        /* Tim nến */
         .wick {
             position: absolute;
             top: -8px;
@@ -147,7 +130,6 @@
             background: #333;
         }
 
-        /* Ngọn lửa thực tế */
         .flame {
             position: absolute;
             width: 16px;
@@ -157,16 +139,12 @@
             top: -40px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 
-                0 0 15px #ffeb3b, 
-                0 0 30px #ff9800,
-                0 0 50px #ff5722;
-            animation: flicker 0.1s infinite alternate;
+            box-shadow: 0 0 15px #ffeb3b, 0 0 30px #ff9800, 0 0 50px #ff5722;
+            animation: flicker 0.15s infinite alternate;
             transform-origin: center bottom;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.6s ease;
         }
 
-        /* Lớp bao ngoài của lửa để tạo quầng sáng */
         .flame::after {
             content: '';
             position: absolute;
@@ -190,7 +168,6 @@
             animation: none;
         }
 
-        /* --- Khói --- */
         .smoke {
             position: absolute;
             top: -45px;
@@ -206,76 +183,84 @@
         }
 
         @keyframes smoke-rise {
-            0% { opacity: 0.6; transform: translateX(-50%) translateY(0) scale(1); }
-            40% { opacity: 0.4; transform: translateX(-60%) translateY(-30px) scale(3); }
-            100% { opacity: 0; transform: translateX(-40%) translateY(-80px) scale(6); }
+            0% { opacity: 0.7; transform: translateX(-50%) translateY(0) scale(1); }
+            40% { opacity: 0.5; transform: translateX(-60%) translateY(-30px) scale(3); }
+            100% { opacity: 0; transform: translateX(-40%) translateY(-100px) scale(7); }
         }
 
-        .smoke.active { animation: smoke-rise 2s ease-out forwards; }
+        .smoke.active { animation: smoke-rise 2.5s ease-out forwards; }
 
-        /* --- Controls UI --- */
+        /* --- Nút điều khiển --- */
         .controls {
             margin-top: 20px;
             text-align: center;
             z-index: 20;
             background: rgba(0,0,0,0.5);
-            padding: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
+            padding: 20px 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
-        
+
         button {
-            padding: 12px 25px;
+            padding: 15px 30px;
             font-size: 18px;
             background: linear-gradient(45deg, #ff4081, #f50057);
             color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(245, 0, 87, 0.4);
-            transition: transform 0.2s;
+            box-shadow: 0 6px 20px rgba(245, 0, 87, 0.5);
+            transition: all 0.3s;
             font-weight: bold;
+            min-width: 220px;
         }
-        
-        button:hover { transform: scale(1.05); }
+
+        button:hover { transform: translateY(-3px) scale(1.05); }
+        button:active { transform: translateY(1px); }
         button:disabled { background: #666; box-shadow: none; cursor: not-allowed; transform: none; }
 
-        #status { margin-top: 10px; font-size: 14px; color: #ddd; font-style: italic; }
+        #status { 
+            margin-top: 15px; 
+            font-size: 16px; 
+            color: #ffeb3b; 
+            font-weight: bold;
+            min-height: 24px;
+        }
 
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
+            background: #000;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.5s;
+            transition: opacity 1.8s ease;
             z-index: 100;
         }
-        #overlay.active { opacity: 1; }
-
+        #overlay.active { opacity: 1; pointer-events: all; }
     </style>
 </head>
 <body>
 
     <div class="cake-container">
         <div class="plate"></div>
-
         <div class="cake-body">
             <div class="cake-top">
-                 <div class="candle-container">
+                <div class="candle-container">
                     <div class="candle">
                         <div class="wick"></div>
                         <div class="flame" id="flame"></div>
                         <div class="smoke" id="smoke"></div>
                     </div>
                 </div>
-                
-                <div class="sprinkle" style="top: 20px; left: 40px; background: red; transform: rotate(45deg);"></div>
-                <div class="sprinkle" style="top: 50px; left: 80px; background: blue; transform: rotate(-20deg);"></div>
-                <div class="sprinkle" style="top: 30px; left: 120px; background: yellow; transform: rotate(90deg);"></div>
-                <div class="sprinkle" style="top: 60px; left: 160px; background: green; transform: rotate(15deg);"></div>
-                <div class="sprinkle" style="top: 25px; left: 200px; background: orange; transform: rotate(-45deg);"></div>
-                <div class="sprinkle" style="top: 55px; left: 230px; background: purple; transform: rotate(10deg);"></div>
+
+                <!-- Hạt cốm trang trí -->
+                <div class="sprinkle" style="top:20px; left:40px; background:#ff1744; transform:rotate(45deg);"></div>
+                <div class="sprinkle" style="top:50px; left:80px; background:#2979ff; transform:rotate(-20deg);"></div>
+                <div class="sprinkle" style="top:30px; left:120px; background:#ffd600; transform:rotate(90deg);"></div>
+                <div class="sprinkle" style="top:60px; left:160px; background:#00e676; transform:rotate(15deg);"></div>
+                <div class="sprinkle" style="top:25px; left:200px; background:#ff9100; transform:rotate(-45deg);"></div>
+                <div class="sprinkle" style="top:55px; left:230px; background:#d500f9; transform:rotate(10deg);"></div>
             </div>
 
             <div class="icing-drips">
@@ -291,89 +276,107 @@
     </div>
 
     <div class="controls">
-        <button id="startBtn">🎙️ Bật Mic để thổi nến</button>
-        <div id="status">Vui lòng cho phép truy cập micro</div>
+        <button id="startBtn">Bật Mic để Thổi Nến</button>
+        <div id="status">Nhấn nút để bắt đầu nha!</div>
     </div>
-    
+
     <div id="overlay"></div>
 
     <script>
-        // --- CẤU HÌNH LINK TRANG MỚI Ở ĐÂY ---
-        const LINK_CHUYEN_HUONG = "https://nguyenthanhsang70.github.io/test/"; 
-        // --------------------------------------
+        // ==== CẤU HÌNH LINK SAU KHI THỔI TẮT ====
+        const LINK_CHUYEN_HUONG = "https://nguyenthanhsang70.github.io/test/";
+        // ========================================
 
         const startBtn = document.getElementById('startBtn');
         const statusText = document.getElementById('status');
         const flame = document.getElementById('flame');
         const smoke = document.getElementById('smoke');
         const overlay = document.getElementById('overlay');
-        
-        let audioContext;
-        let analyser;
-        let microphone;
-        let isBlowOut = false;
 
-        startBtn.addEventListener('click', async () => {
+        let audioContext, analyser, microphone, dataArray, isBlowOut = false;
+
+        async function startListening() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: false
+                    }
+                });
+
                 analyser = audioContext.createAnalyser();
+                analyser.fftSize = 512;
+                analyser.smoothingTimeConstant = 0.3;
+
                 microphone = audioContext.createMediaStreamSource(stream);
                 microphone.connect(analyser);
-                analyser.fftSize = 256;
-                
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
 
-                statusText.innerText = "Đang lắng nghe... Hãy thổi mạnh vào mic! 🌬️";
-                startBtn.innerText = "Đang chờ thổi nến...";
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                statusText.innerHTML = "Sẵn sàng rồi! Thổi mạnh vào mic đi nào! 🌬️";
+                startBtn.innerText = "Đang lắng nghe...";
                 startBtn.disabled = true;
 
-                function detectBlow() {
-                    analyser.getByteFrequencyData(dataArray);
-                    let sum = 0;
-                    for(let i = 0; i < bufferLength; i++) { sum += dataArray[i]; }
-                    let average = sum / bufferLength;
-
-                    // Ngưỡng âm thanh để phát hiện tiếng thổi (có thể chỉnh số 40 này)
-                    if (average > 45 && !isBlowOut) {
-                        blowOutCandle();
-                    }
-
-                    if (!isBlowOut) {
-                        requestAnimationFrame(detectBlow);
-                    }
-                }
                 detectBlow();
             } catch (err) {
+                statusText.innerHTML = "Không thể truy cập micro<br>Vui lòng cho phép và thử lại nhé!";
+                startBtn.disabled = false;
                 console.error(err);
-                statusText.innerText = "Lỗi: Không tìm thấy hoặc không được phép dùng mic.";
             }
-        });
+        }
+
+        function detectBlow() {
+            if (isBlowOut) return;
+
+            analyser.getByteTimeDomainData(dataArray);
+
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                let v = (dataArray[i] - 128) / 128;
+                sum += Math.abs(v);
+            }
+            let volume = sum / dataArray.length;
+
+            // Ngưỡng siêu nhạy - thổi nhẹ là tắt ngay cả trên iPhone
+            if (volume > 0.07) {
+                blowOutCandle();
+                return;
+            }
+
+            requestAnimationFrame(detectBlow);
+        }
 
         function blowOutCandle() {
+            if (isBlowOut) return;
             isBlowOut = true;
-            
-            // 1. Tắt nến và hiện khói
+
             flame.classList.add('out');
             smoke.classList.add('active');
-            statusText.innerText = "Chúc mừng sinh nhật! Đang mở quà... 🎁";
-            
-            // 2. Ngắt mic để tiết kiệm tài nguyên
-            if (audioContext) {
-                audioContext.close();
-            }
+            statusText.innerHTML = "Yay! Nến tắt rồi! 🎉<br>Đang mở quà cho bạn...";
 
-            // 3. Chờ hiệu ứng và chuyển trang
+            if (microphone) microphone.disconnect();
+
             setTimeout(() => {
                 overlay.classList.add('active');
-                
                 setTimeout(() => {
                     window.location.href = LINK_CHUYEN_HUONG;
-                }, 1500); // Chờ màn hình đen 1.5s rồi chuyển
-                
-            }, 2000); // Chờ 2s sau khi thổi tắt
+                }, 1800);
+            }, 2000);
         }
+
+        startBtn.addEventListener('click', () => {
+            startBtn.innerText = "Đang khởi động mic...";
+            startListening();
+        });
+
+        // Giúp iOS unlock audio context khi chạm màn hình
+        document.addEventListener('touchstart', () => {}, { once: true });
     </script>
 </body>
 </html>
