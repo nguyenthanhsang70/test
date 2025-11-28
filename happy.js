@@ -1,4 +1,4 @@
-const REDIRECT_URL = "https://nguyenthanhsang70.github.io/test/"; // THAY LINK CỦA BẠN VÀO ĐÂY
+const REDIRECT_URL = "index.html"; // THAY LINK CỦA BẠN VÀO ĐÂY
 
 const c = document.getElementById('c');
 const ctx = c.getContext('2d');
@@ -349,3 +349,4 @@ window.addEventListener('resize', () => {
   hw = w / 2;
   hh = h / 2;
 });
+
