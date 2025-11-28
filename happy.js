@@ -6,9 +6,9 @@ let h = c.height = window.innerHeight;
 let hw = w / 2;
 let hh = h / 2;
 
-// === CẤU HÌNH ===
+// ==== CẤU HÌNH ====
 const opts = {
-  strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'], // ← Thay tên người nhận ở đây
+  strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'], // ← Thay tên ở đây nhé
   charSize: 30,
   charSpacing: 35,
   lineHeight: 50,
@@ -38,8 +38,7 @@ const opts = {
   balloonSpawnTime: 40,
   balloonBaseInflateTime: 10,
   balloonAddedInflateTime: 10,
-  balloonBaseSize: 20,
-  balloonAddedSize: 20,
+  balloonBaseSize: 40,           // tăng lên cho đẹp hơn
   balloonBaseVel: 0.4,
   balloonAddedVel: 0.4,
   balloonBaseRadian: -(Math.PI / 2 - 0.5),
@@ -48,37 +47,42 @@ const opts = {
 
 // LINK CHUYỂN TỚI SAU KHI BÓNG BAY HẾT
 const NEXT_PAGE_URL = "https://www.facebook.com/messages/t/100010253991234"; 
-// Thay link này thành bất kỳ đâu bạn muốn (Zalo, YouTube, ảnh quà, video...)
+// ← Thay link quà tặng, video, Zalo, v.v. vào đây
 
-const calc = { totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length)) };
+const calc = {
+  totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length))
+};
+
 const Tau = Math.PI * 2;
 const letters = [];
 let doneCount = 0;
 let redirected = false;
 
-ctx.font = `${opts.charSize}px Verdana`;
+ctx.font = `${opts.charSize}px Verdana, sans-serif`;
 
 class Letter {
   constructor(char, x, y) {
     this.char = char;
     this.x = x;
     this.y = y;
+
     this.dx = -ctx.measureText(char).width / 2;
     this.dy = opts.charSize / 2;
     this.fireworkDy = this.y - hh;
 
-    const hue = ((x / calc.totalWidth) +  0.5) % 1 * 360;
+    const hue = ((x / calc.totalWidth + 0.5) % 1) * 360;
+
     this.color = `hsl(${hue},80%,50%)`;
-    this.lightColor = `hsl(${hue},80%,light%)`;
-    this.lightAlphaColor = `hsla(${hue},80%,light%,alp)`;
-    this.alphaColor = `hsla(${hue},80%,50%,alp)`;
+    this.lightColor = (light) => `hsl(${hue},80%,${light}%)`;
+    this.lightAlphaColor = (light, alp) => `hsla(${hue},80%,${light}%,${alp})`;
+    this.alphaColor = (alp) => `hsla(${hue},80%,50%,${alp})`;
 
     this.reset();
   }
 
   reset() {
     this.phase = 'firework';
-    this.tick = 0;
+    this.tick =  = 0;
     this.tick2 = 0;
     this.spawned = false;
     this.spawningTime = opts.fireworkSpawnTime * Math.random() | 0;
@@ -89,12 +93,10 @@ class Letter {
   }
 
   step() {
+    // ==== PHÁO HOA ====
     if (this.phase === 'firework') {
       if (!this.spawned) {
-        if (++this.tick >= this.spawningTime) {
-          this.tick = 0;
-          this.spawned = true;
-        }
+        if (++this.tick >= this.spawningTime) { this.spawned = true; this.tick = 0; }
         return;
       }
 
@@ -107,10 +109,10 @@ class Letter {
       this.prevPoints.push([x, y, t * this.lineWidth]);
 
       for (let i = 1; i < this.prevPoints.length; i++) {
-        const [x1, y1] = this.prevPoints[i];
-        const [x2, y2] = this.prevPoints[i - 1];
-        ctx.strokeStyle = this.alphaColor.replace('alp', i / this.prevPoints.length);
-        ctx.lineWidth = this.prevPoints[i][2] * i / (this.prevPoints.length - 1);
+        const [x1,y1] = this.prevPoints[i];
+        const [x2,y2] = this.prevPoints[i-1];
+        ctx.strokeStyle = this.alphaColor(i / this.prevPoints.length);
+        ctx.lineWidth = this.prevPoints[i][2] * (i / this.prevPoints.length);
         ctx.beginPath();
         ctx.moveTo(x2, y2);
         ctx.lineTo(x1, y1);
@@ -125,7 +127,7 @@ class Letter {
         this.circleFadeTime = opts.fireworkCircleFadeBaseTime + opts.fireworkCircleFadeAddedTime * Math.random() | 0;
         this.tick = this.tick2 = 0;
 
-        // Tạo mảnh pháo hoa
+        // tạo mảnh pháo hoa
         const cnt = opts.fireworkBaseShards + opts.fireworkAddedShards * Math.random() | 0;
         const angle = Tau / cnt;
         let px = 1, py = 0;
@@ -137,41 +139,49 @@ class Letter {
           this.shards.push(new Shard(this.x, this.y, px, py, this.alphaColor));
         }
       }
+      return;
     }
 
-    else if (this.phase === 'contemplate') {
+    // ==== NỔ + HIỆN CHỮ ====
+    if (this.phase === 'contemplate') {
       ++this.tick;
 
+      // vòng tròn nổ
       if (this.circleCreating) {
         ++this.tick2;
         const p = this.tick2 / this.circleCompleteTime;
-        const s = -Math.cos(p * Math.PI) / 2 + 0.5;
-        ctx.fillStyle = this.lightAlphaColor.replace('light', 50 + 50 * p).replace('alp', p);
+        const s = -Math.cos(p * Math.PI)/2 + 0.5;
+        ctx.fillStyle = this.lightAlphaColor(50 + 50*p, p);
         ctx.beginPath();
         ctx.arc(this.x, this.y, s * this.circleFinalSize, 0, Tau);
         ctx.fill();
+
         if (this.tick2 > this.circleCompleteTime) {
           this.circleCreating = false;
           this.circleFading = true;
           this.tick2 = 0;
         }
-      } else if (this.circleFading) {
-        ctx.fillStyle = this.lightColor.replace('light', 70);
-        ctx.fillText(this.char, this.x + this.dx, this.y + this.dy); // ĐÃ SỬA LỖI DẤU PHẨY
+      }
+      else if (this.circleFading) {
+        ctx.fillStyle = this.lightColor(70);
+        ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
 
         ++this.tick2;
         const p = this.tick2 / this.circleFadeTime;
-        const s = -Math.cos(p * Math.PI) / 2 + 0.5;
-        ctx.fillStyle = this.lightAlphaColor.replace('light', 100).replace('alp', 1 - s);
+        const s = -Math.cos(p * Math.PI)/2 + 0.5;
+        ctx.fillStyle = this.lightAlphaColor(100, 1-s);
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.circleFinalSize, 0, Tau);
         ctx.fill();
+
         if (this.tick2 >= this.circleFadeTime) this.circleFading = false;
-      } else {
-        ctx.fillStyle = this.lightColor.replace('light', 70);
+      }
+      else {
+        ctx.fillStyle = this.lightColor(70);
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
       }
 
+      // mảnh vỡ
       this.shards?.forEach((s, i) => {
         s.step();
         if (!s.alive) this.shards.splice(i, 1);
@@ -180,61 +190,65 @@ class Letter {
       if (this.tick > opts.letterContemplatingWaitTime) {
         this.phase = 'balloon';
         this.tick = 0;
-        this.spawnTime = opts.balloonSpawnTime * Math.random() | 0;
-        this.inflateTime = opts.balloonBaseInflateTime + opts.balloonAddedInflateTime * Math.random() | 0;
-        this.size = opts.balloonBaseSize + opts.balloonAddedSize * Math.random();
-        const rad = opts.balloonBaseRadian + opts.balloonAddedRadian * Math.random();
-        const vel = opts.balloonBaseVel + opts.balloonAddedVel * Math.random();
-        this.vx = Math.cos(rad) * vel;
-        this.vy = Math.sin(rad) * vel;
       }
+      return;
     }
 
-    else if (this.phase === 'balloon') {
-      if (this.tick < this.spawnTime) {
+    // ==== BÓNG BAY ====
+    if (this.phase === 'balloon') {
+      if (this.tick < 40) { // chờ chút cho đẹp
         ++this.tick;
-        ctx.fillStyle = this.lightColor.replace('light', 70);
+        ctx.fillStyle = this.lightColor(70);
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-      } else if (this.tick < this.spawnTime + this.inflateTime) {
+      } else if (this.tick < 100) { // bơm bóng
         ++this.tick;
-        const p = (this.tick - this.spawnTime) / this.inflateTime;
+        const p = (this.tick - 40) / 60;
         const bx = this.x;
-        const by = this.y - this.size * p;
+        const by = this.y - opts.balloonSize * p;
 
-        ctx.fillStyle = this.alphaColor.replace('alp', p);
+        ctx.fillStyle = this.alphaColor(p);
         ctx.beginPath();
-        balloonPath(bx, by, this.size * p);
+        balloonPath(bx, by, opts.balloonSize * p);
         ctx.fill();
 
-        ctx.strokeStyle = this.lightColor.replace('light', 80);
+        ctx.strokeStyle = this.lightColor(80);
         ctx.beginPath();
-        ctx.moveTo(bx, by + this.size * p);
+        ctx.moveTo(bx, by + opts.balloonSize * p);
         ctx.lineTo(bx, this.y);
         ctx.stroke();
 
-        ctx.fillStyle = this.lightColor.replace('light', 70);
+        ctx.fillStyle = this.lightColor(70);
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
       } else {
-        // Đang bay lên
+        // bay lên
+        if (!this.cx) {
+          this.cx = this.x;
+          this.cy = this.y;
+          const rad = opts.balloonBaseRadian + opts.balloonAddedRadian * Math.random();
+          const vel = opts.balloonBaseVel + opts.balloonAddedVel * Math.random();
+          this.vx = Math.cos(rad) * vel;
+          this.vy = Math.sin(rad) * vel;
+        }
+
         this.cx += this.vx;
         this.cy += this.vy += opts.upFlow;
 
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        balloonPath(this.cx, this.cy, this.size);
+        balloonPath(this.cx, this.cy, opts.balloonSize);
         ctx.fill();
 
-        ctx.strokeStyle = this.lightColor.replace('light', 80);
+        ctx.strokeStyle = this.lightColor(80);
         ctx.beginPath();
-        ctx.moveTo(this.cx, this.cy + this.size);
-        ctx.lineTo(this.cx, this.cy + this.size + 15);
+        ctx.moveTo(this.cx, this.cy + opts.balloonSize);
+        ctx.lineTo(this.cx, this.cy + opts.balloonSize + 20);
         ctx.stroke();
 
-        ctx.fillStyle = this.lightColor.replace('light', 70);
-        ctx.fillText(this.char, this.cx + this.dx, this.cy + this.dy + this.size);
+        ctx.fillStyle = this.lightColor(70);
+        ctx.fillText(this.char, this.cx + this.dx, this.cy + this.dy + opts.balloonSize);
 
-        // Bay ra khỏi màn hình → xong
-        if (this.cy + this.size < -hh || Math.abs(this.cx) > hw + 200) {
+        // bay khỏi màn hình → xong
+        if (this.cy < -hh - 100) {
           this.phase = 'done';
           doneCount++;
         }
@@ -244,13 +258,13 @@ class Letter {
 }
 
 class Shard {
-  constructor(x, y, vx, vy, color) {
+  constructor(x, y, vx, vy, colorFn) {
     const vel = opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
     this.x = x;
     this.y = y;
     this.vx = vx * vel;
     this.vy = vy * vel;
-    this.color = color;
+    this.colorFn = colorFn;
     this.points = [[x, y]];
     this.size = opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
     this.alive = true;
@@ -263,7 +277,7 @@ class Shard {
     if (this.points.length > opts.fireworkShardPrevPoints) this.points.shift();
 
     for (let i = 1; i < this.points.length; i++) {
-      ctx.strokeStyle = this.color.replace('alp', i / this.points.length);
+      ctx.strokeStyle = this.colorFn(i / this.points.length);
       ctx.lineWidth = i * this.size / this.points.length;
       ctx.beginPath();
       ctx.moveTo(this.points[i-1][0], this.points[i-1][1]);
@@ -276,29 +290,29 @@ class Shard {
 
 function balloonPath(x, y, size) {
   ctx.moveTo(x, y);
-  ctx.bezierCurveTo(x - size/2, y - size/2, x - size/4, y - size, x, y - size);
-  ctx.bezierCurveTo(x + size/4, y - size, x + size/2, y - size/2, x, y);
-  ctx.lineTo(x - 4, y + size/3);
-  ctx.lineTo(x + 4, y + size/3);
+  ctx.bezierCurveTo(x-size/2, y-size/2, x-size/4, y-size, x, y-size);
+  ctx.bezierCurveTo(x+size/4, y-size, x+size/2, y-size/2, x, y);
+  ctx.lineTo(x-5, y+size/3);
+  ctx.lineTo(x+5, y+size/3);
   ctx.closePath();
 }
 
-// Tạo các chữ cái
-for (let i = 0; i < opts.strings.length; i++) {
-  for (let j = 0; j < opts.strings[i].length; j++) {
+// Tạo chữ
+opts.strings.forEach((str, i) => {
+  [...str].forEach((char, j) => {
     letters.push(new Letter(
-      opts.strings[i][j],
-      j * opts.charSpacing + opts.charSpacing / 2 - opts.strings[i].length * opts.charSize / 2,
-      i * opts.lineHeight + opts.lineHeight / 2 - opts.strings.length * opts.lineHeight / 2
+      char,
+      j * opts.charSpacing + opts.charSpacing/2 - str.length * opts.charSize/2,
+      i * opts.lineHeight + opts.lineHeight/2 - opts.strings.length * opts.lineHeight/2
     ));
-  }
-}
+  });
+});
 
-// Vòng lặp chính
+// Vòng lặp
 function anim() {
   requestAnimationFrame(anim);
   ctx.fillStyle = '#111119';
-  ctx.fillRect(0, 0, w, h);
+  ctx.fillRect(0,0,w,h);
 
   ctx.save();
   ctx.translate(hw, hh);
@@ -307,21 +321,18 @@ function anim() {
 
   ctx.restore();
 
-  // Khi tất cả bóng bay xong → chuyển trang
+  // Chuyển trang khi xong
   if (doneCount >= letters.length && !redirected) {
     redirected = true;
-    setTimeout(() => {
-      window.location.href = NEXT_PAGE_URL;
-    }, 1200);
+    setTimeout(() => window.location.href = NEXT_PAGE_URL, 1500);
   }
 }
-
 anim();
 
 // Resize
 window.addEventListener('resize', () => {
   w = c.width = window.innerWidth;
   h = c.height = window.innerHeight;
-  hw = w / 2;
-  hh = h / 2;
+  hw = w/2;
+  hh = h/2;
 });
