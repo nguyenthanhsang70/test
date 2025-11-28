@@ -39,7 +39,7 @@ const opts = {
   balloonAddedRadian: 1.2,
 };
 // LINK CHUYỂN ĐẾN SAU KHI BÓNG BAY HẾT (QUAN TRỌNG!!!)
-const NEXT_PAGE_URL = "index.html
+const NEXT_PAGE_URL = "index.html";
 // Thay link này thành: tin nhắn FB, Zalo, YouTube, ảnh quà, video… gì cũng được
 const calc = {
   totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length))
@@ -229,3 +229,4 @@ window.addEventListener('resize', () => {
   hw = w / 2;
   hh = h / 2;
 });
+
