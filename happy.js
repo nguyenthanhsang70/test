@@ -1,17 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday!</title>
+  <style>
+    body { margin:0; overflow:hidden; background:#111119; }
+    canvas { display:block; }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<script>
+// ==================== TOÀN BỘ CODE JS Ở ĐÂY ====================
 const c = document.getElementById('c');
 const ctx = c.getContext('2d');
-
 let w = c.width = window.innerWidth;
 let h = c.height = window.innerHeight;
 let hw = w / 2;
 let hh = h / 2;
 
 const opts = {
-  strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'],   // Thay tên ở đây nếu muốn
+  strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'], // Thay nội dung ở đây nếu muốn
   charSize: 30,
   charSpacing: 35,
   lineHeight: 50,
-
   fireworkPrevPoints: 10,
   fireworkBaseLineWidth: 5,
   fireworkAddedLineWidth: 8,
@@ -48,7 +62,6 @@ const opts = {
 const calc = {
   totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length))
 };
-
 const Tau = Math.PI * 2;
 const letters = [];
 
@@ -62,16 +75,13 @@ class Letter {
     this.dx = -ctx.measureText(char).width / 2;
     this.dy = opts.charSize / 2;
     this.fireworkDy = this.y - hh;
-
     const hue = ((x / calc.totalWidth) + 0.5) % 1 * 360;
     this.color = `hsl(${hue},80%,50%)`;
     this.lightColor = `hsl(${hue},80%,light%)`;
     this.lightAlphaColor = `hsla(${hue},80%,light%,alp)`;
     this.alphaColor = `hsla(${hue},80%,50%,alp)`;
-
     this.reset();
   }
-
   reset() {
     this.phase = 'firework';
     this.tick = 0;
@@ -81,7 +91,6 @@ class Letter {
     this.lineWidth = opts.fireworkBaseLineWidth + opts.fireworkAddedLineWidth * Math.random();
     this.prevPoints = [[0, hh, 0]];
   }
-
   step() {
     if (this.phase === 'firework') {
       if (!this.spawned) {
@@ -91,13 +100,11 @@ class Letter {
         }
         return;
       }
-
       ++this.tick;
       const lp = this.tick / this.reachTime;
       const ap = Math.sin(lp * Math.PI / 2);
       const x = lp * this.x;
       const y = hh + ap * this.fireworkDy;
-
       if (this.prevPoints.length > opts.fireworkPrevPoints) this.prevPoints.shift();
       this.prevPoints.push([x, y, lp * this.lineWidth]);
 
@@ -120,24 +127,21 @@ class Letter {
         this.circleFadeTime = opts.fireworkCircleFadeBaseTime + opts.fireworkCircleFadeAddedTime * Math.random() | 0;
         this.tick = this.tick2 = 0;
 
-        // Tạo mảnh vỡ pháo hoa
         const cnt = opts.fireworkBaseShards + opts.fireworkAddedShards * Math.random() | 0;
         const angle = Tau / cnt;
         let px = 1, py = 0;
+        this.shards = [];
         for (let i = 0; i < cnt; i++) {
           const tmp = px;
           px = px * Math.cos(angle) - py * Math.sin(angle);
           py = py * Math.cos(angle) + tmp * Math.sin(angle);
-          this.shards = this.shards || [];
           this.shards.push(new Shard(this.x, this.y, px, py, this.alphaColor));
         }
       }
     }
-
     else if (this.phase === 'contemplate') {
       ++this.tick;
 
-      // Vòng tròn nổ
       if (this.circleCreating) {
         ++this.tick2;
         const p = this.tick2 / this.circleCompleteTime;
@@ -155,7 +159,6 @@ class Letter {
       else if (this.circleFading) {
         ctx.fillStyle = this.lightColor.replace('light', 70);
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-
         ++this.tick2;
         const p = this.tick2 / this.circleFadeTime;
         const a = -Math.cos(p * Math.PI) / 2 + 0.5;
@@ -163,7 +166,6 @@ class Letter {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.circleFinalSize, 0, Tau);
         ctx.fill();
-
         if (this.tick2 >= this.circleFadeTime) this.circleFading = false;
       }
       else {
@@ -171,7 +173,6 @@ class Letter {
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
       }
 
-      // Mảnh vỡ
       if (this.shards) {
         for (let i = this.shards.length - 1; i >= 0; i--) {
           this.shards[i].step();
@@ -179,7 +180,6 @@ class Letter {
         }
       }
 
-      // Chuyển sang bóng bay
       if (this.tick > opts.letterContemplatingWaitTime) {
         this.phase = 'balloon';
         this.tick = 0;
@@ -193,7 +193,6 @@ class Letter {
         this.vy = Math.sin(rad) * vel;
       }
     }
-
     else if (this.phase === 'balloon') {
       if (this.spawning) {
         ++this.tick;
@@ -210,41 +209,33 @@ class Letter {
         const p = this.tick / this.inflateTime;
         const bx = this.cx = this.x;
         const by = this.cy = this.y - this.size * p;
-
         ctx.fillStyle = this.alphaColor.replace('alp', p);
         ctx.beginPath();
         balloonPath(bx, by, this.size * p);
         ctx.fill();
-
         ctx.strokeStyle = this.lightColor.replace('light', 80);
         ctx.beginPath();
         ctx.moveTo(bx, by + this.size * p);
         ctx.lineTo(bx, this.y);
         ctx.stroke();
-
         ctx.fillStyle = this.lightColor.replace('light', 70);
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-
         if (this.tick >= this.inflateTime) this.inflating = false;
       }
       else {
         this.cx += this.vx;
         this.cy += this.vy += opts.upFlow;
-
         ctx.fillStyle = this.color;
         ctx.beginPath();
         balloonPath(this.cx, this.cy, this.size);
         ctx.fill();
-
         ctx.strokeStyle = this.lightColor.replace('light', 80);
         ctx.beginPath();
         ctx.moveTo(this.cx, this.cy + this.size);
         ctx.lineTo(this.cx, this.cy + this.size + 15);
         ctx.stroke();
-
         ctx.fillStyle = this.lightColor.replace('light', 70);
         ctx.fillText(this.char, this.cx + this.dx, this.cy + this.dy + this.size);
-
         if (this.cy + this.size < -hh || Math.abs(this.cx) > hw + 100)
           this.phase = 'done';
       }
@@ -264,14 +255,11 @@ class Shard {
     this.size = opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
     this.alive = true;
   }
-
   step() {
     this.x += this.vx;
     this.y += this.vy += opts.gravity;
-
     this.points.push([this.x, this.y]);
     if (this.points.length > opts.fireworkShardPrevPoints) this.points.shift();
-
     for (let i = 1; i < this.points.length; i++) {
       ctx.strokeStyle = this.color.replace('alp', i / this.points.length);
       ctx.lineWidth = i * this.size / this.points.length;
@@ -280,7 +268,6 @@ class Shard {
       ctx.lineTo(this.points[i][0], this.points[i][1]);
       ctx.stroke();
     }
-
     if (this.y > h) this.alive = false;
   }
 }
@@ -294,23 +281,24 @@ function balloonPath(x, y, size) {
   ctx.closePath();
 }
 
-// Tạo chữ
+// Tạo các chữ
 for (let i = 0; i < opts.strings.length; i++) {
-  for (let j = 0; j < opts.strings[i].length; j++) {
+  const line = opts.strings[i];
+  const lineWidth = line.length * opts.charSpacing;
+  for (let j = 0; j < line.length; j++) {
     letters.push(new Letter(
-      opts.strings[i][j],
-      j * opts.charSpacing + opts.charSpacing / 2 - opts.strings[i].length * opts.charSize / 2,
-      i * opts.lineHeight + opts.lineHeight / 2 - opts.strings.length * opts.lineHeight / 2
+      line[j],
+      j * opts.charSpacing + opts.charSpacing / 2 - lineWidth / 2,
+      i * opts.lineHeight + opts.lineHeight / 2 - opts.strings.length * opts.lineHeight / 2 + hh * 0.3
     ));
   }
 }
 
-// Animation loop
+// Animation loop + CHUYỂN TRANG KHI XONG
 function anim() {
   requestAnimationFrame(anim);
   ctx.fillStyle = '#111119';
   ctx.fillRect(0, 0, w, h);
-
   ctx.save();
   ctx.translate(hw, hh);
 
@@ -318,19 +306,35 @@ function anim() {
   letters.forEach(l => {
     l.step();
     if (l.phase !== 'done') allDone = false;
-  ;
   });
-
   ctx.restore();
 
-  if (allDone) letters.forEach(l => l.reset());
+  // === KHI TẤT CẢ BÓNG BAY ĐÃ BAY HẾT ===
+  if (allDone) {
+    // Dừng vòng lặp để không chạy lại
+    letters.length = 0;
+
+    // ĐỔI LINK NÀY THÀNH LINK BẠN MUỐN CHUYỂN TỚI
+    const nextPage = 'index.html'; // ← Thay link thật ở đây
+
+    setTimeout(() => {
+      window.location.href = nextPage;
+    }, 1000); // Chờ 1 giây cho đẹp (có thể để 0 nếu muốn chuyển ngay)
+
+    return; // Dừng animation
+  }
 }
 
 anim();
 
+// Resize
 window.addEventListener('resize', () => {
   w = c.width = window.innerWidth;
   h = c.height = window.innerHeight;
   hw = w / 2;
   hh = h / 2;
 });
+// ============================================================
+</script>
+</body>
+</html>
