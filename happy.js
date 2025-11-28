@@ -1,6 +1,5 @@
 const c = document.getElementById('c');
 const ctx = c.getContext('2d');
-
 let w = c.width = window.innerWidth;
 let h = c.height = window.innerHeight;
 let hw = w / 2;
@@ -8,11 +7,10 @@ let hh = h / 2;
 
 // ==================== CẤU HÌNH ====================
 const opts = {
-  strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'],   // ← Thay tên người nhận ở đây
+  strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'], // Thay nội dung ở đây
   charSize: 34,
   charSpacing: 38,
   lineHeight: 56,
-
   fireworkPrevPoints: 10,
   fireworkBaseLineWidth: 5,
   fireworkAddedLineWidth: 8,
@@ -21,35 +19,21 @@ const opts = {
   fireworkAddedReachTime: 30,
   fireworkCircleBaseSize: 20,
   fireworkCircleAddedSize: 10,
-  fireworkCircleBaseTime: 30,
-  fireworkCircleAddedTime: 30,
-  fireworkCircleFadeBaseTime: 10,
-  fireworkCircleFadeAddedTime: 5,
   fireworkBaseShards: 6,
   fireworkAddedShards: 6,
-  fireworkShardPrevPoints: 3,
-  fireworkShardBaseVel: 4,
-  fireworkShardAddedVel: 2,
-  fireworkShardBaseSize: 3,
-  fireworkShardAddedSize: 3,
-
   gravity: 0.1,
   upFlow: -0.1,
   letterContemplatingWaitTime: 400,
-  balloonBaseSize: 40,        // kích thước bóng bay
+  balloonBaseSize: 40,
   balloonBaseVel: 0.5,
   balloonAddedVel: 0.6,
   balloonBaseRadian: -(Math.PI / 2 - 0.5),
   balloonAddedRadian: 1.2,
 };
 
-// LINK CHUYỂN ĐẾN SAU KHI BÓNG BAY HẾT (QUAN TRỌNG!!!)
-const NEXT_PAGE_URL = "index.html
-// Thay link này thành: tin nhắn FB, Zalo, YouTube, ảnh quà, video… gì cũng được
-
-const calc = {
-  totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length))
-};
+// LINK CHUYỂN ĐẾN SAU KHI XONG (QUAN TRỌNG!!!)
+const NEXT_PAGE_URL = "index.html"; // ĐÃ SỬA: có dấu ngoặc kép đầy đủ
+// Thay link này thành: tin nhắn FB, Zalo, YouTube, ảnh quà, video…
 
 const Tau = Math.PI * 2;
 const letters = [];
@@ -58,118 +42,112 @@ let redirected = false;
 
 ctx.font = `${opts.charSize}px Verdana, sans-serif`;
 
-// ==================== LỚP CHỮ =================
+// Tính chiều rộng thực tế từng dòng để căn giữa chính xác
+const lineWidths = opts.strings.map(line => {
+  let width = 0;
+  for (const ch of line) width += ctx.measureText(ch).width;
+  width += (line.length - 1) * (opts.charSpacing - ctx.measureText(' ').width || 10);
+  return width;
+});
+
+// ==================== LỚP CHỮ ====================
 class Letter {
   constructor(char, x, y) {
     this.char = char;
     this.x = x;
     this.y = y;
-
     this.dx = -ctx.measureText(char).width / 2;
     this.dy = opts.charSize / 2;
     this.fireworkDy = this.y - hh;
-
-    const hue = ((x / calc.totalWidth + 0.5) % 1) * 360;
+    const hue = ((x / w + 0.5) % 1) * 360;
     this.hue = hue;
-
     this.color = `hsl(${hue},85%,55%)`;
-    this.light = (l) => `hsl(${hue},85%,${l}%)`;
-    this.alpha = (a) => `hsla(${hue},85%,55%,${a})`;
+    this.light = l => `hsl(${hue},85%,${l}%)`;
+    this.alpha = a => `hsla(${hue},85%,55%,${a})`;
     this.lightAlpha = (l, a) => `hsla(${hue},85%,${l}%,${a})`;
-
     this.reset();
   }
 
   reset() {
-    this.phase = 'firework';     // firework → contemplate → balloon → done
+    this.phase = 'firework'; // firework → contemplate → balloon → done
     this.tick = 0;
-    this.tick2 = 0;
     this.spawned = false;
     this.spawningTime = opts.fireworkSpawnTime * Math.random() | 0;
     this.reachTime = opts.fireworkBaseReachTime + opts.fireworkAddedReachTime * Math.random() | 0;
     this.lineWidth = opts.fireworkBaseLineWidth + opts.fireworkAddedLineWidth * Math.random();
-    this.prevPoints = [[0, hh, 0]];
+    this.prevPoints = [[0, hh]];
     this.shards = [];
   }
 
   step() {
-    // ---------- PHÁO HOA BAY LÊN ----------
+    // Pháo hoa bay lên
     if (this.phase === 'firework') {
       if (!this.spawned) {
-        if (++this.tick >= this.spawningTime) {
-          this.spawned = true;
-          this.tick = 0;
-        }
+        if (++this.tick >= this.spawningTime) this.spawned = true;
         return;
       }
-
       ++this.tick;
       const t = this.tick / this.reachTime;
-      const x = t * this.x;
-      const y = hh + Math.sin(t * Math.PI / 2) * this.fireworkDy;
+      const x = this.x * t;
+      const y = hh + this.fireworkDy * Math.sin(t * Math.PI / 2);
 
+      this.prevPoints.push([x, y]);
       if (this.prevPoints.length > opts.fireworkPrevPoints) this.prevPoints.shift();
-      this.prevPoints.push([x, y, t * this.lineWidth]);
 
       for (let i = 1; i < this.prevPoints.length; i++) {
-        const p1 = this.prevPoints[i];
-        const p2 = this.prevPoints[i - 1];
+        const [x1, y1] = this.prevPoints[i];
+        const [x2, y2] = this.prevPoints[i - 1];
         ctx.strokeStyle = this.alpha(i / this.prevPoints.length);
-        ctx.lineWidth = p1[2] * (i / (this.prevPoints.length - 1));
+        ctx.lineWidth = this.lineWidth * (i / this.prevPoints.length);
         ctx.beginPath();
-        ctx.moveTo(p2[0], p2[1]);
-        ctx.lineTo(p1[0], p1[1]);
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x1, y1);
         ctx.stroke();
       }
 
       if (t >= 1) {
         this.phase = 'contemplate';
         this.tick = 0;
-        this.tick2 = 0;
-        this.circleFinalSize = opts.fireworkCircleBaseSize + opts.fireworkCircleAddedSize * Math.random();
+        this.circleSize = opts.fireworkCircleBaseSize + opts.fireworkCircleAddedSize * Math.random();
 
-        // tạo mảnh nổ
+        // Tạo mảnh nổ
         const cnt = opts.fireworkBaseShards + opts.fireworkAddedShards * Math.random() | 0;
-        const angleStep = Tau / cnt;
-        let angle = 0;
         for (let i = 0; i < cnt; i++) {
-          const speed = opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
+          const angle = Tau * i / cnt + (Math.random() - 0.5) * 0.5;
+          const vel = 3 + Math.random() * 3;
           this.shards.push({
-            x: this.x,
-            y: this.y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
+            x: this.x, y: this.y,
+            vx: Math.cos(angle) * vel,
+            vy: Math.sin(angle) * vel,
             life: 1
           });
-          angle += angleStep;
         }
       }
       return;
     }
 
-    // ---------- NỔ + HIỆN CHỮ ----------
+    // Hiện chữ + nổ + mảnh rơi
     if (this.phase === 'contemplate') {
       ++this.tick;
 
-      // vòng tròn nổ
+      // Vòng tròn nổ
       if (this.tick < 40) {
         const p = this.tick / 40;
-        const size = p * this.circleFinalSize;
         ctx.fillStyle = this.lightAlpha(70, p);
         ctx.beginPath();
-        ctx.arc(this.x, this.y, size, 0, Tau);
+        ctx.arc(this.x, this.y, this.circleSize * p, 0, Tau);
         ctx.fill();
       }
 
-      // hiện chữ
+      // Vẽ chữ
       ctx.fillStyle = this.light(75);
       ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
 
-      // mảnh pháo hoa rơi
+      // Mảnh pháo hoa rơi
       this.shards = this.shards.filter(s => {
         s.x += s.vx;
-        s.y += s.vy += opts.gravity;
-        s.life -= 0.02;
+        s.y += (s.vy += opts.gravity);
+        s.life -= 0.015;
         if (s.life > 0) {
           ctx.fillStyle = this.alpha(s.life);
           ctx.fillRect(s.x - 2, s.y - 2, 4, 4);
@@ -181,8 +159,6 @@ class Letter {
       if (this.tick > opts.letterContemplatingWaitTime) {
         this.phase = 'balloon';
         this.tick = 0;
-
-        // khởi tạo vận tốc bay lên
         const rad = opts.balloonBaseRadian + opts.balloonAddedRadian * Math.random();
         const vel = opts.balloonBaseVel + opts.balloonAddedVel * Math.random();
         this.vx = Math.cos(rad) * vel;
@@ -193,18 +169,18 @@ class Letter {
       return;
     }
 
-    // ---------- BÓNG BAY BAY LÊN ----------
+    // Bóng bay bay lên
     if (this.phase === 'balloon') {
       this.bx += this.vx;
-      this.by += this.vy += opts.upFlow;
+      this.by += (this.vy += opts.upFlow);
 
-      // vẽ bóng bay
+      // Vẽ bóng
       ctx.fillStyle = this.color;
       ctx.beginPath();
       ctx.arc(this.bx, this.by, opts.balloonBaseSize, 0, Tau);
       ctx.fill();
 
-      // dây bóng
+      // Dây bóng
       ctx.strokeStyle = this.light(30);
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -212,61 +188,61 @@ class Letter {
       ctx.lineTo(this.bx, this.by + opts.balloonBaseSize + 30);
       ctx.stroke();
 
-      // chữ trên bóng
+      // Chữ trên bóng
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(this.char, this.bx, this.by);
 
-      // bay khỏi màn hình → tính là xong
-      if (this.by < -hh -hh - 100) {
+      // Bay khỏi màn hình → xong
+      if (this.by < -h - 100) {
         this.phase = 'done';
-        doneCount++;   // TĂNG BIẾN ĐẾM
+        doneCount++;
       }
     }
   }
 }
 
-// ==================== TẠO CHỮ ====================
+// ==================== TẠO CHỮ (căn giữa chuẩn) ====================
 opts.strings.forEach((line, i) => {
-  [...line].forEach((char, j) => {
-    const x = j * opts.charSpacing + opts.charSpacing / 2 - (line.length * opts.charSize) / 2;
-    const y = i * opts.lineHeight + opts.lineHeight / 2 - (opts.strings.length - 1) * opts.lineHeight / 2;
+  const lineWidth = lineWidths[i];
+  let currentX = -lineWidth / 2;
+
+  [...line].forEach(char => {
+    const charWidth = ctx.measureText(char).width;
+    const x = currentX + charWidth / 2;
+    const y = i * opts.lineHeight - (opts.strings.length - 1) * opts.lineHeight / 2;
     letters.push(new Letter(char, x, y));
+    currentX += charWidth + (opts.charSpacing - ctx.measureText(' ').width || 10);
   });
 });
 
 // ==================== VÒNG LẶP CHÍNH ====================
 function anim() {
   requestAnimationFrame(anim);
-
   ctx.fillStyle = '#0a0a1f';
   ctx.fillRect(0, 0, w, h);
 
   ctx.save();
   ctx.translate(hw, hh);
-
-  letters.forEach(letter => letter.step());
-
+  letters.forEach(l => l.step());
   ctx.restore();
 
-  // KHI TẤT CẢ BÓNG ĐÃ BAY HẾT → CHUYỂN TRANG
+  // Khi tất cả bóng bay hết → chuyển trang
   if (doneCount >= letters.length && !redirected) {
     redirected = true;
     setTimeout(() => {
       window.location.href = NEXT_PAGE_URL;
-    }, 1500); // đợi 1.5 giây cho đẹp mắt
+    }, 1500); // Đợi 1.5 giây cho đẹp
   }
 }
-
 anim();
 
-// ==================== KHI THAY ĐỔI KÍCH THƯỚC ====================
+// Resize màn hình
 window.addEventListener('resize', () => {
   w = c.width = window.innerWidth;
   h = c.height = window.innerHeight;
   hw = w / 2;
   hh = h / 2;
 });
-
