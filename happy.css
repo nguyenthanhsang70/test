@@ -1,0 +1,88 @@
+/* Reset cơ bản + full màn hình */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Canvas full màn hình trên mọi thiết bị */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;           /* Tránh scroll khi chạm trên mobile */
+}
+
+/* Chữ credit ở dưới cùng – đẹp trên cả mobile */
+p {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #eee;
+  text-align: center;
+  text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 0 12px rgba(255,255,255,0.3);
+  z-index: 100;
+  white-space: nowrap;
+  pointer-events: none;         /* Không che mất touch trên mobile */
+  max-width: 95vw;              /* Tránh tràn màn hình nhỏ */
+}
+
+/* Tên tác giả nổi bật */
+p a {
+  color: #ff79c6;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 19px;
+  text-shadow: 0 0 10px #ff79c6;
+  pointer-events: auto;         /* Vẫn click được link */
+}
+
+/* Dòng phụ */
+p span {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #999;
+  opacity: 0.9;
+}
+
+/* Tối ưu cho điện thoại (màn hình nhỏ) */
+@media (max-width: 480px) {
+  p {
+    font-size: 14px;
+    bottom: 8px;
+    padding: 6px 12px;
+  }
+  p a {
+    font-size: 17px;
+  }
+  p span {
+    font-size: 10px;
+  }
+}
+
+/* Tối ưu cho iPhone X, 11, 12, 13, 14, 15… (có notch) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  p {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Tắt highlight khi chạm trên mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
