@@ -9,9 +9,9 @@ let hh = h / 2;
 
 const opts = {
   strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'], // Thay nội dung chữ tại đây
-  charSize: 30,
-  charSpacing: 35,
-  lineHeight: 50,
+  charSize: 48,
+  charSpacing: 52,
+  lineHeight: 80,
   fireworkPrevPoints: 10,
   fireworkBaseLineWidth: 5,
   fireworkAddedLineWidth: 8,
@@ -349,4 +349,5 @@ window.addEventListener('resize', () => {
   hw = w / 2;
   hh = h / 2;
 });
+
 
