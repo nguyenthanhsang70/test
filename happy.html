@@ -210,7 +210,7 @@
   <div id="message">Đang chuẩn bị một điều bất ngờ...</div>
   
   <script>
-    const REDIRECT_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; // Thay link của bạn ở đây
+    const REDIRECT_URL = 'index.html'; // Thay link của bạn ở đây
     
     // Create stars background
     function createStars() {
@@ -589,7 +589,7 @@
         
         if (countdownValue <= 0) {
           clearInterval(countdownInterval);
-          document.getElementById('message').textContent = '🎉 Đang chuyển hướng... 🎉';
+          document.getElementById('message').textContent = 'Đang chuyển hướng... ';
           setTimeout(() => {
             window.location.href = REDIRECT_URL;
           }, 500);
@@ -644,3 +644,4 @@
   </script>
 </body>
 </html>
+
