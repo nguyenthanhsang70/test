@@ -1,647 +1,386 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chúc Mừng Sinh Nhật</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #16213e 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: block;
-    }
-    
-    /* Particles background */
-    .stars {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
-    
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      animation: twinkle 3s infinite;
-    }
-    
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.3; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.5); }
-    }
-    
-    /* Countdown container */
-    #countdown {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      display: none;
-      z-index: 100;
-      animation: fadeIn 1s ease-in;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    }
-    
-    #countdown-text {
-      font-size: clamp(20px, 4vw, 40px);
-      color: #fff;
-      margin-bottom: 30px;
-      font-weight: 300;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: gradientShift 3s ease infinite;
-    }
-    
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-    
-    #countdown-number {
-      font-size: clamp(80px, 20vw, 180px);
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 
-        0 0 10px rgba(255, 255, 255, 0.8),
-        0 0 20px rgba(255, 107, 107, 0.8),
-        0 0 30px rgba(255, 107, 107, 0.6),
-        0 0 40px rgba(255, 107, 107, 0.4),
-        0 0 70px rgba(255, 107, 107, 0.3),
-        0 0 100px rgba(255, 107, 107, 0.2);
-      animation: pulse 1s ease-in-out infinite, colorChange 2s infinite;
-      position: relative;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
-    
-    @keyframes colorChange {
-      0% { color: #ff6b6b; }
-      25% { color: #ffd93d; }
-      50% { color: #6bcf7f; }
-      75% { color: #4d96ff; }
-      100% { color: #ff6b6b; }
-    }
-    
-    /* Glowing circles around countdown */
-    .glow-circle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      animation: expandGlow 2s ease-out infinite;
-    }
-    
-    .glow-circle:nth-child(1) {
-      width: 200px;
-      height: 200px;
-      animation-delay: 0s;
-    }
-    
-    .glow-circle:nth-child(2) {
-      width: 250px;
-      height: 250px;
-      animation-delay: 0.5s;
-    }
-    
-    .glow-circle:nth-child(3) {
-      width: 300px;
-      height: 300px;
-      animation-delay: 1s;
-    }
-    
-    @keyframes expandGlow {
-      0% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0;
-      }
-      50% {
-        opacity: 0.5;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0;
-      }
-    }
-    
-    /* Loading message */
-    #message {
-      position: absolute;
-      bottom: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: clamp(14px, 2vw, 18px);
-      color: rgba(255, 255, 255, 0.7);
-      text-align: center;
-      letter-spacing: 2px;
-      display: none;
-      z-index: 101;
-      animation: fadeInOut 2s ease-in-out infinite;
-    }
-    
-    @keyframes fadeInOut {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
-    }
-    
-    /* Confetti effect */
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      background: #ff6b6b;
-      position: absolute;
-      animation: confettiFall 3s linear infinite;
-    }
-    
-    @keyframes confettiFall {
-      to {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc mừng sinh nhật DA12</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap');
+
+        body {
+            font-family: 'Dancing Script', cursive;
+            background: #FDE3A7;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            position: relative;
+            width: 250px;
+            height: 330px;
+            background: #e0e1dc;
+            transform: perspective(2000px);
+            transform-style: preserve-3d;
+            box-shadow: inset 300px 0 50px rgba(0,0,0,.5), 20px 0 60px rgba(0,0,0,.5);
+            transition: 1s;
+        }
+        .card.opened {
+            transform: perspective(2000px) rotate(15deg) scale(1.2);
+            box-shadow: inset 20px 0 50px rgba(0,0,0,.5), 0 10px 100px rgba(0,0,0,.5);
+        }
+        .card:before {
+            content:''; position: absolute; top: -5px; left: 0; width: 100%; height: 5px;
+            background: #BAC1BA; transform: skewX(-45deg); transform-origin: bottom;
+        }
+        .card:after {
+            content:''; position: absolute; top: 0; right: -5px; width: 5px; height: 100%;
+            background: #92A29C; transform: skewY(-45deg); transform-origin: left;
+        }
+        .imgBox {
+            width: 100%; height: 100%; position: absolute; transform-origin: left;
+            transition: .7s; z-index: 2; top: 0; left: 0;
+        }
+        .bark {
+            position: absolute; background: #e0e1dc; width: 100%; height: 100%;
+            opacity: 0; transition: .7s;
+        }
+        .imgBox img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .card.opened .imgBox {
+            transform: rotateY(-135deg);
+        }
+        .card.opened .bark {
+            opacity: 1;
+            box-shadow: 300px 200px 100px rgba(0, 0, 0, .4) inset;
+        }
+        .details {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-6deg);
+            width: 85%;
+            padding: 10px;
+            text-align: center;
+            color: #222;
+            opacity: 0;
+            transition: opacity 0.5s 0.7s;
+        }
+        .card.opened .details { opacity: 1; }
+        .title1 {
+            font-family: 'Amatic SC', cursive;
+            font-size: 14px;
+            color: #16A085;
+            margin: 0 0 4px 0;
+            line-height: 1;
+        }
+        .title2 {
+            font-family: 'Amatic SC', cursive;
+            font-size: 14px;
+            color: #E74C3C;
+            margin: 0;
+            line-height: 1;
+        }
+        .content {
+            font-size: 11px;
+            line-height: 1.6;
+            margin: 15px 0 20px 0;
+        }
+        .content p { margin: 6px 0; }
+        .signature {
+            width: 100%;
+            text-align: right;
+            padding-right: 5px;
+            margin-top: 10px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        .signature .heart {
+            font-size: 20px;
+            margin-right: 4px;
+        }
+
+        /* SLIDESHOW */
+        .slideshow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        .slideshow.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        .slide.active { opacity: 1; }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
+            font-size: 16px;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .nav-btn:hover { background: white; }
+        .prev { left: 5px; }
+        .next { right: 5px; }
+        .dots {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .dot.active {
+            background: white;
+            width: 20px;
+            border-radius: 5px;
+        }
+
+        /* Hiệu ứng popup */
+        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+        @keyframes zoomIn { from {transform:scale(0.7); opacity:0;} to {transform:scale(1); opacity:1;} }
+    </style>
 </head>
 <body>
-  <div class="stars" id="stars"></div>
-  <canvas id="c"></canvas>
-  
-  <div id="countdown">
-    <div class="glow-circle"></div>
-    <div class="glow-circle"></div>
-    <div class="glow-circle"></div>
-    <div id="countdown-number">10</div>
-  </div>
-  
-  <div id="message">Đang chuẩn bị một điều bất ngờ...</div>
-  
-  <script>
-    const REDIRECT_URL = 'index.html'; // Thay link của bạn ở đây
-    
-    // Create stars background
-    function createStars() {
-      const starsContainer = document.getElementById('stars');
-      for (let i = 0; i < 100; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.animationDelay = Math.random() * 3 + 's';
-        star.style.animationDuration = (Math.random() * 2 + 2) + 's';
-        starsContainer.appendChild(star);
-      }
-    }
-    
-    // Create confetti
-    function createConfetti() {
-      const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#ee5a6f', '#c06c84'];
-      for (let i = 0; i < 50; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.top = -10 + 'px';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animationDelay = Math.random() * 3 + 's';
-        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-        document.body.appendChild(confetti);
-      }
-    }
-    
-    createStars();
-    
-    const c = document.getElementById('c');
-    const ctx = c.getContext('2d');
+    <div class="card" id="card">
+        <div class="imgBox">
+            <div class="bark"></div>
+            <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400" alt="Bìa thiệp">
+        </div>
 
-    let w = c.width = window.innerWidth;
-    let h = c.height = window.innerHeight;
-    let hw = w / 2;
-    let hh = h / 2;
+        <div class="details" id="textContent">
+            <h1 class="title1">XIN CHÀO THIÊN THẦN!!!</h1>
+            <h1 class="title2">CHÚC MỪNG SINH NHẬT</h1>
+            <div class="content">
+                <p>Gửi DA,</p>
+                <p>Hmm, xem nói gì cho cute ha...</p>
+                <p>Cảm ơn vì anh đã được sinh ra,</p>
+                <p>Cảm ơn vì anh đã gặp em,</p>
+                <p>Cảm ơn vì năng lượng anh mang lại,</p>
+                <p>Với tất cả tình cảm,</p>
+                <p>Hy vọng mọi điều tốt nhất sẽ đến với anh</p>
+                <p>Hãy thật hạnh phúc, khỏe mạnh và rực rỡ</p>
+                <p>Cháy hết mình ở tuổi 23 nhé!!</p>
+            </div>
+            <div class="signature">
+                <div>Thương Anh nhiều!</div>
+                <div><span class="heart">♥</span>Nguyễn Thanh Sang (阮清尚)</div>
+            </div>
+        </div>
 
-    const opts = {
-      strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'],
-      charSize: 35,
-      charSpacing: 40,
-      lineHeight: 60,
+        <!-- SLIDESHOW -->
+        <div class="slideshow" id="slideshow">
+            <div class="slide active">
+                <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800" alt="Ảnh 1">
+                <div class="slide-caption">Khoảnh khắc đáng nhớ 1</div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?w=800" alt="Ảnh 2">
+                <div class="slide-caption">Khoảnh khắc đáng nhớ 2</div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=800" alt="Ảnh 3">
+                <div class="slide-caption">Khoảnh khắc đáng nhớ 3</div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1531117646194-619a3c7d2e46?w=800" alt="Ảnh 4">
+                <div class="slide-caption">Khoảnh khắc đáng nhớ 4</div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800" alt="Ảnh 5">
+                <div class="slide-caption">Khoảnh khắc đáng nhớ 5</div>
+            </div>
 
-      fireworkPrevPoints: 15,
-      fireworkBaseLineWidth: 6,
-      fireworkAddedLineWidth: 10,
-      fireworkSpawnTime: 150,
-      fireworkBaseReachTime: 35,
-      fireworkAddedReachTime: 35,
-      fireworkCircleBaseSize: 25,
-      fireworkCircleAddedSize: 15,
-      fireworkCircleBaseTime: 35,
-      fireworkCircleAddedTime: 35,
-      fireworkCircleFadeBaseTime: 15,
-      fireworkCircleFadeAddedTime: 10,
-      fireworkBaseShards: 8,
-      fireworkAddedShards: 8,
-      fireworkShardPrevPoints: 4,
-      fireworkShardBaseVel: 5,
-      fireworkShardAddedVel: 3,
-      fireworkShardBaseSize: 4,
-      fireworkShardAddedSize: 4,
-      gravity: 0.12,
-      upFlow: -0.12,
-      letterContemplatingWaitTime: 400,
-      balloonSpawnTime: 50,
-      balloonBaseInflateTime: 15,
-      balloonAddedInflateTime: 15,
-      balloonBaseSize: 25,
-      balloonAddedSize: 25,
-      balloonBaseVel: 0.5,
-      balloonAddedVel: 0.5,
-      balloonBaseRadian: -(Math.PI / 2 - 0.5),
-      balloonAddedRadian: 1,
-    };
+            <button class="nav-btn prev" onclick="changeSlide(-1)">❮</button>
+            <button class="nav-btn next" onclick="changeSlide(1)">❯</button>
 
-    const calc = {
-      totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length))
-    };
+            <div class="dots">
+                <span class="dot active" onclick="currentSlide(0)"></span>
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+                <span class="dot" onclick="currentSlide(4)"></span>
+            </div>
+        </div>
+    </div>
 
-    const Tau = Math.PI * 2;
-    const letters = [];
-    let countdownStarted = false;
-    let countdownValue = 10;
-    let countdownInterval = null;
+    <script>
+        let currentSlideIndex = 0;
+        let autoSlideInterval;
+        let hasShownVideoPrompt = false;
 
-    ctx.font = `bold ${opts.charSize}px "Segoe UI", Verdana`;
+        const card        = document.getElementById('card');
+        const textContent = document.getElementById('textContent');
+        const slideshow   = document.getElementById('slideshow');
 
-    class Letter {
-      constructor(char, x, y) {
-        this.char = char;
-        this.x = x;
-        this.y = y;
-        this.dx = -ctx.measureText(char).width / 2;
-        this.dy = opts.charSize / 2;
-        this.fireworkDy = this.y - hh;
+        // Tự động mở thiệp sau 1s
+        setTimeout(() => card.classList.add('opened'), 1000);
 
-        const hue = ((x / calc.totalWidth) + 0.5) % 1 * 360;
-        this.color = `hsl(${hue},90%,60%)`;
-        this.lightColor = `hsl(${hue},90%,light%)`;
-        this.lightAlphaColor = `hsla(${hue},90%,light%,alp)`;
-        this.alphaColor = `hsla(${hue},90%,60%,alp)`;
+        // Sau 10s chuyển sang slideshow
+        setTimeout(() => {
+            textContent.style.opacity = '0';
+            setTimeout(() => {
+                slideshow.classList.add('active');
+                startAutoSlide();
+            }, 500);
+        }, 10000);
 
-        this.reset();
-      }
+        // === POPUP VIDEO SIÊU DỄ THƯƠNG ===
+        function createVideoPrompt() {
+            if (hasShownVideoPrompt) return;
+            hasShownVideoPrompt = true;
 
-      reset() {
-        this.phase = 'firework';
-        this.tick = 0;
-        this.spawned = false;
-        this.spawningTime = opts.fireworkSpawnTime * Math.random() | 0;
-        this.reachTime = opts.fireworkBaseReachTime + opts.fireworkAddedReachTime * Math.random() | 0;
-        this.lineWidth = opts.fireworkBaseLineWidth + opts.fireworkAddedLineWidth * Math.random();
-        this.prevPoints = [[0, hh, 0]];
-      }
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position:fixed; top:0; left:0; width:100%; height:100%;
+                background:rgba(0,0,0,0.75); z-index:9999;
+                display:flex; align-items:center; justify-content:center;
+                animation:fadeIn 0.6s ease;
+            `;
 
-      step() {
-        if (this.phase === 'firework') {
-          if (!this.spawned) {
-            if (++this.tick >= this.spawningTime) {
-              this.tick = 0;
-              this.spawned = true;
-            }
-            return;
-          }
+            const box = document.createElement('div');
+            box.style.cssText = `
+                background:#fff; padding:35px 25px; border-radius:25px;
+                max-width:340px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.4);
+                animation:zoomIn 0.7s ease;
+                font-family:'Dancing Script',cursive;
+            `;
 
-          ++this.tick;
-          const lp = this.tick / this.reachTime;
-          const ap = Math.sin(lp * Math.PI / 2);
-          const x = lp * this.x;
-          const y = hh + ap * this.fireworkDy;
+            box.innerHTML = `
+                <h2 style="margin:0 0 18px; font-size:32px; color:#E74C3C;">
+                    DA yêu dấu ơi ❤️
+                </h2>
+                <p style="margin:15px 0 25px; font-size:19px; color:#444; line-height:1.6;">
+                    Em có muốn xem video kỷ niệm<br>
+                    mà anh chuẩn bị riêng cho em không nào?
+                </p>
+                <button id="watchYes" style="
+                    padding:14px 40px; border:none; border-radius:50px;
+                    background:#E74C3C; color:white; font-size:20px; cursor:pointer;
+                    box-shadow:0 10px 30px rgba(231,76,60,0.5);
+                    transition:0.3s; font-family:'Dancing Script',cursive;
+                ">Có, em muốn xem lắm luôn!!! ❤️</button>
+                
+            `;
 
-          if (this.prevPoints.length > opts.fireworkPrevPoints) this.prevPoints.shift();
-          this.prevPoints.push([x, y, lp * this.lineWidth]);
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
 
-          for (let i = 1; i < this.prevPoints.length; i++) {
-            const p = this.prevPoints[i];
-            const p2 = this.prevPoints[i - 1];
-            const grad = ctx.createLinearGradient(p2[0], p2[1], p[0], p[1]);
-            const alpha = i / this.prevPoints.length;
-            grad.addColorStop(0, this.alphaColor.replace('alp', alpha * 0.5));
-            grad.addColorStop(1, this.alphaColor.replace('alp', alpha));
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = p[2] * i / (this.prevPoints.length - 1);
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(p[0], p[1]);
-            ctx.lineTo(p2[0], p2[1]);
-            ctx.stroke();
-          }
+            // Nút xem video (anh thay link thật vào đây nha!)
+            document.getElementById('watchYes').onclick = () => {
+                window.location.href = "luotvideo.html";   // ← THAY LINK VIDEO THẬT CỦA ANH VÀO ĐÂY
+                // Ví dụ: "https://youtu.be/abc123"
+                // Hoặc: "video.html"
+            };
 
-          if (this.tick >= this.reachTime) {
-            this.phase = 'contemplate';
-            this.circleFinalSize = opts.fireworkCircleBaseSize + opts.fireworkCircleAddedSize * Math.random();
-            this.circleCompleteTime = opts.fireworkCircleBaseTime + opts.fireworkCircleAddedTime * Math.random() | 0;
-            this.circleCreating = true;
-            this.circleFadeTime = opts.fireworkCircleFadeBaseTime + opts.fireworkCircleFadeAddedTime * Math.random() | 0;
-            this.tick = this.tick2 = 0;
-
-            const cnt = opts.fireworkBaseShards + opts.fireworkAddedShards * Math.random() | 0;
-            const angle = Tau / cnt;
-            let px = 1, py = 0;
-            for (let i = 0; i < cnt; i++) {
-              const tmp = px;
-              px = px * Math.cos(angle) - py * Math.sin(angle);
-              py = py * Math.cos(angle) + tmp * Math.sin(angle);
-              this.shards = this.shards || [];
-              this.shards.push(new Shard(this.x, this.y, px, py, this.alphaColor));
-            }
-          }
+            // Đóng popup
+            document.getElementById('closePrompt').onclick = () => {
+                overlay.style.animation = 'fadeIn 0.4s reverse';
+                setTimeout(() => overlay.remove(), 400);
+            };
+            overlay.onclick = (e) => {
+                if (e.target === overlay) {
+                    overlay.style.animation = 'fadeIn 0.4s reverse';
+                    setTimeout(() => overlay.remove(), 400);
+                }
+            };
         }
 
-        else if (this.phase === 'contemplate') {
-          ++this.tick;
+        // === SLIDESHOW ===
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.slide');
+            const dots   = document.querySelectorAll('.dot');
 
-          if (this.circleCreating) {
-            ++this.tick2;
-            const p = this.tick2 / this.circleCompleteTime;
-            const a = -Math.cos(p * Math.PI) / 2 + 0.5;
-            
-            const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, a * this.circleFinalSize);
-            grad.addColorStop(0, this.lightAlphaColor.replace('light', 90).replace('alp', p * 0.8));
-            grad.addColorStop(0.5, this.lightAlphaColor.replace('light', 70).replace('alp', p * 0.6));
-            grad.addColorStop(1, this.lightAlphaColor.replace('light', 50).replace('alp', p * 0.3));
-            
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, a * this.circleFinalSize, 0, Tau);
-            ctx.fill();
-            
-            if (this.tick2 > this.circleCompleteTime) {
-              this.circleCreating = false;
-              this.circleFading = true;
-              this.tick2 = 0;
+            if (index >= slides.length) {
+                currentSlideIndex = 0;
+                createVideoPrompt(); // Hiện popup khi hết 1 vòng
             }
-          }
-          else if (this.circleFading) {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = this.color;
-            ctx.fillStyle = this.lightColor.replace('light', 80);
-            ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-            ctx.shadowBlur = 0;
+            if (index < 0) currentSlideIndex = slides.length - 1;
 
-            ++this.tick2;
-            const p = this.tick2 / this.circleFadeTime;
-            const a = -Math.cos(p * Math.PI) / 2 + 0.5;
-            ctx.fillStyle = this.lightAlphaColor.replace('light', 100).replace('alp', 1 - a);
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.circleFinalSize, 0, Tau);
-            ctx.fill();
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
 
-            if (this.tick2 >= this.circleFadeTime) this.circleFading = false;
-          }
-          else {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = this.color;
-            ctx.fillStyle = this.lightColor.replace('light', 80);
-            ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-            ctx.shadowBlur = 0;
-          }
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+        }
 
-          if (this.shards) {
-            for (let i = this.shards.length - 1; i >= 0; i--) {
-              this.shards[i].step();
-              if (!this.shards[i].alive) this.shards.splice(i, 1);
+        function changeSlide(direction) {
+            const totalSlides = document.querySelectorAll('.slide').length;
+            currentSlideIndex += direction;
+
+            // Nếu đang ở ảnh cuối và bấm ➜ → hiện popup
+            if (currentSlideIndex >= totalSlides && direction > 0) {
+                createVideoPrompt();
+                currentSlideIndex = 0;
             }
-          }
 
-          if (this.tick > opts.letterContemplatingWaitTime) {
-            this.phase = 'balloon';
-            this.tick = 0;
-            this.spawning = true;
-            this.spawnTime = opts.balloonSpawnTime * Math.random() | 0;
-            this.inflateTime = opts.balloonBaseInflateTime + opts.balloonAddedInflateTime * Math.random() | 0;
-            this.size = opts.balloonBaseSize + opts.balloonAddedSize * Math.random();
-            const rad = opts.balloonBaseRadian + opts.balloonAddedRadian * Math.random();
-            const vel = opts.balloonBaseVel + opts.balloonAddedVel * Math.random();
-            this.vx = Math.cos(rad) * vel;
-            this.vy = Math.sin(rad) * vel;
-          }
+            showSlide(currentSlideIndex);
+            resetAutoSlide();
         }
 
-        else if (this.phase === 'balloon') {
-          if (this.spawning) {
-            ++this.tick;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = this.color;
-            ctx.fillStyle = this.lightColor.replace('light', 80);
-            ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-            ctx.shadowBlur = 0;
-            if (this.tick >= this.spawnTime) {
-              this.spawning = false;
-              this.inflating = true;
-              this.tick = 0;
-            }
-          }
-          else if (this.inflating) {
-            ++this.tick;
-            const p = this.tick / this.inflateTime;
-            const bx = this.cx = this.x;
-            const by = this.cy = this.y - this.size * p;
-
-            const grad = ctx.createRadialGradient(bx - this.size * p * 0.3, by - this.size * p * 0.3, 0, bx, by, this.size * p);
-            grad.addColorStop(0, this.lightAlphaColor.replace('light', 90).replace('alp', p));
-            grad.addColorStop(1, this.alphaColor.replace('alp', p * 0.8));
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            balloonPath(bx, by, this.size * p);
-            ctx.fill();
-
-            ctx.strokeStyle = this.lightColor.replace('light', 90);
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(bx, by + this.size * p);
-            ctx.lineTo(bx, this.y);
-            ctx.stroke();
-
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = this.color;
-            ctx.fillStyle = this.lightColor.replace('light', 80);
-            ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-            ctx.shadowBlur = 0;
-
-            if (this.tick >= this.inflateTime) this.inflating = false;
-          }
-          else {
-            this.cx += this.vx;
-            this.cy += this.vy += opts.upFlow;
-
-            const grad = ctx.createRadialGradient(this.cx - this.size * 0.3, this.cy - this.size * 0.3, 0, this.cx, this.cy, this.size);
-            grad.addColorStop(0, this.lightColor.replace('light', 90));
-            grad.addColorStop(1, this.color);
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            balloonPath(this.cx, this.cy, this.size);
-            ctx.fill();
-
-            ctx.strokeStyle = this.lightColor.replace('light', 95);
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(this.cx, this.cy + this.size);
-            ctx.lineTo(this.cx, this.cy + this.size + 20);
-            ctx.stroke();
-
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = this.color;
-            ctx.fillStyle = this.lightColor.replace('light', 85);
-            ctx.fillText(this.char, this.cx + this.dx, this.cy + this.dy + this.size);
-            ctx.shadowBlur = 0;
-
-            if (this.cy + this.size < -hh || Math.abs(this.cx) > hw + 100)
-              this.phase = 'done';
-          }
-        }
-      }
-    }
-
-    class Shard {
-      constructor(x, y, vx, vy, color) {
-        const vel = opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
-        this.x = x + vx * vel;
-        this.y = y + vy * vel;
-        this.vx = vx * vel;
-        this.vy = vy * vel;
-        this.color = color;
-        this.points = [[this.x, this.y]];
-        this.size = opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
-        this.alive = true;
-      }
-
-      step() {
-        this.x += this.vx;
-        this.y += this.vy += opts.gravity;
-
-        this.points.push([this.x, this.y]);
-        if (this.points.length > opts.fireworkShardPrevPoints) this.points.shift();
-
-        for (let i = 1; i < this.points.length; i++) {
-          const alpha = i / this.points.length;
-          ctx.strokeStyle = this.color.replace('alp', alpha);
-          ctx.lineWidth = i * this.size / this.points.length;
-          ctx.lineCap = 'round';
-          ctx.beginPath();
-          ctx.moveTo(this.points[i-1][0], this.points[i-1][1]);
-          ctx.lineTo(this.points[i][0], this.points[i][1]);
-          ctx.stroke();
+        function currentSlide(index) {
+            currentSlideIndex = index;
+            showSlide(currentSlideIndex);
+            resetAutoSlide();
         }
 
-        if (this.y > h) this.alive = false;
-      }
-    }
-
-    function balloonPath(x, y, size) {
-      ctx.moveTo(x, y);
-      ctx.bezierCurveTo(x - size/2, y - size/2, x - size/4, y - size, x, y - size);
-      ctx.bezierCurveTo(x + size/4, y - size, x + size/2, y - size/2, x, y);
-      ctx.lineTo(x - 5, y + size/3);
-      ctx.lineTo(x + 5, y + size/3);
-      ctx.closePath();
-    }
-
-    function startCountdown() {
-      if (countdownStarted) return;
-      countdownStarted = true;
-      
-      createConfetti();
-      document.getElementById('countdown').style.display = 'block';
-      document.getElementById('message').style.display = 'block';
-      
-      countdownInterval = setInterval(() => {
-        countdownValue--;
-        document.getElementById('countdown-number').textContent = countdownValue;
-        
-        if (countdownValue <= 0) {
-          clearInterval(countdownInterval);
-          document.getElementById('message').textContent = 'Đang chuyển hướng... ';
-          setTimeout(() => {
-            window.location.href = REDIRECT_URL;
-          }, 500);
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }, 3500);
         }
-      }, 1000);
-    }
 
-    for (let i = 0; i < opts.strings.length; i++) {
-      for (let j = 0; j < opts.strings[i].length; j++) {
-        letters.push(new Letter(
-          opts.strings[i][j],
-          j * opts.charSpacing + opts.charSpacing / 2 - opts.strings[i].length * opts.charSize / 2,
-          i * opts.lineHeight + opts.lineHeight / 2 - opts.strings.length * opts.lineHeight / 2
-        ));
-      }
-    }
-
-    function anim() {
-      requestAnimationFrame(anim);
-      
-      const grad = ctx.createRadialGradient(hw, hh, 0, hw, hh, Math.max(w, h));
-      grad.addColorStop(0, '#0a0a1a');
-      grad.addColorStop(0.5, '#1a0a2e');
-      grad.addColorStop(1, '#16213e');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, w, h);
-
-      ctx.save();
-      ctx.translate(hw, hh);
-
-      let allDone = true;
-      letters.forEach(l => {
-        l.step();
-        if (l.phase !== 'done') allDone = false;
-      });
-
-      ctx.restore();
-
-      if (allDone && !countdownStarted) {
-        startCountdown();
-      }
-    }
-
-    anim();
-
-    window.addEventListener('resize', () => {
-      w = c.width = window.innerWidth;
-      h = c.height = window.innerHeight;
-      hw = w / 2;
-      hh = h / 2;
-    });
-  </script>
+        function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            startAutoSlide();
+        }
+    </script>
 </body>
 </html>
-
