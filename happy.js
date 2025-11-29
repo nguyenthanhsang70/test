@@ -1,4 +1,4 @@
-const REDIRECT_URL = "index.html"; // THAY LINK CHUYỂN HƯỚNG SAU KHI XONG Ở ĐÂY
+const REDIRECT_URL = "index.html"; // Thay link chuyển hướng ở đây
 
 const c = document.getElementById('c');
 const ctx = c.getContext('2d');
@@ -9,9 +9,9 @@ let hh = h / 2;
 
 const opts = {
   strings: ['HAPPY', 'BIRTHDAY', 'TO YOU!'],
-  charSize: 52,              // Chữ to đẹp
-  charSpacing: 58,           // Khoảng cách chữ
-  lineHeight: 90,            // Khoảng cách giữa các dòng
+  charSize: 56,              // To đẹp, giống ảnh bạn gửi
+  charSpacing: 62,
+  lineHeight: 100,
 
   fireworkPrevPoints: 10,
   fireworkBaseLineWidth: 6,
@@ -19,43 +19,55 @@ const opts = {
   fireworkSpawnTime: 200,
   fireworkBaseReachTime: 30,
   fireworkAddedReachTime: 30,
-  fireworkCircleBaseSize: 30,
-  fireworkCircleAddedSize: 18,
-  fireworkCircleBaseTime: 30,
-  fireworkCircleAddedTime: 30,
-  fireworkCircleFadeBaseTime: 10,
-  fireworkCircleFadeAddedTime: 5,
-  fireworkBaseShards: 6,
-  fireworkAddedShards: 6,
-  fireworkShardPrevPoints: 3,
-  fireworkShardBaseVel: 4,
-  fireworkShardAddedVel: 2,
-  fireworkShardBaseSize: 3,
-  fireworkShardAddedSize: 3,
+  fireworkCircleBaseSize: 32,
+  fireworkCircleAddedSize: 20,
+  fireworkBaseShards: 7,
+  fireworkAddedShards: 7,
   gravity: 0.08,
   upFlow: -0.12,
   letterContemplatingWaitTime: 400,
-
+  balloonBaseSize: 38,
   balloonSpawnTime: 50,
   balloonBaseInflateTime: 12,
   balloonAddedInflateTime: 12,
-  balloonBaseSize: 36,         // Bóng bay to hơn
   balloonBaseVel: 0.5,
   balloonAddedVel: 0.5,
-  balloonBaseRadian: -(Math.PI / 2 - 0.5),
-  balloonAddedRadian: 1,
 };
 
 const Tau = Math.PI * 2;
 const letters = [];
 let hasRedirected = false;
 
-// Tính chiều rộng dòng dài nhất để căn giữa các dòng ngắn
-const calc = {
-  totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length))
-};
+ctx.font = `${opts.charSize}px Verdana, sans-serif`;
 
-ctx.font = opts.charSize + 'px Verdana';
+// TÍNH TOÁN ĐỂ BIRTHDAY LUÔN Ở CHÍNH GIỮA MÀN HÌNH
+function createLetters() {
+  letters.length = 0; // Xóa cũ nếu resize
+
+  opts.strings.forEach((line, i) => {
+    const isBirthday = i === 1;
+    let offsetX = 0;
+
+    if (isBirthday) {
+      // Đo chính xác độ rộng thực tế của từ "BIRTHDAY"
+      const textWidth = ctx.measureText(line).width;
+      offsetX = textWidth / 2;
+    } else {
+      // Các dòng khác căn giữa theo cách thông thường (vẫn đẹp)
+      const approxWidth = line.length * opts.charSpacing;
+      offsetX = approxWidth / 2;
+    }
+
+    // Tính vị trí Y của từng dòng (căn giữa theo chiều dọc)
+    const totalHeight = (opts.strings.length - 1) * opts.lineHeight;
+    const y = i * opts.lineHeight - totalHeight / 2;
+
+    for (let j = 0; j < line.length; j++) {
+      const x = j * opts.charSpacing - offsetX;
+      letters.push(new Letter(line[j], x, y));
+    }
+  });
+}
 
 class Letter {
   constructor(char, x, y) {
@@ -66,11 +78,13 @@ class Letter {
     this.dy = opts.charSize / 2;
     this.fireworkDy = this.y - hh;
 
-    const hue = ((x / calc.totalWidth) + 0.5) % 1 * 360;
-    this.color = `hsl(${hue},80%,50%)`;
-    this.lightColor = `hsl(${hue},80%,70%)`;
-    this.lightAlphaColor = `hsla(${hue},80%,light%,alp)`;
-    this.alphaColor = `hsla(${hue},80%,50%,alp)`;
+    // Màu sắc cầu vồng đẹp lung linh
+    const hue = (x * 1.2 + 180) % 360;
+    this.color = `hsl(${hue}, 85%, 55%)`;
+    this.lightColor = `hsl(${hue}, 90%, 75%)`;
+    this.lightAlphaColor = `hsla(${hue},90%,light%,alp)`;
+    this.alphaColor = `hsla(${hue},85%,55%,alp)`;
+
     this.reset();
   }
 
@@ -89,54 +103,52 @@ class Letter {
   step() {
     if (this.phase === 'firework') {
       if (!this.spawned) {
-        if (++this.tick >= this.spawningTime) {
-          this.tick = 0;
+        ++this.tick;
+        if (this.tick >= this.spawningTime) {
           this.spawned = true;
+          this.tick = 0;
         }
         return;
       }
 
       ++this.tick;
       const progress = this.tick / this.reachTime;
-      const ease = Math.sin(progress * Math.PI / 2);
-      const x = ease * this.x;
-      const y = hh + ease * this.fireworkDy;
+      const x = this.x * progress;
+      const y = hh + this.fireworkDy * progress;
 
       if (this.prevPoints.length > opts.fireworkPrevPoints) this.prevPoints.shift();
       this.prevPoints.push([x, y, progress * this.lineWidth]);
 
       for (let i = 1; i < this.prevPoints.length; i++) {
         const [x1, y1, lw1] = this.prevPoints[i];
-        const [x2, y2, lw2] = this.prevPoints[i - 1];
+        const [x2, y2] = this.prevPoints[i - 1];
         ctx.strokeStyle = this.alphaColor.replace('alp', i / this.prevPoints.length);
-        ctx.lineWidth = lw1 * (i / (this.prevPoints.length - 1));
+        ctx.lineWidth = lw1;
         ctx.beginPath();
         ctx.moveTo(x2, y2);
         ctx.lineTo(x1, y1);
         ctx.stroke();
       }
 
-      if (this.tick >= this.reachTime) {
+      if (progress >= 1) {
         this.phase = 'contemplate';
         this.circleFinalSize = opts.fireworkCircleBaseSize + opts.fireworkCircleAddedSize * Math.random();
-        this.circleCompleteTime = opts.fireworkCircleBaseTime + opts.fireworkCircleAddedTime * Math.random() | 0;
+        this.circleCompleteTime = 30 + 20 * Math.random() | 0;
         this.circleCreating = true;
-        this.circleFadeTime = opts.fireworkCircleFadeBaseTime + opts.fireworkCircleFadeAddedTime * Math.random() | 0;
         this.tick = this.tick2 = 0;
 
-        // Tạo mảnh pháo hoa
+        // Pháo hoa nổ
         const cnt = opts.fireworkBaseShards + opts.fireworkAddedShards * Math.random() | 0;
         const angleStep = Tau / cnt;
         let angle = Math.random() * Tau;
         this.shards = [];
         for (let i = 0; i < cnt; i++) {
-          const vx = Math.cos(angle);
-          const vy = Math.sin(angle);
-          this.shards.push(new Shard(this.x, this.y, vx, vy, this.alphaColor));
+          this.shards.push(new Shard(this.x, this.y, Math.cos(angle), Math.sin(angle), this.alphaColor));
           angle += angleStep;
         }
       }
     }
+
     else if (this.phase === 'contemplate') {
       ++this.tick;
 
@@ -148,32 +160,27 @@ class Letter {
           this.circleFading = true;
           this.tick2 = 0;
         } else {
-          const a = -Math.cos(p * Math.PI) / 2 + 0.5;
-          ctx.fillStyle = this.lightAlphaColor.replace('light', 50 + 50 * p).replace('alp', p);
+          const size = p * this.circleFinalSize;
+          ctx.fillStyle = this.lightAlphaColor.replace('light', 80).replace('alp', p);
           ctx.beginPath();
-          ctx.arc(this.x, this.y, a * this.circleFinalSize, 0, Tau);
+          ctx.arc(this.x, this.y, size, 0, Tau);
           ctx.fill();
         }
       }
+
       else if (this.circleFading) {
         ctx.fillStyle = this.lightColor;
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
         ++this.tick2;
-        const p = this.tick2 / this.circleFadeTime;
-        if (p >= 1) this.circleFading = false;
-        else {
-          const a = -Math.cos(p * Math.PI) / 2 + 0.5;
-          ctx.fillStyle = this.lightAlphaColor.replace('light', 100).replace('alp', 1 - a);
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.circleFinalSize, 0, Tau);
-          ctx.fill();
-        }
+        if (this.tick2 > 15) this.circleFading = false;
       }
+
       else {
         ctx.fillStyle = this.lightColor;
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
       }
 
+      // Vẽ mảnh pháo hoa
       if (this.shards) {
         for (let i = this.shards.length - 1; i >= 0; i--) {
           this.shards[i].step();
@@ -181,75 +188,66 @@ class Letter {
         }
       }
 
+      // Chuyển sang bóng bay
       if (this.tick > opts.letterContemplatingWaitTime) {
         this.phase = 'balloon';
         this.tick = 0;
-        this.spawning = true;
         this.spawnTime = opts.balloonSpawnTime * Math.random() | 0;
         this.inflateTime = opts.balloonBaseInflateTime + opts.balloonAddedInflateTime * Math.random() | 0;
-        this.size = opts.balloonSize;
-        const rad = opts.balloonBaseRadian + opts.balloonAddedRadian * Math.random();
-        const vel = opts.balloonBaseVel + opts.balloonAddedVel * Math.random();
-        this.vx = Math.cos(rad) * vel;
-        this.vy = Math.sin(rad) * vel;
+        this.size = opts.balloonBaseSize + 10 * Math.random();
+        const angle = opts.balloonBaseRadian + opts.balloonAddedRadian * Math.random();
+        const speed = opts.balloonBaseVel + opts.balloonAddedVel * Math.random();
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
       }
     }
+
     else if (this.phase === 'balloon') {
-      if (this.spawning) {
+      if (this.tick < this.spawnTime) {
         ++this.tick;
         ctx.fillStyle = this.lightColor;
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-        if (this.tick >= this.spawnTime) {
-          this.spawning = false;
-          this.inflating = true;
-          this.tick = 0;
-        }
       }
-      else if (this.inflating) {
+      else if (this.tick < this.spawnTime + this.inflateTime) {
         ++this.tick;
-        const p = this.tick / this.inflateTime;
-        const bx = this.cx = this.x;
-        const by = this.cy = this.y - this.size * p;
-
-        ctx.fillStyle = this.alphaColor.replace('alp', p);
+        const p = (this.tick - this.spawnTime) / this.inflateTime;
+        const bx = this.x;
+        const by = this.y - this.size * p;
+        ctx.fillStyle = this.alphaColor.replace('alp', p * 0.9);
         ctx.beginPath();
         balloonPath(bx, by, this.size * p);
         ctx.fill();
 
-        ctx.strokeStyle = this.lightColor.replace('70', '85');
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = this.lightColor;
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(bx, by + this.size * p);
-        ctx.lineTo(bx, this.y);
+        ctx.lineTo(bx, this.y + opts.charSize / 2);
         ctx.stroke();
 
         ctx.fillStyle = this.lightColor;
         ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
-
-        if (this.tick >= this.inflateTime) this.inflating = false;
       }
       else {
-        this.cx += this.vx;
-        this.cy += this.vy += opts.upFlow;
+        this.x += this.vx;
+        this.y += this.vy += opts.upFlow;
 
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        balloonPath(this.cx, this.cy, this.size);
+        balloonPath(this.x, this.y, this.size);
         ctx.fill();
 
-        ctx.strokeStyle = this.lightColor.replace('70', '85');
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = this.lightColor;
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(this.cx, this.cy + this.size);
-        ctx.lineTo(this.cx, this.cy + this.size + 18);
+        ctx.moveTo(this.x, this.y + this.size);
+        ctx.lineTo(this.x, this.y + this.size + 20);
         ctx.stroke();
 
         ctx.fillStyle = this.lightColor;
-        ctx.fillText(this.char, this.cx + this.dx, this.cy + this.dy + this.size);
+        ctx.fillText(this.char, this.x + this.dx, this.y + this.dy + this.size);
 
-        if (this.cy + this.size < -hh || Math.abs(this.cx) > hw + 300) {
-          this.phase = 'done';
-        }
+        if (this.y < -hh - 100) this.phase = 'done';
       }
     }
   }
@@ -257,99 +255,74 @@ class Letter {
 
 class Shard {
   constructor(x, y, vx, vy, color) {
-    const vel = opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
-    this.x = x + vx * vel;
-    this.y = y + vy * vel;
-    this.vx = vx * vel;
-    this.vy = vy * vel;
+    const speed = 4 + 3 * Math.random();
+    this.x = x + vx * speed;
+    this.y = y + vy * speed;
+    this.vx = vx * speed;
+    this.vy = vy * speed;
     this.color = color;
     this.points = [[this.x, this.y]];
-    this.size = opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
     this.alive = true;
   }
-
   step() {
     this.x += this.vx;
     this.y += this.vy += opts.gravity;
     this.points.push([this.x, this.y]);
-    if (this.points.length > opts.fireworkShardPrevPoints) this.points.shift();
+    if (this.points.length > 4) this.points.shift();
 
     for (let i = 1; i < this.points.length; i++) {
       ctx.strokeStyle = this.color.replace('alp', i / this.points.length);
-      ctx.lineWidth = this.size * (i / this.points.length);
+      ctx.lineWidth = 4 * (i / this.points.length);
       ctx.beginPath();
       ctx.moveTo(this.points[i-1][0], this.points[i-1][1]);
       ctx.lineTo(this.points[i][0], this.points[i][1]);
       ctx.stroke();
     }
-
-    if (this.y > h) this.alive = false;
+    if (this.y > h + 50) this.alive = false;
   }
 }
 
 function balloonPath(x, y, size) {
-  ctx.moveTo(x, y);
-  ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size / 4, y - size, x, y - size);
-  ctx.bezierCurveTo(x + size / 4, y - size, x + size / 2, y - size / 2, x, y);
-  ctx.lineTo(x - 5, y + size / 2.8);
-  ctx.lineTo(x + 5, y + size / 2.8);
+  ctx.moveTo(x, y - size);
+  ctx.bezierCurveTo(x + size/2, y - size/2, x + size/2, y + size/2, x, y + size);
+  ctx.bezierCurveTo(x - size/2, y + size/2, x - size/2, y - size/2, x, y - size);
   ctx.closePath();
 }
 
-// TẠO CHỮ — BIRTHDAY LUÔN Ở GIỮA HOÀN HẢO
-ctx.font = opts.charSize + 'px Verdana';
-for (let i = 0; i < opts.strings.length; i++) {
-  const line = opts.strings[i];
-  let offsetX = 0;
+// Tạo chữ lần đầu
+createLetters();
 
-  if (i === 1) { // Dòng BIRTHDAY (index = 1)
-    // Căn giữa tuyệt đối theo toàn bộ màn hình
-    const lineWidth = ctx.measureText(line).width;
-    offsetX = lineWidth / 2;
-  } else {
-    // 2 dòng kia vẫn căn giữa theo cách cũ (đẹp và cân đối)
-    offsetX = (calc.totalWidth - line.length * opts.charSpacing) / 2;
-  }
-
-  for (let j = 0; j < line.length; j++) {
-    const charX = j * opts.charSpacing - offsetX;
-    const charY = i * opts.lineHeight + opts.lineHeight / 2 - (opts.strings.length - 1) * opts.lineHeight / 2;
-
-    letters.push(new Letter(line[j], charX, charY));
-  }
-}
-
-// Animation loop
+// Animation
 function anim() {
   requestAnimationFrame(anim);
-  ctx.fillStyle = '#0d0d1a';
+  ctx.fillStyle = 'rgba(10,10,25,0.15)';
   ctx.fillRect(0, 0, w, h);
 
   ctx.save();
   ctx.translate(hw, hh);
 
-  let allDone = true;
+  let done = true;
   letters.forEach(l => {
     l.step();
-    if (l.phase !== 'done') allDone = false;
+    if (l.phase !== 'done') done = false;
   });
 
   ctx.restore();
 
-  if (allDone && !hasRedirected) {
+  if (done && !hasRedirected) {
     hasRedirected = true;
-    setTimeout(() => {
-      window.location.href = REDIRECT_URL;
-    }, 1500);
+    setTimeout(() => window.location.href = REDIRECT_URL, 2000);
   }
 }
 
 anim();
 
-// Resize
+// Khi resize màn hình → tính lại vị trí chữ (vẫn giữ BIRTHDAY chính giữa)
 window.addEventListener('resize', () => {
   w = c.width = window.innerWidth;
   h = c.height = window.innerHeight;
-  hw = w /  / 2;
+  hw = w / 2;
   hh = h / 2;
+  ctx.font = `${opts.charSize}px Verdana, sans-serif`;
+  createLetters();
 });
