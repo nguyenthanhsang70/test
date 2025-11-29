@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thổi Nến - NTS</title>
     <style>
-        :root {
-            --bg-color: #080808;
-        }
-
+        :root { --bg-color: #080808; }
         body {
             background-color: var(--bg-color);
             display: flex;
@@ -17,261 +14,96 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
             perspective: 1000px;
+            transition: opacity 2s ease-out;
         }
-
-        /* --- Môi trường tối & Ánh sáng --- */
         .vignette {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, transparent 30%, #000 90%);
             z-index: 50; pointer-events: none;
         }
-
-        /* Ánh sáng hắt lên bàn/bánh */
         .ambient-light {
             position: absolute;
             width: 800px; height: 800px;
-            background: radial-gradient(circle, rgba(255, 147, 41, 0.15) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(255,147,41,0.15) 0%, transparent 60%);
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1;
             transition: opacity 0.2s;
             mix-blend-mode: screen;
         }
+        .cake-container { position: relative; width: 300px; height: 300px; z-index: 10; transform-style: preserve-3d; transform: rotateX(5deg); }
+        .plate { width: 340px; height: 140px; position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(to bottom, #ddd, #999); border-radius: 50%; box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.5); z-index: 2; }
+        .cake-body { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 280px; height: 140px;
+            background: #3e2723; background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to right, #4e342e, #3e2723, #281a16);
+            background-size: 4px 4px, 100% 100%; border-radius: 50% 50% 10px 10px / 30px 30px 10px 10px; z-index: 3;
+            box-shadow: inset 0 -10px 30px rgba(0,0,0,0.8); }
+        .cake-top { position: absolute; top: -50px; left: 0; width: 280px; height: 100px;
+            background: radial-gradient(ellipse at 40% 40%, #ffecb3 0%, #ffca28 60%, #ff8f00 100%); border-radius: 50%; z-index: 5;
+            box-shadow: inset 0 5px 10px rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.2); }
+        .drip { position: absolute; background: #ffca28; width: 30px; height: 60px; border-radius: 0 0 15px 15px; box-shadow: inset 2px -2px 5px rgba(0,0,0,0.1); z-index: 4; }
+        .drip:nth-child(1){left:30px;height:50px}.drip:nth-child(2){left:80px;height:70px;width:35px}
+        .drip:nth-child(3){left:130px;height:45px}.drip:nth-child(4){left:180px;height:60px;width:25px}
+        .drip:nth-child(5){left:230px;height:40px}
 
-        /* --- Bánh 3D Chi tiết --- */
-        .cake-container {
-            position: relative;
-            width: 300px; height: 300px;
-            z-index: 10;
-            transform-style: preserve-3d;
-            transform: rotateX(5deg);
-        }
+        .candle-wrapper { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); z-index: 20; perspective: 500px; }
+        .candle-stick { position: relative; width: 20px; height: 80px; background: linear-gradient(90deg,#cfd8dc 0%,#fff 40%,#b0bec5 100%);
+            border-radius: 3px; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+        .candle-stick::before { content:''; position:absolute; top:0; left:0; width:100%; height:15px;
+            background: radial-gradient(circle at top,rgba(255,235,59,0.9),transparent); border-radius:3px 3px 0 0;
+            opacity:0.8; filter:blur(2px); animation:wax-glow .1s infinite alternate; }
+        .wick { position:absolute; top:-12px; left:50%; transform:translateX(-50%); width:2px; height:12px; background:#222; border-radius:2px; }
+        .wick::after { content:''; position:absolute; top:0; left:-1px; width:4px; height:4px; background:#ff5722; border-radius:50%; box-shadow:0 0 5px #ff5722; opacity:0.9; }
 
-        .plate {
-            width: 340px; height: 140px;
-            position: absolute;
-            bottom: -30px; left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(to bottom, #ddd, #999);
-            border-radius: 50%;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.5);
-            z-index: 2;
-        }
+        .flame-container { position:absolute; bottom:100%; left:50%; width:40px; height:60px; transform:translateX(-50%);
+            transform-origin:center bottom; filter:blur(.5px); }
+        .flame-base-blue { position:absolute; bottom:0; left:50%; width:14px; height:20px; transform:translateX(-50%);
+            background:rgba(0,100,255,0.6); border-radius:50%; filter:blur(4px); opacity:.8; z-index:10; }
+        .flame-body { position:absolute; bottom:5px; left:50%; width:16px; height:45px; transform:translateX(-50%);
+            background:linear-gradient(to top,rgba(255,150,0,.5),rgba(255,200,0,.8)); border-radius:50% 50% 20% 20%;
+            box-shadow:0 0 10px rgba(255,100,0,.6); animation:flicker-shape .1s infinite alternate; z-index:9; }
+        .flame-core { position:absolute; bottom:5px; left:50%; width:8px; height:25px; transform:translateX(-50%);
+            background:#fff; border-radius:50% 50% 30% 30%; box-shadow:0 0 15px #fff; opacity:.9; z-index:11;
+            animation:flicker-core .15s infinite alternate-reverse; }
+        .flame-aura { position:absolute; bottom:-10px; left:50%; width:80px; height:80px; transform:translateX(-50%);
+            background:radial-gradient(circle,rgba(255,100,0,.2) 0%,transparent 70%); border-radius:50%; z-index:1; }
 
-        .cake-body {
-            position: absolute;
-            bottom: 20px; left: 50%;
-            transform: translateX(-50%);
-            width: 280px; height: 140px;
-            /* Texture Bánh Chocolate Xốp */
-            background: #3e2723;
-            background-image: 
-                radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                linear-gradient(to right, #4e342e, #3e2723, #281a16);
-            background-size: 4px 4px, 100% 100%;
-            border-radius: 50% 50% 10px 10px / 30px 30px 10px 10px;
-            z-index: 3;
-            box-shadow: inset 0 -10px 30px rgba(0,0,0,0.8);
-        }
+        @keyframes flicker-shape { 0%{transform:translateX(-50%) scale(1) skewX(0deg);height:45px} 100%{transform:translateX(-50%) scale(1.03) skewX(1deg);height:47px} }
+        @keyframes flicker-core { 0%{opacity:.9;height:25px} 100%{opacity:1;height:27px} }
+        @keyframes wax-glow { 0%{opacity:.6} 100%{opacity:.9} }
 
-        .cake-top {
-            position: absolute;
-            top: -50px; left: 0;
-            width: 280px; height: 100px;
-            /* Texture Kem Mịn Bóng (Specular) */
-            background: radial-gradient(ellipse at 40% 40%, #ffecb3 0%, #ffca28 60%, #ff8f00 100%);
-            border-radius: 50%;
-            z-index: 5;
-            box-shadow: inset 0 5px 10px rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.2);
-        }
+        .smoke-particle { position:absolute; background:radial-gradient(circle,rgba(200,200,200,.5),transparent);
+            border-radius:50%; filter:blur(5px); z-index:30; pointer-events:none; }
+        @keyframes smoke-rise { 0%{opacity:.5;transform:translate(-50%,0) scale(.5)} 100%{opacity:0;transform:translate(var(--dx),-100px) scale(3)} }
 
-        /* Kem chảy bóng bẩy */
-        .drip {
-            position: absolute;
-            background: #ffca28;
-            width: 30px; height: 60px;
-            border-radius: 0 0 15px 15px;
-            box-shadow: inset 2px -2px 5px rgba(0,0,0,0.1);
-            z-index: 4;
+        /* ĐẾM NGƯỢC ĐẸP - ĐÃ BỎ NÚT */
+        .countdown-overlay {
+            position:fixed; top:0; left:0; width:100%; height:100%; background:#000;
+            display:none; flex-direction:column; justify-content:center; align-items:center; z-index:999;
         }
-        .drip:nth-child(1) { left: 30px; height: 50px; }
-        .drip:nth-child(2) { left: 80px; height: 70px; width: 35px; }
-        .drip:nth-child(3) { left: 130px; height: 45px; }
-        .drip:nth-child(4) { left: 180px; height: 60px; width: 25px; }
-        .drip:nth-child(5) { left: 230px; height: 40px; }
+        .countdown-number {
+            font-size:280px; font-weight:100; color:#fff; margin-bottom:40px;
+            text-shadow:0 0 40px rgba(255,255,255,.3);
+        }
+        .countdown-text {
+            font-size:28px; color:#ff6b6b; font-weight:500;
+        }
+        .countdown-text::after { content:" ❤️"; animation:heartbeat 1.5s infinite; }
+        @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
 
-        /* --- Cây Nến Siêu Thực --- */
-        .candle-wrapper {
-            position: absolute;
-            top: -40px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
-            perspective: 500px;
-        }
-
-        .candle-stick {
-            position: relative;
-            width: 20px; height: 80px;
-            /* Gradient tạo khối tròn */
-            background: linear-gradient(90deg, #cfd8dc 0%, #ffffff 40%, #b0bec5 100%);
-            border-radius: 3px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
-        }
-
-        /* Hiệu ứng Subsurface Scattering: Ánh sáng xuyên qua sáp ở đỉnh */
-        .candle-stick::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 15px;
-            background: radial-gradient(circle at top, rgba(255, 235, 59, 0.9), transparent);
-            border-radius: 3px 3px 0 0;
-            opacity: 0.8;
-            filter: blur(2px);
-            animation: wax-glow 0.1s infinite alternate;
-        }
-
-        .wick {
-            position: absolute;
-            top: -12px; left: 50%;
-            transform: translateX(-50%);
-            width: 2px; height: 12px;
-            background: #222;
-            border-radius: 2px;
-        }
-        /* Đầu bấc đỏ than hồng */
-        .wick::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -1px; width: 4px; height: 4px;
-            background: #ff5722;
-            border-radius: 50%;
-            box-shadow: 0 0 5px #ff5722;
-            opacity: 0.9;
-        }
-
-        /* --- NGỌN LỬA 100% REAL (Volumetric CSS) --- */
-        .flame-container {
-            position: absolute;
-            bottom: 100%; left: 50%;
-            width: 40px; height: 60px;
-            transform: translateX(-50%);
-            transform-origin: center bottom;
-            filter: blur(0.5px); /* Làm mềm biên */
-        }
-
-        /* Lớp 1: Chân lửa xanh dương (Nhiệt độ cao nhất) */
-        .flame-base-blue {
-            position: absolute;
-            bottom: 0; left: 50%;
-            width: 14px; height: 20px;
-            transform: translateX(-50%);
-            background: rgba(0, 100, 255, 0.6);
-            border-radius: 50%;
-            filter: blur(4px);
-            opacity: 0.8;
-            z-index: 10;
-        }
-
-        /* Lớp 2: Thân lửa vàng/cam */
-        .flame-body {
-            position: absolute;
-            bottom: 5px; left: 50%;
-            width: 16px; height: 45px;
-            transform: translateX(-50%);
-            background: linear-gradient(to top, rgba(255,150,0,0.5), rgba(255,200,0,0.8));
-            border-radius: 50% 50% 20% 20%;
-            box-shadow: 0 0 10px rgba(255, 100, 0, 0.6);
-            animation: flicker-shape 0.1s infinite alternate;
-            z-index: 9;
-        }
-
-        /* Lớp 3: Lõi trắng sáng (White Core) */
-        .flame-core {
-            position: absolute;
-            bottom: 5px; left: 50%;
-            width: 8px; height: 25px;
-            transform: translateX(-50%);
-            background: #fff;
-            border-radius: 50% 50% 30% 30%;
-            box-shadow: 0 0 15px #fff;
-            opacity: 0.9;
-            z-index: 11;
-            animation: flicker-core 0.15s infinite alternate-reverse;
-        }
-
-        /* Lớp 4: Hào quang bao quanh (Glow) */
-        .flame-aura {
-            position: absolute;
-            bottom: -10px; left: 50%;
-            width: 80px; height: 80px;
-            transform: translateX(-50%);
-            background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        /* Animation Hỗn loạn */
-        @keyframes flicker-shape {
-            0% { transform: translateX(-50%) scale(1) skewX(0deg); border-radius: 50% 50% 20% 20%; height: 45px; }
-            25% { transform: translateX(-51%) scale(1.02) skewX(-2deg); height: 46px; }
-            50% { transform: translateX(-49%) scale(0.98) skewX(2deg); height: 44px; }
-            75% { transform: translateX(-50%) scale(1.05) skewX(-1deg); height: 47px; }
-            100% { transform: translateX(-50%) scale(1) skewX(0deg); height: 45px; }
-        }
-
-        @keyframes flicker-core {
-            0% { opacity: 0.9; height: 25px; }
-            100% { opacity: 1; height: 27px; }
-        }
-        
-        @keyframes wax-glow {
-            0% { opacity: 0.6; }
-            100% { opacity: 0.9; }
-        }
-
-        /* --- Khói --- */
-        .smoke-particle {
-            position: absolute;
-            background: radial-gradient(circle, rgba(200,200,200,0.5), transparent);
-            border-radius: 50%;
-            filter: blur(5px);
-            z-index: 30;
-            pointer-events: none;
-        }
-
-        @keyframes smoke-rise {
-            0% { opacity: 0.5; transform: translate(-50%, 0) scale(0.5); }
-            100% { opacity: 0; transform: translate(var(--dx), -100px) scale(3); }
-        }
-
-        /* --- UI Controls --- */
-        .controls {
-            position: fixed; bottom: 30px;
-            text-align: center; z-index: 100;
-        }
-        
-        button {
-            background: linear-gradient(45deg, #ff6f00, #ffca28);
-            border: none; padding: 15px 40px;
-            color: #000; font-weight: 800; font-size: 18px;
-            border-radius: 50px; cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 111, 0, 0.6);
-            transition: all 0.3s;
-        }
-        button:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 111, 0, 0.9); }
-        button:disabled { background: #555; color: #aaa; box-shadow: none; }
-
-        #status {
-            margin-top: 15px; font-size: 16px; color: #aaa; font-style: italic;
-        }
-
+        .controls { position:fixed; bottom:30px; text-align:center; z-index:100; width:100%; }
+        button { background:linear-gradient(45deg,#ff6f00,#ffca28); border:none; padding:15px 40px; color:#000;
+            font-weight:800; font-size:18px; border-radius:50px; cursor:pointer; box-shadow:0 0 20px rgba(255,111,0,.6);
+            transition:all .3s; }
+        button:hover { transform:scale(1.05); box-shadow:0 0 40px rgba(255,111,0,.9); }
+        button:disabled { background:#555; color:#aaa; box-shadow:none; cursor:not-allowed; }
+        #status { margin-top:15px; font-size:16px; color:#aaa; font-style:italic; }
     </style>
 </head>
 <body>
-
     <div class="vignette"></div>
     <div class="ambient-light" id="ambientLight"></div>
 
@@ -282,9 +114,9 @@
                 <div class="drip"></div><div class="drip"></div><div class="drip"></div><div class="drip"></div><div class="drip"></div>
             </div>
             <div class="cake-top">
-                <div style="position:absolute; top:30px; left:60px; width:8px; height:8px; background:#f44336; border-radius:50%; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div>
-                <div style="position:absolute; top:60px; left:120px; width:8px; height:8px; background:#4caf50; border-radius:50%; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div>
-                <div style="position:absolute; top:40px; left:180px; width:8px; height:8px; background:#2196f3; border-radius:50%; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div>
+                <div style="position:absolute;top:30px;left:60px;width:8px;height:8px;background:#f44336;border-radius:50%;box-shadow:1px 1px 2px rgba(0,0,0,.3);"></div>
+                <div style="position:absolute;top:60px;left:120px;width:8px;height:8px;background:#4caf50;border-radius:50%;box-shadow:1px 1px 2px rgba(0,0,0,.3);"></div>
+                <div style="position:absolute;top:40px;left:180px;width:8px;height:8px;background:#2196f3;border-radius:50%;box-shadow:1px 1px 2px rgba(0,0,0,.3);"></div>
                 
                 <div class="candle-wrapper">
                     <div class="candle-stick">
@@ -306,30 +138,34 @@
         <div id="status">Hãy bật mic và thổi thật mạnh nhé!</div>
     </div>
 
+    <!-- Overlay đếm ngược (đã bỏ nút) -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-number" id="countdownNumber">10</div>
+        <div class="countdown-text">Chuẩn bị đón điều bất ngờ nào...</div>
+    </div>
+
     <script>
-        // === CẤU HÌNH ===
-        const LINK_CHUYEN_HUONG = "happy.html"; 
-        const BLOW_THRESHOLD = 0.09; // Ngưỡng thổi tắt (0.01 - 1.0)
-        // ================
+        const LINK_CHUYEN_HUONG = "happy.html";
+        const BLOW_THRESHOLD = 0.09;
 
         const startBtn = document.getElementById('startBtn');
         const statusText = document.getElementById('status');
         const flameContainer = document.getElementById('realFlame');
         const ambientLight = document.getElementById('ambientLight');
-        const candleStick = document.querySelector('.candle-stick'); // Để tắt glow sáp
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNumber = document.getElementById('countdownNumber');
 
         let audioContext, analyser, microphone, dataArray;
         let isBlowOut = false;
         let flickerInterval;
 
-        // Tạo hiệu ứng ánh sáng chập chờn ngẫu nhiên (Realistic flicker)
         function startAmbientFlicker() {
             flickerInterval = setInterval(() => {
-                if(isBlowOut) return;
-                const randomOpacity = 0.7 + Math.random() * 0.3;
-                const randomScale = 0.98 + Math.random() * 0.04;
-                ambientLight.style.opacity = randomOpacity * 0.2; // Giảm cường độ chút cho dịu
-                ambientLight.style.transform = `translate(-50%, -50%) scale(${randomScale})`;
+                if (isBlowOut) return;
+                const o = 0.7 + Math.random() * 0.3;
+                const s = 0.98 + Math.random() * 0.04;
+                ambientLight.style.opacity = o * 0.2;
+                ambientLight.style.transform = `translate(-50%,-50%) scale(${s})`;
             }, 50);
         }
 
@@ -339,134 +175,98 @@
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 512;
-                analyser.smoothingTimeConstant = 0.4; // Làm mượt input để lửa không giật cục
-                
+                analyser.smoothingTimeConstant = 0.4;
                 microphone = audioContext.createMediaStreamSource(stream);
                 microphone.connect(analyser);
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-                startBtn.innerHTML = "🌬️ Đang nghe...";
+                startBtn.innerHTML = "Đang nghe...";
                 startBtn.disabled = true;
-                statusText.innerText = "Thổi vào micro đi nào!";
-                
+                statusText.innerText = "Thổi thật mạnh vào mic nào!";
+
                 startAmbientFlicker();
                 detectBlow();
-            } catch (err) {
-                console.error(err);
-                statusText.innerText = "Lỗi Micro. Vui lòng thử lại trên trình duyệt khác.";
+            } catch (e) {
+                statusText.innerText = "Không bật được mic. Thử lại trên Chrome nhé!";
             }
         }
 
         function detectBlow() {
             if (isBlowOut) return;
-
             analyser.getByteFrequencyData(dataArray);
-            
-            // Lấy giá trị trung bình của các tần số thấp (tiếng phù phù khi thổi)
             let sum = 0;
-            // Chỉ lấy khoảng 20 bin đầu tiên (tần số thấp) để nhạy với tiếng gió hơn tiếng nói
-            let lowFreqCount = 20; 
-            for(let i = 0; i < lowFreqCount; i++) {
-                sum += dataArray[i];
-            }
-            let volume = sum / lowFreqCount / 255; // Quy đổi về 0.0 -> 1.0
-
-            updateFlamePhysics(volume);
-
-            if (volume > BLOW_THRESHOLD) {
-                extinguishFlame();
-            } else {
-                requestAnimationFrame(detectBlow);
-            }
+            for (let i = 0; i < 20; i++) sum += dataArray[i];
+            const vol = sum / 20 / 255;
+            updateFlamePhysics(vol);
+            if (vol > BLOW_THRESHOLD) extinguishFlame();
+            else requestAnimationFrame(detectBlow);
         }
 
-        // Mô phỏng vật lý: Gió làm lửa nghiêng và xanh đi
-        function updateFlamePhysics(vol) {
-            // Khi gió mạnh (vol cao): Lửa nhỏ lại (scale giảm), nghiêng (skew), mờ đi (opacity)
-            // Màu sắc chuyển sang xanh nhiều hơn (mất oxy)
-            
-            const lean = Math.random() > 0.5 ? vol * 60 : vol * -60; // Nghiêng trái phải
-            const scaleY = 1 - vol; // Gió to thì lửa lùn xuống
-            const opacity = 1 - (vol * 0.5);
-
+        function updateFlamePhysics(v) {
+            const lean = Math.random() > 0.5 ? v * 60 : v * -60;
+            const scaleY = 1 - v;
+            const op = 1 - v * 0.5;
             flameContainer.style.transform = `translateX(-50%) skewX(${lean}deg) scaleY(${scaleY})`;
-            flameContainer.style.opacity = opacity;
-
-            // Làm ánh sáng xung quanh chớp tắt điên cuồng khi có gió
-            ambientLight.style.opacity = (1 - vol) * 0.3;
+            flameContainer.style.opacity = op;
+            ambientLight.style.opacity = (1 - v) * 0.3;
         }
 
         function extinguishFlame() {
             isBlowOut = true;
             clearInterval(flickerInterval);
-
-            // Tắt lửa visual
-            flameContainer.style.transition = "all 0.2s ease";
+            flameContainer.style.transition = "all .3s ease";
             flameContainer.style.opacity = 0;
             flameContainer.style.transform = "translateX(-50%) scale(0)";
-            
-            // Tắt ánh sáng môi trường
             ambientLight.style.opacity = 0;
-            
-            // Tắt glow ở đầu nến
-            const candleBefore = document.createElement('style');
-            candleBefore.innerHTML = ".candle-stick::before { opacity: 0 !important; }";
-            document.head.appendChild(candleBefore);
 
-            // Tạo khói
+            // Tắt glow sáp
+            const style = document.createElement('style');
+            style.innerHTML = ".candle-stick::before{opacity:0 !important}";
+            document.head.appendChild(style);
+
             spawnSmoke();
+            if (microphone) microphone.disconnect();
 
-            statusText.innerHTML = "🎉 WOHOOO! CHÚC MỪNG SINH NHẬT! 🎂";
-            
-            // Ngắt mic
-            if(microphone) microphone.disconnect();
-
-            // Chuyển trang
             setTimeout(() => {
-                // Fade out toàn màn hình
-                document.body.style.transition = "opacity 2s";
-                document.body.style.opacity = 0;
-                setTimeout(() => {
-                    window.location.href = LINK_CHUYEN_HUONG;
-                }, 2000);
-            }, 2000);
+                countdownOverlay.style.display = "flex";
+                startCountdown();
+            }, 1500);
         }
 
         function spawnSmoke() {
-            const container = document.querySelector('.candle-wrapper');
-            for(let i=0; i<20; i++) {
-                let s = document.createElement('div');
+            const c = document.querySelector('.candle-wrapper');
+            for (let i = 0; i < 25; i++) {
+                const s = document.createElement('div');
                 s.className = 'smoke-particle';
-                let size = 5 + Math.random() * 15;
-                s.style.width = size + 'px';
-                s.style.height = size + 'px';
+                const size = 8 + Math.random() * 20;
+                s.style.width = s.style.height = size + 'px';
                 s.style.top = '-10px';
                 s.style.left = '50%';
-                
-                let drift = (Math.random() - 0.5) * 100 + 'px';
-                s.style.setProperty('--dx', drift);
-                s.style.animation = `smoke-rise ${1.5 + Math.random()}s ease-out forwards`;
-                
-                container.appendChild(s);
+                s.style.setProperty('--dx', (Math.random() - 0.5) * 120 + 'px');
+                s.style.animation = `smoke-rise ${1.8 + Math.random() * 1.5}s ease-out forwards`;
+                c.appendChild(s);
             }
         }
 
-        startBtn.addEventListener('click', () => {
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-            initMic();
-        });
+        function startCountdown() {
+            let sec = 10;
+            countdownNumber.textContent = sec;
+            const timer = setInterval(() => {
+                sec--;
+                countdownNumber.textContent = sec;
+                if (sec <= 0) {
+                    clearInterval(timer);
+                    document.body.style.opacity = 0;
+                    setTimeout(() => window.location.href = LINK_CHUYEN_HUONG, 2000);
+                }
+            }, 1000);
+        }
 
-        // iOS unlock audio context
-        document.addEventListener('touchstart', function() {
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-        }, {once:true});
+        startBtn.onclick = initMic;
 
+        document.addEventListener('touchstart', () => {
+            if (audioContext && audioContext.state === 'suspended') audioContext.resume();
+        }, { once: true });
     </script>
 </body>
 </html>
-
-
