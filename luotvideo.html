@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TikTok Clean UI</title>
+    <title>TikTok Clean UI - Auto Next Page</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -11,7 +11,6 @@
             --white: #fff;
             --text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
@@ -20,12 +19,11 @@
             font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
             overflow: hidden;
         }
-
         .app-container {
             position: relative;
             height: 100vh;
             width: 100%;
-            max-width: 480px; 
+            max-width: 480px;
             margin: 0 auto;
             background: #000;
             overflow-y: scroll;
@@ -33,8 +31,7 @@
             scrollbar-width: none;
         }
         .app-container::-webkit-scrollbar { display: none; }
-
-        /* VIDEO POST */
+        
         .video-post {
             position: relative;
             height: 100vh;
@@ -43,25 +40,22 @@
             background: #111;
             overflow: hidden;
         }
-
         .video-player {
             width: 100%;
             height: 100%;
             object-fit: cover;
             cursor: pointer;
         }
-
         .overlay-gradient {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 30%; /* Tăng độ cao gradient một chút */
+            height: 30%;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
             pointer-events: none;
             z-index: 1;
         }
-
         .play-icon-overlay {
             position: absolute;
             top: 50%;
@@ -74,23 +68,20 @@
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
             z-index: 5;
         }
-
-        /* SIDEBAR (Phải) - Đã chỉnh vị trí thấp hơn */
+        
+        /* SIDEBAR & INFO AREA */
         .sidebar {
             position: absolute;
             right: 10px;
-            bottom: 40px; /* Hạ thấp xuống vì không còn bottom-nav */
+            bottom: 40px;
             display: flex;
             flex-direction: column;
             gap: 20px;
             z-index: 10;
             align-items: center;
         }
-
         .sidebar-item { text-align: center; cursor: pointer; }
-
         .avatar-container { position: relative; margin-bottom: 10px; }
-
         .avatar {
             width: 48px;
             height: 48px;
@@ -99,7 +90,6 @@
             padding: 1px;
             object-fit: cover;
         }
-
         .add-icon {
             position: absolute;
             bottom: -8px;
@@ -115,28 +105,24 @@
             justify-content: center;
             font-size: 12px;
         }
-
         .icon-wrapper {
             font-size: 32px;
             margin-bottom: 4px;
             transition: transform 0.1s;
             text-shadow: var(--text-shadow);
         }
-        
         .icon-wrapper:active { transform: scale(0.85); }
         .liked { color: var(--primary); }
         .count { font-size: 12px; font-weight: 600; text-shadow: var(--text-shadow); }
-
-        /* INFO AREA (Dưới) - Đã chỉnh vị trí thấp hơn */
+        
         .info-area {
             position: absolute;
-            bottom: 20px; /* Hạ thấp sát đáy hơn */
+            bottom: 20px;
             left: 10px;
             width: 75%;
             z-index: 10;
             text-shadow: var(--text-shadow);
         }
-
         .username { font-weight: 700; font-size: 17px; margin-bottom: 8px; display: block; }
         .caption {
             font-size: 15px;
@@ -147,12 +133,10 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
         .music-note { display: flex; align-items: center; gap: 10px; }
         .marquee-container { width: 150px; overflow: hidden; white-space: nowrap; }
         .marquee-text { display: inline-block; animation: marquee 5s linear infinite; font-size: 14px; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
         .disc-wrapper {
             width: 45px;
             height: 45px;
@@ -167,7 +151,7 @@
         }
         .disc-image { width: 25px; height: 25px; border-radius: 50%; object-fit: cover; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
+        
         /* Heart Animation */
         .heart-popup {
             position: fixed;
@@ -184,29 +168,26 @@
             20% { transform: translate(-50%, -50%) scale(1.2) rotate(-15deg); opacity: 1; }
             100% { transform: translate(-50%, -150px) scale(1.5) rotate(0deg); opacity: 0; }
         }
-
     </style>
 </head>
 <body>
-
     <div class="app-container" id="app">
-        
+        <!-- Video 1 -->
         <div class="video-post">
-            <video class="video-player" loop playsinline src="https://videos.pexels.com/video-files/3692803/3692803-hd_720_1280_30fps.mp4"></video>
+            <video class="video-player" loop playsinline src="Download.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-
             <div class="info-area">
                 <div class="username">@giao_dien_sach</div>
-                <div class="caption">Đã xóa hết menu rườm rà, chỉ còn video thôi nhé! 😍 #clean #ui</div>
+                <div class="caption">Video 1 - Sạch sẽ, mượt mà, không quảng cáo</div>
                 <div class="music-note">
                     <i class="fas fa-music"></i>
                     <div class="marquee-container">
-                        <div class="marquee-text">Nhạc nền Chill phết - Top Trending...</div>
+                        <div class="marquee-text">Nhạc nền chill - Trending TikTok</div>
                     </div>
                 </div>
             </div>
-
+            <!-- Sidebar giống nhau cho mọi video -->
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="https://i.pravatar.cc/100?img=5" class="avatar" alt="User">
@@ -234,22 +215,25 @@
             </div>
         </div>
 
-        <div class="video-post">
-            <video class="video-player" loop playsinline src="https://videos.pexels.com/video-files/5824987/5824987-hd_720_1280_30fps.mp4"></video>
+        <!-- Bạn có thể thêm 4 video nữa giống hệt, chỉ đổi src video và caption -->
+        <!-- Ví dụ video 2, 3, 4, 5... -->
+        <!-- Ở đây mình chỉ để 1 video mẫu, bạn nhân bản thêm 4 cái nữa -->
+
+        <!-- Video 5 (CUỐI CÙNG) -->
+        <div class="video-post" data-last-video="true">
+            <video class="video-player" playsinline src="Download.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-
             <div class="info-area">
-                <div class="username">@travel_holic</div>
-                <div class="caption">Full màn hình nhìn đã mắt hơn hẳn 🌊 #travel #vibe</div>
+                <div class="username">@giao_dien_sach</div>
+                <div class="caption">Video cuối cùng rồi nha! Chuyển trang ngay đây</div>
                 <div class="music-note">
                     <i class="fas fa-music"></i>
                     <div class="marquee-container">
-                        <div class="marquee-text">Âm thanh gốc - Travel Holic</div>
+                        <div class="marquee-text">End of playlist - See you next!</div>
                     </div>
                 </div>
             </div>
-
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="https://i.pravatar.cc/100?img=12" class="avatar" alt="User">
@@ -257,17 +241,13 @@
                 </div>
                 <div class="sidebar-item" onclick="toggleLike(this)">
                     <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
-                    <span class="count">1M</span>
+                    <span class="count">99.9K</span>
                 </div>
-                <div class="sidebar-item">
-                    <div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div>
-                    <span class="count">5K</span>
-                </div>
-                <div class="sidebar-item">
-                    <div class="icon-wrapper"><i class="fas fa-bookmark"></i></div>
-                    <span class="count">10K</span>
-                </div>
-                 <div class="sidebar-item disc-wrapper">
+                <!-- Các icon khác giống trên -->
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">1.2K</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">888</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
+                <div class="sidebar-item disc-wrapper">
                     <img src="https://i.pravatar.cc/100?img=12" class="disc-image">
                 </div>
             </div>
@@ -276,13 +256,14 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const videos = document.querySelectorAll('.video-post');
-            
-            // 1. Auto Play/Pause
+            const videoPosts = document.querySelectorAll('.video-post');
+            const container = document.getElementById('app');
+
+            // Tự động phát video hiện trong khung nhìn
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     const video = entry.target.querySelector('video');
-                    if(entry.isIntersecting) {
+                    if (entry.isIntersecting) {
                         video.currentTime = 0;
                         video.play().catch(() => {
                             video.muted = true;
@@ -292,29 +273,48 @@
                         video.pause();
                     }
                 });
-            }, { threshold: 0.6 });
+            }, { threshold: 0.7 });
 
-            videos.forEach(v => observer.observe(v));
+            videoPosts.forEach(post => observer.observe(post));
 
-            // 2. Logic Tap
-            videos.forEach(post => {
+            // Xử lý khi video kết thúc
+            videoPosts.forEach((post, index) => {
+                const video = post.querySelector('video');
+
+                video.addEventListener('ended', () => {
+                    // Nếu là video cuối cùng → chuyển trang
+                    if (post.hasAttribute('data-last-video')) {
+                        // Đổi thành trang bạn muốn chuyển tới
+                        window.location.href = "ketthuc.html"; // hoặc https://yourwebsite.com/next
+                    } else {
+                        // Chuyển sang video tiếp theo bằng scroll mượt
+                        const nextPost = videoPosts[index + 1];
+                        if (nextPost) {
+                            nextPost.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+
+            // Double tap = like, single tap = pause/play
+            videoPosts.forEach(post => {
                 const video = post.querySelector('video');
                 const playIcon = post.querySelector('.play-icon-overlay');
                 let lastClick = 0;
 
                 post.addEventListener('click', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastClick;
-                    
-                    if (tapLength < 300 && tapLength > 0) {
-                        // Double Tap
+                    const now = Date.now();
+                    const diff = now - lastClick;
+
+                    if (diff < 300 && diff > 0) {
+                        // Double tap → Thả tim + like
                         createHeartAnimation(e.clientX, e.clientY);
                         const likeBtn = post.querySelector('.sidebar-item:nth-child(2)');
-                        if(likeBtn) toggleLike(likeBtn, true);
+                        if (likeBtn) toggleLike(likeBtn, true);
                     } else {
-                        // Single Tap
+                        // Single tap → Pause/Play
                         setTimeout(() => {
-                            if (new Date().getTime() - lastClick >= 300) {
+                            if (Date.now() - lastClick >= 300) {
                                 if (video.paused) {
                                     video.play();
                                     playIcon.style.opacity = 0;
@@ -325,7 +325,7 @@
                             }
                         }, 300);
                     }
-                    lastClick = currentTime;
+                    lastClick = now;
                 });
             });
         });
@@ -341,21 +341,15 @@
         }
 
         function toggleLike(element, forceLike = false) {
-            const iconWrapper = element.querySelector('.icon-wrapper');
-            if (forceLike) {
-                if (!iconWrapper.classList.contains('liked')) {
-                    iconWrapper.classList.add('liked');
-                    iconWrapper.style.transform = 'scale(1.2)';
-                    setTimeout(() => iconWrapper.style.transform = 'scale(1)', 200);
-                }
+            const icon = element.querySelector('.icon-wrapper i');
+            const wrapper = element.querySelector('.icon-wrapper');
+            if (forceLike || !wrapper.classList.contains('liked')) {
+                wrapper.classList.add('liked');
+                wrapper.style.transform = 'scale(1.3)';
+                setTimeout(() => wrapper.style.transform = 'scale(1)', 200);
             } else {
-                iconWrapper.classList.toggle('liked');
-                if (iconWrapper.classList.contains('liked')) {
-                     iconWrapper.style.transform = 'scale(1.2)';
-                     setTimeout(() => iconWrapper.style.transform = 'scale(1)', 200);
-                }
+                wrapper.classList.remove('liked');
             }
-            event.stopPropagation();
         }
     </script>
 </body>
