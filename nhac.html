@@ -210,20 +210,10 @@
   <div id="message">Đang chuẩn bị một điều bất ngờ...</div>
  
   <!-- Audio element for background music -->
-  <audio id="bgMusic" loop preload="auto">
-    <!-- Nhạc sinh nhật vui tươi - Chọn 1 trong các link dưới đây -->
-    
-    <!-- Option 1: Happy Birthday Upbeat -->
-    <source src="n.mp3" type="audio/mpeg">
-    
-    <!-- Option 2: Birthday Celebration (uncomment để dùng) -->
-    <!-- <source src="https://cdn.pixabay.com/download/audio/2022/08/02/audio_47cab11fd6.mp3" type="audio/mpeg"> -->
-    
-    <!-- Option 3: Happy Kids Birthday (uncomment để dùng) -->
-    <!-- <source src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_12b0c7443c.mp3" type="audio/mpeg"> -->
-    
-    <!-- Option 4: Birthday Party (uncomment để dùng) -->
-    <!-- <source src="https://cdn.pixabay.com/download/audio/2022/03/23/audio_b124d1ad8a.mp3" type="audio/mpeg"> -->
+  <audio id="bgMusic" loop autoplay>
+    <!-- Nhạc sinh nhật - Nhiều nguồn dự phòng -->
+    <source src="https://www.bensound.com/bensound-music/bensound-ukulele.mp3" type="audio/mpeg">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
   </audio>
  
   <script>
@@ -559,11 +549,18 @@
       if (countdownStarted) return;
       countdownStarted = true;
      
-      // Auto play music
+      // Auto play music with volume control
+      bgMusic.volume = 0.7; // Điều chỉnh âm lượng (0.0 - 1.0)
       bgMusic.play().catch(err => {
-        console.log('Autoplay prevented:', err);
+        console.log('Autoplay prevented, trying alternative method...');
         // Fallback: play on first user interaction
-        document.addEventListener('click', () => bgMusic.play(), { once: true });
+        const playOnInteraction = () => {
+          bgMusic.play();
+          document.removeEventListener('click', playOnInteraction);
+          document.removeEventListener('touchstart', playOnInteraction);
+        };
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('touchstart', playOnInteraction);
       });
      
       createConfetti();
@@ -621,10 +618,26 @@
       hh = h / 2;
     });
     
-    // Auto play music on page load (alternative method)
+    // Auto play music on page load with multiple fallbacks
     window.addEventListener('load', () => {
-      bgMusic.play().catch(err => console.log('Autoplay on load prevented'));
+      // Try to play immediately
+      bgMusic.volume = 0.7;
+      bgMusic.play().catch(err => {
+        console.log('Initial autoplay prevented');
+        // Try again after a short delay
+        setTimeout(() => {
+          bgMusic.play().catch(() => {
+            console.log('Waiting for user interaction to play music');
+          });
+        }, 500);
+      });
     });
+    
+    // Additional fallback for mobile devices
+    document.addEventListener('touchstart', function playOnTouch() {
+      bgMusic.play().catch(err => console.log('Touch play prevented'));
+      document.removeEventListener('touchstart', playOnTouch);
+    }, { once: true });
   </script>
 </body>
 </html>
