@@ -10,21 +10,21 @@
       padding: 0;
       box-sizing: border-box;
     }
-   
+    
     body {
       margin: 0;
       overflow: hidden;
       background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #16213e 100%);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-   
+    
     canvas {
       position: absolute;
       top: 0;
       left: 0;
       display: block;
     }
-   
+    
     /* Particles background */
     .stars {
       position: fixed;
@@ -35,7 +35,7 @@
       pointer-events: none;
       z-index: 1;
     }
-   
+    
     .star {
       position: absolute;
       width: 2px;
@@ -44,12 +44,12 @@
       border-radius: 50%;
       animation: twinkle 3s infinite;
     }
-   
+    
     @keyframes twinkle {
       0%, 100% { opacity: 0.3; transform: scale(1); }
       50% { opacity: 1; transform: scale(1.5); }
     }
-   
+    
     /* Countdown container */
     #countdown {
       position: absolute;
@@ -61,12 +61,12 @@
       z-index: 100;
       animation: fadeIn 1s ease-in;
     }
-   
+    
     @keyframes fadeIn {
       from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
       to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
-   
+    
     #countdown-text {
       font-size: clamp(20px, 4vw, 40px);
       color: #fff;
@@ -81,17 +81,17 @@
       background-clip: text;
       animation: gradientShift 3s ease infinite;
     }
-   
+    
     @keyframes gradientShift {
       0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
     }
-   
+    
     #countdown-number {
       font-size: clamp(80px, 20vw, 180px);
       font-weight: bold;
       color: #fff;
-      text-shadow:
+      text-shadow: 
         0 0 10px rgba(255, 255, 255, 0.8),
         0 0 20px rgba(255, 107, 107, 0.8),
         0 0 30px rgba(255, 107, 107, 0.6),
@@ -101,12 +101,12 @@
       animation: pulse 1s ease-in-out infinite, colorChange 2s infinite;
       position: relative;
     }
-   
+    
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.15); }
     }
-   
+    
     @keyframes colorChange {
       0% { color: #ff6b6b; }
       25% { color: #ffd93d; }
@@ -114,7 +114,7 @@
       75% { color: #4d96ff; }
       100% { color: #ff6b6b; }
     }
-   
+    
     /* Glowing circles around countdown */
     .glow-circle {
       position: absolute;
@@ -125,25 +125,25 @@
       border: 2px solid rgba(255, 255, 255, 0.3);
       animation: expandGlow 2s ease-out infinite;
     }
-   
+    
     .glow-circle:nth-child(1) {
       width: 200px;
       height: 200px;
       animation-delay: 0s;
     }
-   
+    
     .glow-circle:nth-child(2) {
       width: 250px;
       height: 250px;
       animation-delay: 0.5s;
     }
-   
+    
     .glow-circle:nth-child(3) {
       width: 300px;
       height: 300px;
       animation-delay: 1s;
     }
-   
+    
     @keyframes expandGlow {
       0% {
         transform: translate(-50%, -50%) scale(0.8);
@@ -157,7 +157,7 @@
         opacity: 0;
       }
     }
-   
+    
     /* Loading message */
     #message {
       position: absolute;
@@ -172,12 +172,12 @@
       z-index: 101;
       animation: fadeInOut 2s ease-in-out infinite;
     }
-   
+    
     @keyframes fadeInOut {
       0%, 100% { opacity: 0.5; }
       50% { opacity: 1; }
     }
-   
+    
     /* Confetti effect */
     .confetti {
       position: fixed;
@@ -187,7 +187,7 @@
       position: absolute;
       animation: confettiFall 3s linear infinite;
     }
-   
+    
     @keyframes confettiFall {
       to {
         transform: translateY(100vh) rotate(360deg);
@@ -199,27 +199,25 @@
 <body>
   <div class="stars" id="stars"></div>
   <canvas id="c"></canvas>
- 
+  
   <div id="countdown">
     <div class="glow-circle"></div>
     <div class="glow-circle"></div>
     <div class="glow-circle"></div>
     <div id="countdown-number">10</div>
   </div>
- 
+  
   <div id="message">Đang chuẩn bị một điều bất ngờ...</div>
- 
-  <!-- Audio element for background music -->
-  <audio id="bgMusic" loop autoplay>
-    <!-- Nhạc sinh nhật - Nhiều nguồn dự phòng -->
-    <source src="https://www.bensound.com/bensound-music/bensound-ukulele.mp3" type="audio/mpeg">
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  
+  <!-- Audio background music -->
+  <audio id="bgMusic" loop>
+    <source src="n.mp3" type="audio/mpeg">
   </audio>
- 
+  
   <script>
     const REDIRECT_URL = 'chamtraitym.html'; // Thay link của bạn ở đây
-    const bgMusic = document.getElementById('bgMusic');
-   
+    const MUSIC_URL = 'n.mp3'; // Thay link nhạc của bạn ở đây
+    
     // Create stars background
     function createStars() {
       const starsContainer = document.getElementById('stars');
@@ -233,7 +231,7 @@
         starsContainer.appendChild(star);
       }
     }
-   
+    
     // Create confetti
     function createConfetti() {
       const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#ee5a6f', '#c06c84'];
@@ -248,20 +246,23 @@
         document.body.appendChild(confetti);
       }
     }
-   
+    
     createStars();
-   
+    
     const c = document.getElementById('c');
     const ctx = c.getContext('2d');
+
     let w = c.width = window.innerWidth;
     let h = c.height = window.innerHeight;
     let hw = w / 2;
     let hh = h / 2;
+
     const opts = {
       strings: ['HAPPY', 'BIRTHDAY', 'DIỆP ANH!'],
       charSize: 35,
       charSpacing: 40,
       lineHeight: 60,
+
       fireworkPrevPoints: 15,
       fireworkBaseLineWidth: 6,
       fireworkAddedLineWidth: 10,
@@ -294,15 +295,19 @@
       balloonBaseRadian: -(Math.PI / 2 - 0.5),
       balloonAddedRadian: 1,
     };
+
     const calc = {
       totalWidth: opts.charSpacing * Math.max(...opts.strings.map(s => s.length))
     };
+
     const Tau = Math.PI * 2;
     const letters = [];
     let countdownStarted = false;
     let countdownValue = 10;
     let countdownInterval = null;
+
     ctx.font = `bold ${opts.charSize}px "Segoe UI", Verdana`;
+
     class Letter {
       constructor(char, x, y) {
         this.char = char;
@@ -311,13 +316,16 @@
         this.dx = -ctx.measureText(char).width / 2;
         this.dy = opts.charSize / 2;
         this.fireworkDy = this.y - hh;
+
         const hue = ((x / calc.totalWidth) + 0.5) % 1 * 360;
         this.color = `hsl(${hue},90%,60%)`;
         this.lightColor = `hsl(${hue},90%,light%)`;
         this.lightAlphaColor = `hsla(${hue},90%,light%,alp)`;
         this.alphaColor = `hsla(${hue},90%,60%,alp)`;
+
         this.reset();
       }
+
       reset() {
         this.phase = 'firework';
         this.tick = 0;
@@ -327,6 +335,7 @@
         this.lineWidth = opts.fireworkBaseLineWidth + opts.fireworkAddedLineWidth * Math.random();
         this.prevPoints = [[0, hh, 0]];
       }
+
       step() {
         if (this.phase === 'firework') {
           if (!this.spawned) {
@@ -336,13 +345,16 @@
             }
             return;
           }
+
           ++this.tick;
           const lp = this.tick / this.reachTime;
           const ap = Math.sin(lp * Math.PI / 2);
           const x = lp * this.x;
           const y = hh + ap * this.fireworkDy;
+
           if (this.prevPoints.length > opts.fireworkPrevPoints) this.prevPoints.shift();
           this.prevPoints.push([x, y, lp * this.lineWidth]);
+
           for (let i = 1; i < this.prevPoints.length; i++) {
             const p = this.prevPoints[i];
             const p2 = this.prevPoints[i - 1];
@@ -358,6 +370,7 @@
             ctx.lineTo(p2[0], p2[1]);
             ctx.stroke();
           }
+
           if (this.tick >= this.reachTime) {
             this.phase = 'contemplate';
             this.circleFinalSize = opts.fireworkCircleBaseSize + opts.fireworkCircleAddedSize * Math.random();
@@ -365,6 +378,7 @@
             this.circleCreating = true;
             this.circleFadeTime = opts.fireworkCircleFadeBaseTime + opts.fireworkCircleFadeAddedTime * Math.random() | 0;
             this.tick = this.tick2 = 0;
+
             const cnt = opts.fireworkBaseShards + opts.fireworkAddedShards * Math.random() | 0;
             const angle = Tau / cnt;
             let px = 1, py = 0;
@@ -377,23 +391,25 @@
             }
           }
         }
+
         else if (this.phase === 'contemplate') {
           ++this.tick;
+
           if (this.circleCreating) {
             ++this.tick2;
             const p = this.tick2 / this.circleCompleteTime;
             const a = -Math.cos(p * Math.PI) / 2 + 0.5;
-           
+            
             const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, a * this.circleFinalSize);
             grad.addColorStop(0, this.lightAlphaColor.replace('light', 90).replace('alp', p * 0.8));
             grad.addColorStop(0.5, this.lightAlphaColor.replace('light', 70).replace('alp', p * 0.6));
             grad.addColorStop(1, this.lightAlphaColor.replace('light', 50).replace('alp', p * 0.3));
-           
+            
             ctx.fillStyle = grad;
             ctx.beginPath();
             ctx.arc(this.x, this.y, a * this.circleFinalSize, 0, Tau);
             ctx.fill();
-           
+            
             if (this.tick2 > this.circleCompleteTime) {
               this.circleCreating = false;
               this.circleFading = true;
@@ -406,6 +422,7 @@
             ctx.fillStyle = this.lightColor.replace('light', 80);
             ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
             ctx.shadowBlur = 0;
+
             ++this.tick2;
             const p = this.tick2 / this.circleFadeTime;
             const a = -Math.cos(p * Math.PI) / 2 + 0.5;
@@ -413,6 +430,7 @@
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.circleFinalSize, 0, Tau);
             ctx.fill();
+
             if (this.tick2 >= this.circleFadeTime) this.circleFading = false;
           }
           else {
@@ -422,12 +440,14 @@
             ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
             ctx.shadowBlur = 0;
           }
+
           if (this.shards) {
             for (let i = this.shards.length - 1; i >= 0; i--) {
               this.shards[i].step();
               if (!this.shards[i].alive) this.shards.splice(i, 1);
             }
           }
+
           if (this.tick > opts.letterContemplatingWaitTime) {
             this.phase = 'balloon';
             this.tick = 0;
@@ -441,6 +461,7 @@
             this.vy = Math.sin(rad) * vel;
           }
         }
+
         else if (this.phase === 'balloon') {
           if (this.spawning) {
             ++this.tick;
@@ -460,6 +481,7 @@
             const p = this.tick / this.inflateTime;
             const bx = this.cx = this.x;
             const by = this.cy = this.y - this.size * p;
+
             const grad = ctx.createRadialGradient(bx - this.size * p * 0.3, by - this.size * p * 0.3, 0, bx, by, this.size * p);
             grad.addColorStop(0, this.lightAlphaColor.replace('light', 90).replace('alp', p));
             grad.addColorStop(1, this.alphaColor.replace('alp', p * 0.8));
@@ -467,22 +489,26 @@
             ctx.beginPath();
             balloonPath(bx, by, this.size * p);
             ctx.fill();
+
             ctx.strokeStyle = this.lightColor.replace('light', 90);
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(bx, by + this.size * p);
             ctx.lineTo(bx, this.y);
             ctx.stroke();
+
             ctx.shadowBlur = 10;
             ctx.shadowColor = this.color;
             ctx.fillStyle = this.lightColor.replace('light', 80);
             ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
             ctx.shadowBlur = 0;
+
             if (this.tick >= this.inflateTime) this.inflating = false;
           }
           else {
             this.cx += this.vx;
             this.cy += this.vy += opts.upFlow;
+
             const grad = ctx.createRadialGradient(this.cx - this.size * 0.3, this.cy - this.size * 0.3, 0, this.cx, this.cy, this.size);
             grad.addColorStop(0, this.lightColor.replace('light', 90));
             grad.addColorStop(1, this.color);
@@ -490,23 +516,27 @@
             ctx.beginPath();
             balloonPath(this.cx, this.cy, this.size);
             ctx.fill();
+
             ctx.strokeStyle = this.lightColor.replace('light', 95);
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(this.cx, this.cy + this.size);
             ctx.lineTo(this.cx, this.cy + this.size + 20);
             ctx.stroke();
+
             ctx.shadowBlur = 12;
             ctx.shadowColor = this.color;
             ctx.fillStyle = this.lightColor.replace('light', 85);
             ctx.fillText(this.char, this.cx + this.dx, this.cy + this.dy + this.size);
             ctx.shadowBlur = 0;
+
             if (this.cy + this.size < -hh || Math.abs(this.cx) > hw + 100)
               this.phase = 'done';
           }
         }
       }
     }
+
     class Shard {
       constructor(x, y, vx, vy, color) {
         const vel = opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
@@ -519,11 +549,14 @@
         this.size = opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
         this.alive = true;
       }
+
       step() {
         this.x += this.vx;
         this.y += this.vy += opts.gravity;
+
         this.points.push([this.x, this.y]);
         if (this.points.length > opts.fireworkShardPrevPoints) this.points.shift();
+
         for (let i = 1; i < this.points.length; i++) {
           const alpha = i / this.points.length;
           ctx.strokeStyle = this.color.replace('alp', alpha);
@@ -534,9 +567,11 @@
           ctx.lineTo(this.points[i][0], this.points[i][1]);
           ctx.stroke();
         }
+
         if (this.y > h) this.alive = false;
       }
     }
+
     function balloonPath(x, y, size) {
       ctx.moveTo(x, y);
       ctx.bezierCurveTo(x - size/2, y - size/2, x - size/4, y - size, x, y - size);
@@ -545,32 +580,24 @@
       ctx.lineTo(x + 5, y + size/3);
       ctx.closePath();
     }
+
     function startCountdown() {
       if (countdownStarted) return;
       countdownStarted = true;
-     
-      // Auto play music with volume control
-      bgMusic.volume = 0.7; // Điều chỉnh âm lượng (0.0 - 1.0)
-      bgMusic.play().catch(err => {
-        console.log('Autoplay prevented, trying alternative method...');
-        // Fallback: play on first user interaction
-        const playOnInteraction = () => {
-          bgMusic.play();
-          document.removeEventListener('click', playOnInteraction);
-          document.removeEventListener('touchstart', playOnInteraction);
-        };
-        document.addEventListener('click', playOnInteraction);
-        document.addEventListener('touchstart', playOnInteraction);
-      });
-     
+      
+      // Start background music
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.volume = 0.8; // Set volume to 50%
+      bgMusic.play().catch(err => console.log('Autoplay prevented:', err));
+      
       createConfetti();
       document.getElementById('countdown').style.display = 'block';
       document.getElementById('message').style.display = 'block';
-     
+      
       countdownInterval = setInterval(() => {
         countdownValue--;
         document.getElementById('countdown-number').textContent = countdownValue;
-       
+        
         if (countdownValue <= 0) {
           clearInterval(countdownInterval);
           document.getElementById('message').textContent = 'Đang chuyển hướng... ';
@@ -580,6 +607,7 @@
         }
       }, 1000);
     }
+
     for (let i = 0; i < opts.strings.length; i++) {
       for (let j = 0; j < opts.strings[i].length; j++) {
         letters.push(new Letter(
@@ -589,55 +617,51 @@
         ));
       }
     }
+
     function anim() {
       requestAnimationFrame(anim);
-     
+      
       const grad = ctx.createRadialGradient(hw, hh, 0, hw, hh, Math.max(w, h));
       grad.addColorStop(0, '#0a0a1a');
       grad.addColorStop(0.5, '#1a0a2e');
       grad.addColorStop(1, '#16213e');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
+
       ctx.save();
       ctx.translate(hw, hh);
+
       let allDone = true;
       letters.forEach(l => {
         l.step();
         if (l.phase !== 'done') allDone = false;
       });
+
       ctx.restore();
+
       if (allDone && !countdownStarted) {
         startCountdown();
       }
     }
+
     anim();
+    
+    // Enable audio on first user interaction (fallback for autoplay restrictions)
+    let musicStarted = false;
+    document.addEventListener('click', () => {
+      if (!musicStarted && countdownStarted) {
+        const bgMusic = document.getElementById('bgMusic');
+        bgMusic.play().catch(err => console.log('Play error:', err));
+        musicStarted = true;
+      }
+    }, { once: true });
+
     window.addEventListener('resize', () => {
       w = c.width = window.innerWidth;
       h = c.height = window.innerHeight;
       hw = w / 2;
       hh = h / 2;
     });
-    
-    // Auto play music on page load with multiple fallbacks
-    window.addEventListener('load', () => {
-      // Try to play immediately
-      bgMusic.volume = 0.7;
-      bgMusic.play().catch(err => {
-        console.log('Initial autoplay prevented');
-        // Try again after a short delay
-        setTimeout(() => {
-          bgMusic.play().catch(() => {
-            console.log('Waiting for user interaction to play music');
-          });
-        }, 500);
-      });
-    });
-    
-    // Additional fallback for mobile devices
-    document.addEventListener('touchstart', function playOnTouch() {
-      bgMusic.play().catch(err => console.log('Touch play prevented'));
-      document.removeEventListener('touchstart', playOnTouch);
-    }, { once: true });
   </script>
 </body>
 </html>
