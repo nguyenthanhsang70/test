@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chúc Mừng Sinh Nhật</title>
   <style>
+    /* Các style CSS giữ nguyên như trước */
     * {
       margin: 0;
       padding: 0;
@@ -194,9 +195,49 @@
         opacity: 0;
       }
     }
+    
+    /* Audio control button */
+    .music-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+    }
+    
+    .music-control:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .music-control i {
+      color: white;
+      font-size: 24px;
+    }
+    
+    .music-control.muted i {
+      opacity: 0.5;
+    }
   </style>
 </head>
 <body>
+  <!-- Thêm audio element cho nhạc nền -->
+  <audio id="background-music" loop preload="auto">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    <!-- Thay link trên bằng link nhạc của bạn -->
+    <!-- Ví dụ: <source src="nhac-sinh-nhat.mp3" type="audio/mpeg"> -->
+  </audio>
+  
   <div class="stars" id="stars"></div>
   <canvas id="c"></canvas>
   
@@ -209,26 +250,152 @@
   
   <div id="message">Đang chuẩn bị một điều bất ngờ...</div>
   
-  <!-- Audio background music -->
-  <audio id="bgMusic" loop preload="auto">
-    <source src="YOUR_MUSIC_URL_HERE.mp3" type="audio/mpeg">
-    <source src="YOUR_MUSIC_URL_HERE.ogg" type="audio/ogg">
-  </audio>
-  
-  <!-- Click to start overlay -->
-  <div id="startOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; cursor: pointer;">
-    <div style="text-align: center; color: white;">
-      <div style="font-size: 48px; margin-bottom: 20px;">🎵</div>
-      <div style="font-size: 24px; margin-bottom: 10px;">Nhấn để bắt đầu</div>
-      <div style="font-size: 16px; opacity: 0.7;">Click anywhere to start with music</div>
-    </div>
+  <!-- Thêm nút điều khiển nhạc -->
+  <div class="music-control" id="music-control" title="Bật/Tắt nhạc">
+    <i>🎵</i>
   </div>
   
   <script>
-    const REDIRECT_URL = 'chamtraitym.html'; // Thay link của bạn ở đây
-    const MUSIC_URL = 'n.mp3'; // Thay link nhạc của bạn ở đây
+    // Thay link nhạc của bạn vào đây (thay thế link hiện tại)
+    const MUSIC_URL = 'n.mp3';
+    const REDIRECT_URL = 'chamtraitym.html';
     
-    // Create stars background
+    // Khởi tạo nhạc nền - PHÁT LIỀN KHÔNG CHẦN CHỪ
+    const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.src = MUSIC_URL;
+    backgroundMusic.volume = 0.7; // Âm lượng 70%
+    backgroundMusic.muted = false;
+    
+    // Tạo nút điều khiển nhạc
+    const musicControl = document.getElementById('music-control');
+    let isPlaying = false;
+    let musicStarted = false;
+    
+    // Hàm phát nhạc ngay lập tức - nhiều cách khác nhau
+    function playMusicImmediately() {
+      if (musicStarted) return;
+      musicStarted = true;
+      
+      console.log("Đang cố gắng phát nhạc...");
+      
+      // Thử nhiều cách để phát nhạc
+      const playPromises = [];
+      
+      // Cách 1: Phát trực tiếp
+      try {
+        const promise = backgroundMusic.play();
+        if (promise !== undefined) {
+          playPromises.push(promise);
+        }
+      } catch (e) {
+        console.log("Lỗi phát trực tiếp:", e);
+      }
+      
+      // Cách 2: Đặt thời gian chờ và thử lại
+      setTimeout(() => {
+        if (!isPlaying) {
+          try {
+            backgroundMusic.currentTime = 0;
+            const promise = backgroundMusic.play();
+            if (promise !== undefined) {
+              promise.then(() => {
+                console.log("Phát nhạc thành công sau timeout");
+                isPlaying = true;
+                musicControl.classList.remove('muted');
+              }).catch(e => {
+                console.log("Lỗi phát sau timeout:", e);
+              });
+            }
+          } catch (e) {
+            console.log("Lỗi phát sau timeout:", e);
+          }
+        }
+      }, 100);
+      
+      // Xử lý tất cả promises
+      Promise.allSettled(playPromises).then(results => {
+        results.forEach((result, i) => {
+          if (result.status === 'fulfilled') {
+            console.log(`Phát nhạc thành công (cách ${i+1})`);
+            isPlaying = true;
+            musicControl.classList.remove('muted');
+          } else {
+            console.log(`Lỗi phát nhạc (cách ${i+1}):`, result.reason);
+          }
+        });
+      });
+    }
+    
+    // PHÁT NHẠC NGAY KHI TRANG SẴN SÀNG
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("DOM đã tải xong - phát nhạc ngay!");
+      playMusicImmediately();
+    });
+    
+    // Cũng thử phát khi window load
+    window.addEventListener('load', function() {
+      console.log("Window đã load - thử phát nhạc lần nữa");
+      if (!isPlaying) {
+        setTimeout(playMusicImmediately, 50);
+      }
+    });
+    
+    // Phát nhạc ngay cả trước khi DOM load hoàn tất
+    console.log("Script đang chạy - phát nhạc sớm nhất có thể");
+    setTimeout(playMusicImmediately, 10);
+    
+    // Xử lý click để bật/tắt nhạc
+    musicControl.addEventListener('click', function() {
+      if (!musicStarted) {
+        musicStarted = true;
+      }
+      
+      if (isPlaying) {
+        backgroundMusic.pause();
+        musicControl.classList.add('muted');
+        musicControl.innerHTML = '<i>🔇</i>';
+      } else {
+        backgroundMusic.play().then(() => {
+          musicControl.classList.remove('muted');
+          musicControl.innerHTML = '<i>🎵</i>';
+        }).catch(e => {
+          console.log("Lỗi khi phát nhạc:", e);
+        });
+      }
+      isPlaying = !isPlaying;
+    });
+    
+    // Xử lý sự kiện khi người dùng tương tác với bất kỳ đâu trên trang
+    document.addEventListener('click', function() {
+      if (!isPlaying && musicStarted) {
+        backgroundMusic.play().then(() => {
+          isPlaying = true;
+          musicControl.classList.remove('muted');
+        });
+      }
+    });
+    
+    // Xử lý sự kiện khi người dùng tương tác với bất kỳ phím nào
+    document.addEventListener('keydown', function() {
+      if (!isPlaying && musicStarted) {
+        backgroundMusic.play().then(() => {
+          isPlaying = true;
+          musicControl.classList.remove('muted');
+        });
+      }
+    });
+    
+    // Thêm sự kiện touch cho mobile
+    document.addEventListener('touchstart', function() {
+      if (!isPlaying && musicStarted) {
+        backgroundMusic.play().then(() => {
+          isPlaying = true;
+          musicControl.classList.remove('muted');
+        });
+      }
+    });
+    
+    // Tạo hiệu ứng sao
     function createStars() {
       const starsContainer = document.getElementById('stars');
       for (let i = 0; i < 100; i++) {
@@ -242,7 +409,7 @@
       }
     }
     
-    // Create confetti
+    // Tạo confetti
     function createConfetti() {
       const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#ee5a6f', '#c06c84'];
       for (let i = 0; i < 50; i++) {
@@ -259,28 +426,7 @@
     
     createStars();
     
-    // Handle start overlay and music
-    let animationStarted = false;
-    const startOverlay = document.getElementById('startOverlay');
-    const bgMusic = document.getElementById('bgMusic');
-    
-    startOverlay.addEventListener('click', () => {
-      startOverlay.style.display = 'none';
-      animationStarted = true;
-      
-      // Start music
-      bgMusic.volume = 0.5;
-      bgMusic.play().then(() => {
-        console.log('Music started successfully');
-      }).catch(err => {
-        console.error('Music play error:', err);
-        // Try again after a short delay
-        setTimeout(() => bgMusic.play(), 100);
-      });
-      
-      startAnimation();
-    });
-    
+    // Các phần code khác giữ nguyên...
     const c = document.getElementById('c');
     const ctx = c.getContext('2d');
 
@@ -646,7 +792,6 @@
     }
 
     function anim() {
-      if (!animationStarted) return;
       requestAnimationFrame(anim);
       
       const grad = ctx.createRadialGradient(hw, hh, 0, hw, hh, Math.max(w, h));
@@ -672,11 +817,6 @@
       }
     }
 
-    function startAnimation() {
-      anim();
-    }
-    
-    // Start animation loop (will wait for user click)
     anim();
 
     window.addEventListener('resize', () => {
