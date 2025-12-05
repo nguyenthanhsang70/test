@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TikTok Clean UI - Auto Next Page</title>
+    <title>video</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -48,18 +48,13 @@
         }
         .overlay-gradient {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 30%;
+            bottom: 0; left: 0; width: 100%; height: 30%;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            pointer-events: none;
-            z-index: 1;
+            pointer-events: none; z-index: 1;
         }
         .play-icon-overlay {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             font-size: 60px;
             opacity: 0;
@@ -69,46 +64,27 @@
             z-index: 5;
         }
         
-        /* SIDEBAR & INFO AREA */
+        /* SIDEBAR & INFO */
         .sidebar {
             position: absolute;
-            right: 10px;
-            bottom: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            z-index: 10;
-            align-items: center;
+            right: 10px; bottom: 40px;
+            display: flex; flex-direction: column;
+            gap: 20px; z-index: 10; align-items: center;
         }
         .sidebar-item { text-align: center; cursor: pointer; }
         .avatar-container { position: relative; margin-bottom: 10px; }
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 1px solid #fff;
-            padding: 1px;
-            object-fit: cover;
-        }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; border: 1px solid #fff; padding: 1px; object-fit: cover; }
         .add-icon {
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
+            position: absolute; bottom: -8px; left: 50%;
             transform: translateX(-50%);
-            background: var(--primary);
-            color: #fff;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: var(--primary); color: #fff;
+            width: 20px; height: 20px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
             font-size: 12px;
         }
         .icon-wrapper {
-            font-size: 32px;
-            margin-bottom: 4px;
-            transition: transform 0.1s;
+            font-size: 32px; margin-bottom: 4px;
+            transition: transform 0.2s;
             text-shadow: var(--text-shadow);
         }
         .icon-wrapper:active { transform: scale(0.85); }
@@ -117,36 +93,22 @@
         
         .info-area {
             position: absolute;
-            bottom: 20px;
-            left: 10px;
-            width: 75%;
-            z-index: 10;
+            bottom: 20px; left: 10px;
+            width: 75%; z-index: 10;
             text-shadow: var(--text-shadow);
         }
-        .username { font-weight: 700; font-size: 17px; margin-bottom: 8px; display: block; }
-        .caption {
-            font-size: 15px;
-            margin-bottom: 10px;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+        .username { font-weight: 700; font-size: 17px; margin-bottom: 8px; }
+        .caption { font-size: 15px; margin-bottom: 10px; line-height: 1.4;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .music-note { display: flex; align-items: center; gap: 10px; }
         .marquee-container { width: 150px; overflow: hidden; white-space: nowrap; }
-        .marquee-text { display: inline-block; animation: marquee 5s linear infinite; font-size: 14px; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+        .marquee-text { display: inline-block; animation: marquee 8s linear infinite; font-size: 14px; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         .disc-wrapper {
-            width: 45px;
-            height: 45px;
-            background: #222;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: spin 5s linear infinite;
-            background-image: linear-gradient(#333, #111);
+            width: 45px; height: 45px;
+            background: #222; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            animation: spin 4s linear infinite;
             border: 8px solid #222;
         }
         .disc-image { width: 25px; height: 25px; border-radius: 50%; object-fit: cover; }
@@ -154,13 +116,11 @@
         
         /* Heart Animation */
         .heart-popup {
-            position: fixed;
-            color: var(--primary);
+            position: fixed; color: var(--primary);
             font-size: 80px;
             transform: translate(-50%, -50%) rotate(-15deg);
             animation: popUp 0.8s ease-out forwards;
-            pointer-events: none;
-            z-index: 100;
+            pointer-events: none; z-index: 100;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         @keyframes popUp {
@@ -172,83 +132,249 @@
 </head>
 <body>
     <div class="app-container" id="app">
-        <!-- Video 1 -->
+
+        <!-- VIDEO 1 (có loop) -->
         <div class="video-post">
-            <video class="video-player" loop playsinline src="Download.mp4"></video>
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video1.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
+            
             <div class="info-area">
-                <div class="username">@giao_dien_sach</div>
-                <div class="caption">Video 1 - Sạch sẽ, mượt mà, không quảng cáo</div>
+                <div class="username">디엡 안</div>
+                <div class="caption">#xuhuong #nhacchaymoingay #pthida_22</div>
                 <div class="music-note">
                     <i class="fas fa-music"></i>
                     <div class="marquee-container">
-                        <div class="marquee-text">Nhạc nền chill - Trending TikTok</div>
+                        <div class="marquee-text">Nhạc Nền chill - 디엡 안</div>
                     </div>
                 </div>
             </div>
-            <!-- Sidebar giống nhau cho mọi video -->
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
-                    <img src="https://i.pravatar.cc/100?img=5" class="avatar" alt="User">
+                    <img src="avatarda.jpeg" class="avatar">
                     <div class="add-icon"><i class="fas fa-plus"></i></div>
                 </div>
                 <div class="sidebar-item" onclick="toggleLike(this)">
                     <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
-                    <span class="count">120.5K</span>
+                    <span class="count">4M</span>
                 </div>
-                <div class="sidebar-item">
-                    <div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div>
-                    <span class="count">802</span>
-                </div>
-                <div class="sidebar-item">
-                    <div class="icon-wrapper"><i class="fas fa-bookmark"></i></div>
-                    <span class="count">450</span>
-                </div>
-                <div class="sidebar-item">
-                    <div class="icon-wrapper"><i class="fas fa-share"></i></div>
-                    <span class="count">Share</span>
-                </div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">200K</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">2k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
                 <div class="sidebar-item disc-wrapper">
-                    <img src="https://i.pravatar.cc/100?img=5" class="disc-image">
+                    <img src="avatarda.jpeg" class="disc-image">
                 </div>
             </div>
         </div>
 
-        <!-- Bạn có thể thêm 4 video nữa giống hệt, chỉ đổi src video và caption -->
-        <!-- Ví dụ video 2, 3, 4, 5... -->
-        <!-- Ở đây mình chỉ để 1 video mẫu, bạn nhân bản thêm 4 cái nữa -->
-
-        <!-- Video 5 (CUỐI CÙNG) -->
-        <div class="video-post" data-last-video="true">
-            <video class="video-player" playsinline src="Download.mp4"></video>
+        <!-- VIDEO 2 (có loop) -->
+        <div class="video-post">
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video2.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
+            
             <div class="info-area">
-                <div class="username">@giao_dien_sach</div>
-                <div class="caption">Video cuối cùng rồi nha! Chuyển trang ngay đây</div>
+                <div class="username">Nguyễn Thanh Sang (阮清尚)</div>
+                <div class="caption">Vì giờ này anh đã thích em rồi đó #pthida_22</div>
                 <div class="music-note">
                     <i class="fas fa-music"></i>
                     <div class="marquee-container">
-                        <div class="marquee-text">End of playlist - See you next!</div>
+                        <div class="marquee-text">Âm thanh gốc - Nguyễn Thanh Sang (阮清尚)</div>
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
-                    <img src="https://i.pravatar.cc/100?img=12" class="avatar" alt="User">
+                    <img src="avatarnts.jpg" class="avatar">
                     <div class="add-icon"><i class="fas fa-plus"></i></div>
                 </div>
                 <div class="sidebar-item" onclick="toggleLike(this)">
                     <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
-                    <span class="count">99.9K</span>
+                    <span class="count">10M</span>
                 </div>
-                <!-- Các icon khác giống trên -->
-                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">1.2K</span></div>
-                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">888</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">543k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">321k</span></div>
                 <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
                 <div class="sidebar-item disc-wrapper">
-                    <img src="https://i.pravatar.cc/100?img=12" class="disc-image">
+                    <img src="avatarnts.jpg" class="disc-image">
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- VIDEO 3 (có loop) -->
+        <div class="video-post">
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video3.mp4"></video>
+            <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
+            <div class="overlay-gradient"></div>
+            
+            <div class="info-area">
+                <div class="username">디엡 안</div>
+                <div class="caption">#xuhuong #pthida_22</div>
+                <div class="music-note">
+                    <i class="fas fa-music"></i>
+                    <div class="marquee-container">
+                        <div class="marquee-text">Âm thanh gốc - 디엡 안</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-item avatar-container">
+                    <img src="avatarda.jpeg" class="avatar">
+                    <div class="add-icon"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="sidebar-item" onclick="toggleLike(this)">
+                    <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
+                    <span class="count">89.7K</span>
+                </div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">3k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">2k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
+                <div class="sidebar-item disc-wrapper">
+                    <img src="avatarda.jpeg" class="disc-image">
+                </div>
+            </div>
+        </div>
+
+         <!-- VIDEO 4 (có loop) -->
+        <div class="video-post">
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video4.mp4"></video>
+            <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
+            <div class="overlay-gradient"></div>
+            
+            <div class="info-area">
+                <div class="username">디엡 안</div>
+                <div class="caption">#xuhuong #pthida_22</div>
+                <div class="music-note">
+                    <i class="fas fa-music"></i>
+                    <div class="marquee-container">
+                        <div class="marquee-text">Âm thanh gốc - 디엡 안</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-item avatar-container">
+                    <img src="avatarda.jpeg" class="avatar">
+                    <div class="add-icon"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="sidebar-item" onclick="toggleLike(this)">
+                    <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
+                    <span class="count">89.7K</span>
+                </div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">800k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">4k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
+                <div class="sidebar-item disc-wrapper">
+                    <img src="avatarda.jpeg" class="disc-image">
+                </div>
+            </div>
+        </div>
+
+         <!-- VIDEO 5 (có loop) -->
+        <div class="video-post">
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video5.mp4"></video>
+            <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
+            <div class="overlay-gradient"></div>
+            
+            <div class="info-area">
+                <div class="username">디엡 안</div>
+                <div class="caption">#xuhuong #pthida_22</div>
+                <div class="music-note">
+                    <i class="fas fa-music"></i>
+                    <div class="marquee-container">
+                        <div class="marquee-text">Âm thanh gốc - 디엡 안</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-item avatar-container">
+                    <img src="avatarda.jpeg" class="avatar">
+                    <div class="add-icon"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="sidebar-item" onclick="toggleLike(this)">
+                    <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
+                    <span class="count">90.7K</span>
+                </div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">100k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">321</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
+                <div class="sidebar-item disc-wrapper">
+                    <img src="avatarda.jpeg" class="disc-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- VIDEO 6 (có loop) -->
+        <div class="video-post">
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video6.mp4"></video>
+            <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
+            <div class="overlay-gradient"></div>
+            
+            <div class="info-area">
+                <div class="username">디엡 안</div>
+                <div class="caption">#xuhuong #pthida_22</div>
+                <div class="music-note">
+                    <i class="fas fa-music"></i>
+                    <div class="marquee-container">
+                        <div class="marquee-text">Âm thanh gốc - 디엡 안</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-item avatar-container">
+                    <img src="avatarda.jpeg" class="avatar">
+                    <div class="add-icon"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="sidebar-item" onclick="toggleLike(this)">
+                    <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
+                    <span class="count">200.7K</span>
+                </div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">520k</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">2234</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
+                <div class="sidebar-item disc-wrapper">
+                    <img src="avatarda.jpeg" class="disc-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- VIDEO CUỐI CÙNG - KHÔNG LOOP - CHUYỂN TRANG 100% -->
+        <div class="video-post" data-last-video="true">
+            <video class="video-player" playsinline webkit-playsinline preload="metadata" src="video7.mp4"></video>
+            <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
+            <div class="overlay-gradient"></div>
+            
+            <div class="info-area">
+                <div class="username">디엡 안</div>
+                <div class="caption">Xem hết để chuyển trang...</div>
+                <div class="music-note">
+                    <i class="fas fa-music"></i>
+                    <div class="marquee-container">
+                        <div class="marquee-text">Âm thanh gốc - 디엡 안</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-item avatar-container">
+                    <img src="avatarda.jpeg" class="avatar">
+                    <div class="add-icon"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="sidebar-item" onclick="toggleLike(this)">
+                    <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
+                    <span class="count">999K</span>
+                </div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-comment-dots"></i></div><span class="count">12.5K</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-bookmark"></i></div><span class="count">8.8K</span></div>
+                <div class="sidebar-item"><div class="icon-wrapper"><i class="fas fa-share"></i></div><span class="count">Share</span></div>
+                <div class="sidebar-item disc-wrapper">
+                    <img src="avatarda.jpeg" class="disc-image">
                 </div>
             </div>
         </div>
@@ -257,65 +383,103 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const videoPosts = document.querySelectorAll('.video-post');
-            const container = document.getElementById('app');
+            let hasUserInteracted = false;
+            let hasNavigated = false; // Ngăn chặn chuyển trang nhiều lần
 
-            // Tự động phát video hiện trong khung nhìn
+            // Unlock âm thanh sau lần chạm đầu tiên
+            const unlockAudio = () => {
+                if (hasUserInteracted) return;
+                hasUserInteracted = true;
+                document.removeEventListener('touchstart', unlockAudio);
+                document.removeEventListener('click', unlockAudio);
+            };
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+
+            // Phát video khi vào tầm nhìn
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     const video = entry.target.querySelector('video');
+                    const playIcon = entry.target.querySelector('.play-icon-overlay');
                     if (entry.isIntersecting) {
                         video.currentTime = 0;
-                        video.play().catch(() => {
-                            video.muted = true;
-                            video.play();
-                        });
+                        video.muted = false;
+                        video.play().catch(() => { video.muted = true; video.play(); });
+                        playIcon.style.opacity = 0;
                     } else {
                         video.pause();
                     }
                 });
             }, { threshold: 0.7 });
-
             videoPosts.forEach(post => observer.observe(post));
 
-            // Xử lý khi video kết thúc
-            videoPosts.forEach((post, index) => {
-                const video = post.querySelector('video');
+            // XỬ LÝ VIDEO CUỐI - CHUYỂN TRANG 100%
+            const lastPost = document.querySelector('[data-last-video="true"]');
+            if (lastPost) {
+                const lastVideo = lastPost.querySelector('video');
 
-                video.addEventListener('ended', () => {
-                    // Nếu là video cuối cùng → chuyển trang
-                    if (post.hasAttribute('data-last-video')) {
-                        // Đổi thành trang bạn muốn chuyển tới
-                        window.location.href = "ketthuc.html"; // hoặc https://yourwebsite.com/next
-                    } else {
-                        // Chuyển sang video tiếp theo bằng scroll mượt
-                        const nextPost = videoPosts[index + 1];
-                        if (nextPost) {
-                            nextPost.scrollIntoView({ behavior: 'smooth' });
-                        }
+                const goToNextPage = () => {
+                    if (hasNavigated) return; // Ngăn chặn gọi nhiều lần
+                    hasNavigated = true;
+                    console.log('Đang chuyển trang...');
+                    
+                    // ĐỔI LINK TẠI ĐÂY - ví dụ:
+                    // window.location.href = "ketthuc.html";
+                    
+                    // Demo: chuyển về Google (thay bằng link của bạn)
+                    window.location.href = "ketthuc.html";
+                };
+
+                // Lắng nghe sự kiện ended
+                lastVideo.addEventListener('ended', () => {
+                    console.log('Video ended event fired');
+                    goToNextPage();
+                });
+
+                // Kiểm tra timeupdate - khi gần hết video
+                lastVideo.addEventListener('timeupdate', () => {
+                    if (lastVideo.duration > 0 && lastVideo.currentTime >= lastVideo.duration - 0.5) {
+                        console.log('Video near end');
+                        goToNextPage();
                     }
+                });
+
+                // Thêm log để debug
+                lastVideo.addEventListener('loadedmetadata', () => {
+                    console.log('Last video duration:', lastVideo.duration);
+                });
+            }
+
+            // Các video khác (có loop) → next khi kết thúc
+            videoPosts.forEach((post, i) => {
+                if (post.hasAttribute('data-last-video')) return;
+                const video = post.querySelector('video');
+                video.addEventListener('ended', () => {
+                    const next = videoPosts[i + 1];
+                    if (next) next.scrollIntoView({ behavior: 'smooth' });
                 });
             });
 
-            // Double tap = like, single tap = pause/play
+            // Double tap = like, single tap = play/pause
             videoPosts.forEach(post => {
                 const video = post.querySelector('video');
                 const playIcon = post.querySelector('.play-icon-overlay');
-                let lastClick = 0;
+                let lastTap = 0;
 
-                post.addEventListener('click', (e) => {
+                post.addEventListener('click', e => {
                     const now = Date.now();
-                    const diff = now - lastClick;
+                    const diff = now - lastTap;
 
-                    if (diff < 300 && diff > 0) {
-                        // Double tap → Thả tim + like
+                    if (diff < 350 && diff > 0) {
+                        // Double tap
                         createHeartAnimation(e.clientX, e.clientY);
-                        const likeBtn = post.querySelector('.sidebar-item:nth-child(2)');
-                        if (likeBtn) toggleLike(likeBtn, true);
+                        const likeBtn = post.querySelectorAll('.sidebar-item')[1];
+                        toggleLike(likeBtn);
                     } else {
-                        // Single tap → Pause/Play
                         setTimeout(() => {
-                            if (Date.now() - lastClick >= 300) {
+                            if (Date.now() - now >= 350) {
                                 if (video.paused) {
+                                    video.muted = false;
                                     video.play();
                                     playIcon.style.opacity = 0;
                                 } else {
@@ -323,34 +487,33 @@
                                     playIcon.style.opacity = 1;
                                 }
                             }
-                        }, 300);
+                        }, 350);
                     }
-                    lastClick = now;
+                    lastTap = now;
                 });
             });
         });
 
         function createHeartAnimation(x, y) {
-            const heart = document.createElement('div');
-            heart.classList.add('heart-popup');
-            heart.innerHTML = '<i class="fas fa-heart"></i>';
-            heart.style.left = x + 'px';
-            heart.style.top = y + 'px';
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 800);
+            const h = document.createElement('div');
+            h.className = 'heart-popup';
+            h.innerHTML = '<i class="fas fa-heart"></i>';
+            h.style.left = x + 'px';
+            h.style.top = y + 'px';
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 900);
         }
 
-        function toggleLike(element, forceLike = false) {
-            const icon = element.querySelector('.icon-wrapper i');
-            const wrapper = element.querySelector('.icon-wrapper');
-            if (forceLike || !wrapper.classList.contains('liked')) {
-                wrapper.classList.add('liked');
-                wrapper.style.transform = 'scale(1.3)';
-                setTimeout(() => wrapper.style.transform = 'scale(1)', 200);
-            } else {
-                wrapper.classList.remove('liked');
+        function toggleLike(el) {
+            const wrapper = el.querySelector('.icon-wrapper');
+            wrapper.classList.toggle('liked');
+            if (wrapper.classList.contains('liked')) {
+                wrapper.style.transform = 'scale(1.5)';
+                setTimeout(() => wrapper.style.transform = '', 200);
             }
         }
     </script>
 </body>
 </html>
+
+
