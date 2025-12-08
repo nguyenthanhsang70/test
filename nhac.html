@@ -18,6 +18,93 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
+    /* Lock screen */
+    #lockscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #16213e 100%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    #lockscreen.unlocked {
+      opacity: 0;
+      transform: scale(1.2);
+      pointer-events: none;
+    }
+    
+    .lock-icon {
+      font-size: clamp(60px, 15vw, 100px);
+      margin-bottom: 30px;
+      animation: lockBounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes lockBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .lock-text {
+      font-size: clamp(24px, 5vw, 36px);
+      color: #fff;
+      font-weight: 300;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      text-align: center;
+      padding: 0 20px;
+    }
+    
+    .lock-subtext {
+      font-size: clamp(14px, 3vw, 18px);
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 2px;
+      animation: fadeInOut 2s ease-in-out infinite;
+      text-align: center;
+      padding: 0 20px;
+    }
+    
+    .lock-time {
+      position: absolute;
+      top: 80px;
+      font-size: clamp(48px, 12vw, 72px);
+      color: #fff;
+      font-weight: 200;
+      letter-spacing: 2px;
+    }
+    
+    .lock-date {
+      position: absolute;
+      top: 170px;
+      font-size: clamp(16px, 3vw, 20px);
+      color: rgba(255, 255, 255, 0.8);
+      letter-spacing: 1px;
+    }
+    
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0);
+      animation: rippleEffect 0.6s ease-out;
+      pointer-events: none;
+    }
+    
+    @keyframes rippleEffect {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+    
     canvas {
       position: absolute;
       top: 0;
@@ -197,6 +284,15 @@
   </style>
 </head>
 <body>
+  <!-- Lock Screen -->
+  <div id="lockscreen">
+    <div class="lock-time" id="lockTime">00:00</div>
+    <div class="lock-date" id="lockDate">Thứ Hai, 8 Tháng 12</div>
+    <div class="lock-icon">🔒</div>
+    <div class="lock-text">Chúc Mừng Sinh Nhật</div>
+    <div class="lock-subtext">Chạm để mở khóa</div>
+  </div>
+  
   <div class="stars" id="stars"></div>
   <canvas id="c"></canvas>
   
@@ -209,29 +305,65 @@
   
   <div id="message">Đang chuẩn bị một điều bất ngờ...</div>
   
-  <!-- Audio element for background music -->
-  <audio id="bgMusic" loop>
-    <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_4c13d4e5b1.mp3" type="audio/mpeg">
-  </audio>
-  
   <script>
     const REDIRECT_URL = 'chamtraitym.html'; // Thay link của bạn ở đây
+    const MUSIC_URL = 'n.mp3'; // Thay link nhạc của bạn ở đây
     
-    // Auto-play background music
-    const bgMusic = document.getElementById('bgMusic');
+    // Create audio element
+    const audio = new Audio(MUSIC_URL);
+    audio.loop = true;
+    audio.volume = 0.5; // Âm lượng 50%
     
-    // Try to play music on page load
-    function playMusic() {
-      bgMusic.play().catch(err => {
-        // If autoplay is blocked, play on first user interaction
-        document.addEventListener('click', () => {
-          bgMusic.play();
-        }, { once: true });
-      });
+    // Lock screen functionality
+    const lockscreen = document.getElementById('lockscreen');
+    const lockTime = document.getElementById('lockTime');
+    const lockDate = document.getElementById('lockDate');
+    
+    function updateLockTime() {
+      const now = new Date();
+      
+      // Chuyển đổi sang múi giờ Việt Nam (UTC+7)
+      const vietnamTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+      
+      const hours = String(vietnamTime.getHours()).padStart(2, '0');
+      const minutes = String(vietnamTime.getMinutes()).padStart(2, '0');
+      lockTime.textContent = `${hours}:${minutes}`;
+      
+      const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+      const months = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
+                      'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+      lockDate.textContent = `${days[vietnamTime.getDay()]}, ${vietnamTime.getDate()} ${months[vietnamTime.getMonth()]}`;
     }
     
-    // Start music immediately
-    playMusic();
+    updateLockTime();
+    setInterval(updateLockTime, 1000);
+    
+    function createRipple(e) {
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      const size = Math.max(window.innerWidth, window.innerHeight);
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = e.clientX - size/2 + 'px';
+      ripple.style.top = e.clientY - size/2 + 'px';
+      lockscreen.appendChild(ripple);
+      
+      setTimeout(() => ripple.remove(), 600);
+    }
+    
+    lockscreen.addEventListener('click', function(e) {
+      createRipple(e);
+      lockscreen.classList.add('unlocked');
+      
+      // Phát nhạc sau khi mở khóa
+      audio.play().catch(err => {
+        console.log('Không thể phát nhạc tự động:', err);
+      });
+      
+      setTimeout(() => {
+        lockscreen.style.display = 'none';
+        anim(); // Start animation
+      }, 800);
+    });
     
     // Create stars background
     function createStars() {
@@ -610,7 +742,7 @@
         
         if (countdownValue <= 0) {
           clearInterval(countdownInterval);
-          document.getElementById('message').textContent = 'Đang chuyển hướng... ';
+          document.getElementById('message').textContent = 'Đang chuyển hướng...';
           setTimeout(() => {
             window.location.href = REDIRECT_URL;
           }, 500);
@@ -654,7 +786,8 @@
       }
     }
 
-    anim();
+    // Don't start animation until unlocked
+    // anim() is now called after unlock
 
     window.addEventListener('resize', () => {
       w = c.width = window.innerWidth;
