@@ -194,70 +194,9 @@
         opacity: 0;
       }
     }
-    
-    /* Music control */
-    .music-control {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1000;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.3s ease;
-    }
-    
-    .music-control:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.1);
-    }
-    
-    .music-control i {
-      color: white;
-      font-size: 24px;
-    }
-    
-    .music-control.muted i:before {
-      content: "🔇";
-    }
-    
-    .music-control:not(.muted) i:before {
-      content: "🔊";
-    }
-    
-    /* Audio loading indicator */
-    .audio-loading {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 5px 10px;
-      border-radius: 10px;
-      display: none;
-      z-index: 1000;
-    }
   </style>
-  <!-- Thêm Font Awesome cho icon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <!-- Audio element - Sử dụng file n.mp3 trong cùng thư mục -->
-  <audio id="background-music" loop>
-    <source src="n.mp3" type="audio/mpeg">
-    <source src="n.ogg" type="audio/ogg">
-    <source src="n.wav" type="audio/wav">
-    Trình duyệt của bạn không hỗ trợ audio.
-  </audio>
-  
   <div class="stars" id="stars"></div>
   <canvas id="c"></canvas>
   
@@ -270,115 +209,29 @@
   
   <div id="message">Đang chuẩn bị một điều bất ngờ...</div>
   
-  <!-- Music control button -->
-  <div class="music-control" id="music-control">
-    <i></i>
-  </div>
-  
-  <!-- Audio loading indicator -->
-  <div class="audio-loading" id="audio-loading">Đang tải nhạc...</div>
+  <!-- Audio element for background music -->
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_4c13d4e5b1.mp3" type="audio/mpeg">
+  </audio>
   
   <script>
     const REDIRECT_URL = 'chamtraitym.html'; // Thay link của bạn ở đây
     
-    // Audio setup
-    const backgroundMusic = document.getElementById('background-music');
-    const musicControl = document.getElementById('music-control');
-    const audioLoading = document.getElementById('audio-loading');
-    let musicPlaying = false;
-    let audioLoaded = false;
+    // Auto-play background music
+    const bgMusic = document.getElementById('bgMusic');
     
-    // Hàm kiểm tra và phát nhạc
+    // Try to play music on page load
     function playMusic() {
-      if (audioLoaded && !musicPlaying) {
-        backgroundMusic.volume = 0.5; // Volume 50%
-        backgroundMusic.play()
-          .then(() => {
-            musicPlaying = true;
-            musicControl.classList.remove('muted');
-            audioLoading.style.display = 'none';
-            console.log('Nhạc đang phát');
-          })
-          .catch(error => {
-            console.log('Lỗi khi phát nhạc:', error);
-            audioLoading.textContent = 'Nhấn vào màn hình để phát nhạc';
-            audioLoading.style.display = 'block';
-          });
-      }
+      bgMusic.play().catch(err => {
+        // If autoplay is blocked, play on first user interaction
+        document.addEventListener('click', () => {
+          bgMusic.play();
+        }, { once: true });
+      });
     }
     
-    // Sự kiện khi audio đã tải xong
-    backgroundMusic.addEventListener('canplaythrough', function() {
-      audioLoaded = true;
-      audioLoading.textContent = 'Đã tải nhạc xong';
-      setTimeout(() => {
-        audioLoading.style.display = 'none';
-      }, 1000);
-      
-      // Thử phát nhạc ngay
-      playMusic();
-    });
-    
-    // Sự kiện khi đang tải audio
-    backgroundMusic.addEventListener('loadstart', function() {
-      audioLoading.style.display = 'block';
-      audioLoading.textContent = 'Đang tải nhạc...';
-    });
-    
-    // Sự kiện lỗi tải audio
-    backgroundMusic.addEventListener('error', function(e) {
-      console.log('Lỗi tải file nhạc:', e);
-      audioLoading.textContent = 'Không thể tải file nhạc n.mp3';
-      audioLoading.style.color = '#ff6b6b';
-    });
-    
-    // Toggle music play/pause
-    musicControl.addEventListener('click', function(e) {
-      e.stopPropagation(); // Ngăn sự kiện lan ra document
-      
-      if (musicPlaying) {
-        backgroundMusic.pause();
-        musicControl.classList.add('muted');
-        musicPlaying = false;
-      } else {
-        playMusic();
-      }
-    });
-    
-    // Tự động bắt đầu phát nhạc khi trang được tải
-    window.addEventListener('load', function() {
-      console.log('Trang đã tải xong');
-      
-      // Hiển thị nút điều khiển nhạc
-      musicControl.style.display = 'flex';
-      
-      // Bắt đầu tải nhạc nếu chưa tải
-      if (!audioLoaded) {
-        backgroundMusic.load();
-      }
-    });
-    
-    // Tạo sự kiện click toàn trang để kích hoạt âm thanh
-    document.addEventListener('click', function initAudio() {
-      console.log('Người dùng đã click, thử phát nhạc...');
-      playMusic();
-      
-      // Nếu đã phát thành công, xóa sự kiện
-      if (musicPlaying) {
-        document.removeEventListener('click', initAudio);
-      }
-    });
-    
-    // Tạo sự kiện keypress để kích hoạt âm thanh
-    document.addEventListener('keypress', function initAudioKeyboard() {
-      console.log('Người dùng đã nhấn phím, thử phát nhạc...');
-      playMusic();
-      
-      // Nếu đã phát thành công, xóa sự kiện
-      if (musicPlaying) {
-        document.removeEventListener('keypress', initAudioKeyboard);
-      }
-    });
+    // Start music immediately
+    playMusic();
     
     // Create stars background
     function createStars() {
