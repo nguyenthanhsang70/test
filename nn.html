@@ -142,15 +142,16 @@
 </head>
 <body>
     <div class="container">
-        <button class="trigger-btn" onclick="spamNotifications()">Nhấn vào đây!</button>
+        <button class="trigger-btn" onclick="spamNotifications()">🔔 Nhấn vào đây!</button>
     </div>
 
     <div class="notification-container" id="notificationContainer"></div>
 
-    <div class="credit">Cre: Nguyễn Thanh Sang</div>
+    <div class="credit">Cre: Panbap - Rip: Vương ...</div>
 
     <script>
         const messages = [
+            'Tràn ngập bộ',
             'Nhớ nhớ nhớ em!'
         ];
 
@@ -165,8 +166,17 @@
                 <span class="close-btn">−</span>
             `;
             
-            const x = Math.random() * (window.innerWidth - 250);
-            const y = Math.random() * (window.innerHeight - 80);
+            // Get actual notification width dynamically
+            container.appendChild(notification);
+            const notifWidth = notification.offsetWidth;
+            const notifHeight = notification.offsetHeight;
+            
+            // Calculate max positions to keep notification fully on screen
+            const maxX = window.innerWidth - notifWidth - 10;
+            const maxY = window.innerHeight - notifHeight - 10;
+            
+            const x = Math.random() * Math.max(0, maxX);
+            const y = Math.random() * Math.max(0, maxY);
             
             notification.style.left = x + 'px';
             notification.style.top = y + 'px';
@@ -182,8 +192,6 @@
                     notification.remove();
                 }, 300);
             });
-            
-            container.appendChild(notification);
         }
 
         function spamNotifications() {
@@ -193,7 +201,7 @@
             const interval = setInterval(() => {
                 createNotification();
                 count++;
-                if (count >= 400) {
+                if (count >= 80) {
                     clearInterval(interval);
                 }
             }, 30);
