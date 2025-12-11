@@ -1,160 +1,450 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gửi đến Em ❤️</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-   
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-        .bg-animation {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none;
-        }
-        .heart-particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.6);
-            clip-path: path("M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402m5.726-20.583c-2.203 0-4.446 1.042-5.726 3.238-1.285-2.206-3.522-3.248-5.719-3.248-3.183 0-6.281 2.187-6.281 6.391 0 5.088 5.571 9.926 12 15.603 6.38-5.698 12-10.484 12-15.603 0-4.135-3.053-6.381-6.274-6.381");
-            bottom: -50px;
-            animation: floatUp 6s linear forwards;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            10% { opacity: 0.8; }
-            100% { transform: translateY(-110vh) scale(1); opacity: 0; }
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 30px;
-            padding: 40px 30px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 10;
-        }
-        .avatar-box {
-            width: 120px; height: 120px; margin: 0 auto 20px;
-            border-radius: 50%; padding: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .avatar {
-            width: 100%; height: 100%; border-radius: 50%;
-            background-image: url('avatarnts.jpg');
-            background-size: cover; background-position: center;
-        }
-        h1 {
-            font-family: 'Dancing Script', cursive;
-            color: #d63384; font-size: 2.8em; margin-bottom: 10px;
-        }
-        .message {
-            font-size: 1.1em; color: #4a4a4a; line-height: 1.6; margin-bottom: 30px;
-        }
-        .highlight { color: #d63384; font-weight: 700; }
-        .btn-group {
-            display: flex; flex-direction: column; gap: 15px; align-items: center;
-            margin-bottom: 20px;
-        }
-        .btn {
-            text-decoration: none; padding: 15px 40px; border-radius: 50px;
-            font-size: 1.1em; font-weight: 600; cursor: pointer;
-            transition: all 0.3s ease; width: 85%; max-width: 300px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .btn-primary {
-            background: linear-gradient(45deg, #ff9a9e, #fecfef); color: #fff;
-            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
-        }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 154, 158, 0.6); }
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.6); color: #555; border: 1px solid #fff;
-        }
-        .btn-secondary:hover { background: #fff; color: #d63384; transform: translateY(-2px); }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hết Rồi Em... — Mini Love Site</title>
 
-        /* Dòng chữ thêm dưới nút */
-        .waiting-text {
-            font-size: 1.15em;
-            color: #d63384;
-            font-weight: 600;
-            margin-top: 10px;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-    </style>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+  :root{
+    --bg1: #ff9a9e;
+    --bg2: #fad0c4;
+    --accent: #d63384;
+    --card-bg: rgba(255,255,255,0.28);
+    --text: #333;
+    --glass-border: rgba(255,255,255,0.5);
+  }
+
+  /* Dark-mode variables (will toggle class on body) */
+  body.dark {
+    --bg1: #2b2133;
+    --bg2: #3a2a3a;
+    --accent: #ff8ab6;
+    --card-bg: rgba(255,255,255,0.04);
+    --text: #eee;
+    --glass-border: rgba(255,255,255,0.08);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family: 'Quicksand', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;overflow:hidden;color:var(--text);
+    position:relative;padding:20px;
+  }
+
+  /* Moving soft pulse background */
+  .bg-grad {
+    position:fixed;inset: -20%;z-index:0;
+    background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.06), transparent 6%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.04), transparent 6%);
+    animation: drift 12s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes drift { from{transform:translateY(0)} to{transform:translateY(-8%)} }
+
+  /* Container card */
+  .card{
+    width:100%;max-width:560px;border-radius:28px;
+    padding:28px 26px;background:var(--card-bg);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 14px 50px rgba(0,0,0,0.12);
+    position:relative;z-index:10;
+    overflow:hidden;
+    border-image: linear-gradient(90deg, #ff9a9e, #fecfef, #ffd7f2) 1;
+  }
+
+  /* Gradient animated border outline */
+  .card::before{
+    content:"";position:absolute;inset:0;padding:2px;border-radius:30px;
+    background: linear-gradient(90deg, rgba(255,154,158,0.2), rgba(246,200,236,0.12));
+    -webkit-mask: linear-gradient(#000,#000) padding-box, linear-gradient(#000,#000);
+    pointer-events:none;
+  }
+
+  .top {
+    display:flex;align-items:center;gap:16px;margin-bottom:10px;
+  }
+
+  .avatar-box{
+    width:96px;height:96px;border-radius:50%;padding:6px;
+    background:rgba(255,255,255,0.5);overflow:hidden;
+    transform-origin:center;transition:transform .28s ease, box-shadow .28s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  .avatar{
+    width:100%;height:100%;border-radius:50%;
+    background-image: url('avatarnts.jpg'); /* thay bằng ảnh của bạn */
+    background-size:cover;background-position:center;
+    transition: transform .28s ease;
+  }
+  .avatar-box:hover{ transform: scale(1.06); box-shadow: 0 16px 40px rgba(0,0,0,0.18) }
+  .avatar-box:hover .avatar{ transform: translateY(-4px) scale(1.02) }
+
+  h1{
+    font-family:'Dancing Script', cursive;font-size:40px;color:var(--accent);
+    margin:0;line-height:1;animation: heartbeat 1.6s infinite;
+  }
+  @keyframes heartbeat{
+    0%{transform:scale(1)}20%{transform:scale(1.06)}40%{transform:scale(1)}60%{transform:scale(1.02)}100%{transform:scale(1)}
+  }
+
+  .subtitle{ font-size:0.95rem;color:rgba(0,0,0,0.55); margin-top:6px }
+  body.dark .subtitle{ color: rgba(255,255,255,0.6) }
+
+  /* Chat bubble typing effect */
+  .chat{
+    margin-top:16px;display:flex;justify-content:center;
+  }
+  .bubble{
+    max-width:100%;width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+    padding:16px 18px;border-radius:18px;border:1px solid rgba(0,0,0,0.05);
+    position:relative;font-size:15px;color:#333;box-shadow:0 8px 18px rgba(0,0,0,0.06);
+  }
+  body.dark .bubble{ background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); color:var(--text) }
+  .bubble .dots{
+    display:inline-block;margin-left:4px;width:18px;
+  }
+  .dot{ display:inline-block; width:5px;height:5px;border-radius:50%; margin:0 2px; opacity:.4;
+    animation: dotJump 1s infinite; background:var(--accent);
+  }
+  .dot:nth-child(2){ animation-delay: .15s }
+  .dot:nth-child(3){ animation-delay: .3s }
+  @keyframes dotJump{ 0%{transform:translateY(0)}50%{transform:translateY(-6px);opacity:1}100%{transform:translateY(0)} }
+
+  /* Buttons */
+  .btns{ margin-top:18px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center }
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;font-weight:600;text-decoration:none;
+    cursor:pointer;border:0;outline:0;
+  }
+  .btn-primary{
+    background: linear-gradient(90deg,#ff9a9e,#fecfef);color:#fff;box-shadow:0 8px 24px rgba(255,154,158,0.22);
+  }
+  .btn-secondary{
+    background:rgba(255,255,255,0.72); color:#444; border:1px solid rgba(255,255,255,0.6);
+  }
+  body.dark .btn-secondary{ background: rgba(255,255,255,0.04); color:var(--text) }
+
+  .waiting-text{ text-align:center;margin-top:12px;color:var(--accent);font-weight:700 }
+
+  .author-info{ margin-top:18px;border-top:1px solid rgba(255,255,255,0.14);padding-top:12px;font-size:0.86rem;color:rgba(0,0,0,0.55) }
+  body.dark .author-info{ color: rgba(255,255,255,0.6) }
+
+  /* floating hearts particles container */
+  #particles{ position:fixed; inset:0; pointer-events:none; z-index:5 }
+
+  /* burst on click */
+  .burst{
+    position:fixed; width:12px;height:12px;border-radius:50%;
+    pointer-events:none;opacity:1; transform:translate(-50%,-50%) scale(0.9);
+    animation: burstAnim .8s forwards;
+  }
+  @keyframes burstAnim{
+    0%{transform:translate(-50%,-50%) scale(0.7);opacity:1}
+    100%{transform:translate(-50%,-50%) scale(8);opacity:0}
+  }
+
+  /* cursor trail hearts */
+  .trail{
+    position:fixed; width:18px;height:18px;pointer-events:none;font-size:16px;
+    transform:translate(-50%,-50%);opacity:.95;animation: trailFade 0.9s forwards;
+    z-index:9999;
+  }
+  @keyframes trailFade{ 0%{opacity:1;transform:translate(-50%,-50%) translateY(0)}100%{opacity:0;transform:translate(-50%,-50%) translateY(-26px) scale(.6)} }
+
+  /* rotating messages */
+  .rotator{ margin-top:14px;text-align:center;font-weight:600;color:var(--accent) }
+
+  /* modal secret */
+  .modal {
+    position:fixed; inset:0; display:grid;place-items:center;background:rgba(0,0,0,0.45); z-index:200; opacity:0; pointer-events:none;
+    transition:opacity .22s ease;
+  }
+  .modal.show{ opacity:1; pointer-events:auto }
+  .modal-card{
+    width:min(420px,92%); background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.9));
+    padding:20px;border-radius:14px; text-align:center; box-shadow: 0 22px 60px rgba(0,0,0,0.25);
+  }
+  body.dark .modal-card{ background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4)); color:var(--text) }
+
+  /* small responsive */
+  @media(max-width:520px){
+    h1{ font-size:34px }
+    .avatar-box{ width:86px;height:86px }
+  }
+</style>
 </head>
 <body>
-    <div id="heart-container" class="bg-animation"></div>
-    <div class="container">
-        <div class="avatar-box">
-            <div class="avatar"></div>
-        </div>
-        <h1>Hết Rồi Em...</h1>
-        <div class="message" id="typing-text"></div>
-        
-        <div class="btn-group">
-            <a href="profile.html" target="_blank" class="btn btn-primary">
-                <i class="fa-solid fa-user"></i> Xem Profile Anh Nè
-            </a>
-           
-            <a href="https://www.facebook.com/nguyenthanhsang70" target="_blank" class="btn btn-secondary">
-                <i class="fa-brands fa-facebook"></i> Facebook Của Anh
-            </a>
-        </div>
+  <div class="bg-grad"></div>
 
-        <!-- Dòng chữ chờ em nè -->
-        <div class="waiting-text">
-            Anh tin nhắn cho anh đi, chờ em nãy giờ rồi nè…
-        </div>
+  <div id="particles"></div>
+
+  <div class="card" role="main" aria-label="Trang kết thúc dễ thương">
+    <div class="top">
+      <div class="avatar-box" id="avatarBox" title="Nhấn để xem bí mật">
+        <div class="avatar" id="avatar"></div>
+      </div>
+      <div style="flex:1">
+        <h1>Hết Rồi Em...</h1>
+        <div class="subtitle">Nhưng anh vẫn mong em ở lại một chút nữa 💌</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <button id="darkToggle" class="btn btn-secondary" title="Chuyển giao diện">🌙</button>
+        <button id="soundToggle" class="btn btn-secondary" title="Bật / tắt nhạc">🔊</button>
+      </div>
     </div>
 
-    <script>
-        const textToType = "Em có thích những gì anh làm không?<br>Nếu có thích, thì <span class='highlight'>đừng im lặng</span> nữa nhé.<br>Nhắn tin cho anh đi nào! ❤️";
-        const typingElement = document.getElementById('typing-text');
-       
-        window.onload = () => {
-            typingElement.innerHTML = textToType;
-            typingElement.style.opacity = 0;
-            typingElement.style.transition = "opacity 1.5s ease";
-            setTimeout(() => { typingElement.style.opacity = 1; }, 300);
-            setInterval(createHeart, 400);
-        };
+    <!-- chat bubble typing -->
+    <div class="chat">
+      <div class="bubble" id="chatBubble" aria-live="polite">
+        <span id="typedText"></span>
+        <span class="dots" id="dots" style="display:inline-block">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </span>
+      </div>
+    </div>
 
-        function createHeart() {
-            const container = document.getElementById('heart-container');
-            const heart = document.createElement('div');
-            heart.classList.add('heart-particle');
-            const size = Math.random() * 20 + 10;
-            heart.style.width = `${size}px`; 
-            heart.style.height = `${size}px`;
-            heart.style.left = `${Math.random() * 100}%`;
-            heart.style.animationDuration = `${Math.random() * 3 + 4}s`;
-            const colors = ['#ff9a9e', '#fad0c4', '#ffffff'];
-            heart.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            container.appendChild(heart);
-            setTimeout(() => heart.remove(), 7000);
-        }
-    </script>
+    <div class="btns">
+      <a href="profile.html" target="_blank" class="btn btn-primary"><i class="fa-solid fa-user"></i> Xem Profile Anh</a>
+      <a id="messengerBtn" href="https://www.facebook.com/messages/t/nguyenthanhsang70" target="_blank" class="btn btn-secondary">
+        <i class="fa-brands fa-facebook-messenger"></i> Nhắn Messenger
+      </a>
+      <button id="secretBtn" class="btn btn-secondary"><i class="fa-solid fa-lock"></i> Bí mật của anh</button>
+    </div>
+
+    <!-- <div class="waiting-text" id="waitingText">Nhắn tin cho anh đi, chờ em nãy giờ rồi nè…</div> -->
+
+    <!-- <div class="rotator" id="rotator">Em im lặng là anh lo đó...</div> -->
+    <div class="author-info">
+      <div class="author-name" style="color:var(--accent);font-weight:700">Design by: @Nguyễn Thanh Sang (阮清尚)</div>
+      <div class="author-subtext">设计由: @阮清尚</div>
+    </div>
+  </div>
+
+  <!-- modal secret -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <h3 style="font-family:'Dancing Script',cursive;color:var(--accent)">Bí mật nhỏ</h3>
+      <p style="margin-top:8px">Nếu em đang đọc: anh vừa mỉm cười. Nhắn cho anh một câu thôi — anh đọc ngay ♥</p>
+      <div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
+        <button id="closeModal" class="btn btn-primary">OK, nhắn liền</button>
+        <button id="closeModal2" class="btn btn-secondary">Để sau cũng được</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUDIO (thay src bằng file của bạn nếu có) -->
+  <audio id="bgAudio" loop preload="auto">
+    <!-- <source src="voice_intro.mp3" type="audio/mpeg"> -->
+  </audio>
+
+<script>
+/* ---------- small helpers ---------- */
+const rand = (a,b) => Math.random() * (b-a) + a;
+
+/* ---------- Typing bubble (with 'typing' dots) ---------- */
+const sentences = [
+  "Em có thích những gì anh làm không?",
+  "Nếu có thích, thì đừng im lặng nữa nhé.",
+  "Nhắn tin cho anh đi nào! ❤️",
+  "Nhắn tin cho anh đi, chờ em nãy giờ rồi nè…"
+  
+];
+let typedEl = document.getElementById('typedText');
+let dots = document.getElementById('dots');
+let iSentence = 0, iChar = 0;
+function typeSentence(){
+  dots.style.display = 'inline-block';
+  const s = sentences[iSentence];
+  if(iChar < s.length){
+    typedEl.innerHTML = s.slice(0, iChar+1).replace(/\n/g,'<br>');
+    iChar++;
+    setTimeout(typeSentence, 40 + rand(-10,60));
+  } else {
+    // show full then pause, hide dots
+    dots.style.display='none';
+    setTimeout(()=> {
+      // move to next
+      iSentence = (iSentence+1) % sentences.length;
+      iChar = 0;
+      // brief backspace effect
+      backspace();
+    }, 1800);
+  }
+}
+function backspace(){
+  const s = sentences[iSentence===0?sentences.length-1:iSentence-1];
+  if(s.length > 0){
+    let cur = typedEl.innerHTML.replace(/<br>/g, '\n');
+    if(cur.length>0){
+      typedEl.innerHTML = cur.slice(0, -1).replace(/\n/g,'<br>');
+      setTimeout(backspace, 14 + rand(0,40));
+    } else {
+      setTimeout(typeSentence, 180);
+    }
+  } else {
+    setTimeout(typeSentence, 180);
+  }
+}
+window.addEventListener('load', () => {
+  setTimeout(typeSentence, 600);
+});
+
+// /* ---------- Rotating small highlight text ---------- */
+// const rotator = document.getElementById('rotator');
+// const rotMsgs = [
+//   "Em biết không… nhìn em là anh quên buồn luôn đó.",
+//   "Nhắn cho anh chút đi nè.",
+//   "Anh chờ 1 tin nhắn từ em thôi ❤️",
+//   "Đừng làm anh tò mò quá lâu nhé."
+// ];
+// let rIdx = 0;
+// setInterval(()=> {
+//   rotator.style.opacity = 0;
+//   setTimeout(()=> {
+//     rotator.textContent = rotMsgs[rIdx];
+//     rotator.style.opacity = 1;
+//     rIdx = (rIdx+1) % rotMsgs.length;
+//   }, 400)
+// }, 4200);
+
+/* ---------- Particles hearts floating up ---------- */
+const particles = document.getElementById('particles');
+function createParticle(){
+  const el = document.createElement('div');
+  const size = rand(10,28);
+  el.style.position = 'absolute';
+  el.style.left = `${rand(4,96)}%`;
+  el.style.bottom = '-40px';
+  el.style.fontSize = `${size}px`;
+  el.style.opacity = rand(.45,1);
+  el.style.transform = `rotate(${rand(-25,25)}deg)`;
+  el.style.pointerEvents = 'none';
+  el.style.userSelect = 'none';
+  el.style.zIndex = 4;
+  el.innerText = ['💖','💗','💕','❤︎'][Math.floor(rand(0,4))];
+  particles.appendChild(el);
+  const duration = rand(4500,9500);
+  el.animate([
+    { transform: `translateY(0) scale(0.6)`, opacity: el.style.opacity },
+    { transform: `translateY(-110vh) scale(1)`, opacity:0 }
+  ], { duration: duration, easing:'linear' });
+  setTimeout(()=> el.remove(), duration+80);
+}
+setInterval(createParticle, 420);
+
+/* ---------- Click burst ---------- */
+document.addEventListener('click', (e) => {
+  for(let i=0;i<6;i++){
+    const b = document.createElement('div');
+    b.className = 'burst';
+    b.style.left = e.clientX + 'px';
+    b.style.top = e.clientY + 'px';
+    b.style.background = ['#ff9a9e','#ffd1e8','#fff'][Math.floor(rand(0,3))];
+    document.body.appendChild(b);
+    setTimeout(()=> b.remove(), 900);
+  }
+});
+
+/* ---------- Cursor heart trail ---------- */
+// document.addEventListener('mousemove', (e) => {
+//   const t = document.createElement('div');
+//   t.className = 'trail';
+//   t.style.left = e.clientX + 'px';
+//   t.style.top = e.clientY + 'px';
+//   t.innerText = ['❤️','💗','💞'][Math.floor(rand(0,3))];
+//   t.style.pointerEvents = 'none';
+//   document.body.appendChild(t);
+//   setTimeout(()=> t.remove(), 1000);
+// });
+
+/* ---------- Avatar click -> open modal "bí mật" ---------- */
+const avatarBox = document.getElementById('avatarBox');
+const modal = document.getElementById('modal');
+const closeModal = document.getElementById('closeModal');
+const closeModal2 = document.getElementById('closeModal2');
+const secretBtn = document.getElementById('secretBtn');
+
+function openModal(){
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+}
+function closeModalFn(){
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+}
+avatarBox.addEventListener('click', openModal);
+secretBtn.addEventListener('click', openModal);
+closeModal.addEventListener('click', closeModalFn);
+closeModal2.addEventListener('click', closeModalFn);
+modal.addEventListener('click', (e)=> { if(e.target === modal) closeModalFn(); });
+
+/* ---------- Dark mode toggle ---------- */
+const darkToggle = document.getElementById('darkToggle');
+darkToggle.addEventListener('click', ()=> {
+  document.body.classList.toggle('dark');
+});
+
+/* ---------- Sound toggle (audio element empty by default) ---------- */
+const soundToggle = document.getElementById('soundToggle');
+const audio = document.getElementById('bgAudio');
+let soundOn = false;
+soundToggle.addEventListener('click', ()=> {
+  soundOn = !soundOn;
+  if(soundOn){
+    // If you have a real src in the <audio>, this will play
+    audio.volume = 0.18;
+    audio.play().catch(()=>{ /* ignore autoplay blockers */ });
+    soundToggle.textContent = '🔈';
+  } else {
+    audio.pause();
+    soundToggle.textContent = '🔊';
+  }
+});
+
+/* ---------- Avatar hover expression (change image) ---------- */
+/* If you want to use different expressive avatars, swap URLs here */
+const avatar = document.getElementById('avatar');
+avatarBox.addEventListener('mouseenter', ()=> {
+  // change to smiling version if exists
+  // avatar.style.backgroundImage = "url('avatar_smile.jpg')";
+  avatar.style.filter = "saturate(1.06) brightness(1.04)";
+});
+avatarBox.addEventListener('mouseleave', ()=> {
+  // avatar.style.backgroundImage = "url('avatarnts.jpg')";
+  avatar.style.filter = "";
+});
+
+/* ---------- Messenger button small wiggle when nothing clicked for a while ---------- */
+const messengerBtn = document.getElementById('messengerBtn');
+let idle = 0;
+setInterval(()=> {
+  idle++;
+  if(idle===12){
+    messengerBtn.animate([{ transform:'translateY(0)'},{ transform:'translateY(-6px)'},{ transform:'translateY(0)' }], { duration:800, easing:'ease-out' });
+  }
+}, 1000);
+['click','mousemove','keydown','touchstart'].forEach(ev => window.addEventListener(ev, ()=> idle=0));
+
+/* ---------- Accessibility: keyboard close modal ---------- */
+document.addEventListener('keydown', (e)=> { if(e.key === 'Escape') closeModalFn(); });
+
+/* ---------- Small polish: stop creating particles when tab not visible ---------- */
+document.addEventListener('visibilitychange', ()=> {
+  if(document.hidden){
+    // optionally stop animations or audio
+    audio.pause();
+  } else {
+    if(soundOn){ audio.play().catch(()=>{}); }
+  }
+});
+</script>
 </body>
-
 </html>
