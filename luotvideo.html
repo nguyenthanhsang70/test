@@ -12,7 +12,7 @@
             --text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-       
+        
         body {
             background-color: #000;
             color: var(--white);
@@ -31,7 +31,7 @@
             scrollbar-width: none;
         }
         .app-container::-webkit-scrollbar { display: none; }
-       
+        
         .video-post {
             position: relative;
             height: 100vh;
@@ -63,7 +63,7 @@
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
             z-index: 5;
         }
-       
+        
         /* SIDEBAR & INFO */
         .sidebar {
             position: absolute;
@@ -90,7 +90,7 @@
         .icon-wrapper:active { transform: scale(0.85); }
         .liked { color: var(--primary); }
         .count { font-size: 12px; font-weight: 600; text-shadow: var(--text-shadow); }
-       
+        
         .info-area {
             position: absolute;
             bottom: 20px; left: 10px;
@@ -113,7 +113,7 @@
         }
         .disc-image { width: 25px; height: 25px; border-radius: 50%; object-fit: cover; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-       
+        
         /* Heart Animation */
         .heart-popup {
             position: fixed; color: var(--primary);
@@ -131,16 +131,14 @@
     </style>
 </head>
 <body>
-    <!-- Video dummy ẩn để unlock audio context trên iOS -->
-    <video id="audio-unlock" src="data:video/mp4;base64,AAAAIGZ0eXBtcDQyAAACAGlzb21pc29tcDQxAAACOHZlbmNvZABWAQABAAABAA==" style="display:none;"></video>
-
     <div class="app-container" id="app">
-        <!-- VIDEO 1 -->
+
+        <!-- VIDEO 1 (có loop) -->
         <div class="video-post">
-            <video class="video-player" loop playsinline webkit-playsinline preload="auto" muted src="video1.mp4"></video>
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video1.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-           
+            
             <div class="info-area">
                 <div class="username">디엡 안 <i class="fas fa-check-circle" style="color: #20D5EC; font-size: 12px;"></i></div>
                 <div class="caption">Nhấn màn hình để nghe tiếng#xuhuong #nhacchaymoingay #pthida_22</div>
@@ -151,6 +149,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="avatarda.jpeg" class="avatar">
@@ -169,12 +168,12 @@
             </div>
         </div>
 
-        <!-- VIDEO 2 -->
+        <!-- VIDEO 2 (có loop) -->
         <div class="video-post">
-            <video class="video-player" loop playsinline webkit-playsinline preload="auto" muted src="video2.mp4"></video>
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video2.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-           
+            
             <div class="info-area">
                 <div class="username">Nguyễn Thanh Sang (阮清尚) <i class="fas fa-check-circle" style="color: #20D5EC; font-size: 12px;"></i></div>
                 <div class="caption">Vì giờ này anh đã thích em rồi đó #pthida_22</div>
@@ -185,6 +184,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="avatarnts.jpg" class="avatar">
@@ -203,12 +203,13 @@
             </div>
         </div>
 
-        <!-- VIDEO 3 -->
+        
+        <!-- VIDEO 3 (có loop) -->
         <div class="video-post">
-            <video class="video-player" loop playsinline webkit-playsinline preload="auto" muted src="video3.mp4"></video>
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video3.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-           
+            
             <div class="info-area">
                 <div class="username">디엡 안 <i class="fas fa-check-circle" style="color: #20D5EC; font-size: 12px;"></i></div>
                 <div class="caption">#xuhuong #pthida_22</div>
@@ -219,6 +220,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="avatarda.jpeg" class="avatar">
@@ -237,12 +239,12 @@
             </div>
         </div>
 
-        <!-- VIDEO 4 -->
+         <!-- VIDEO 4 (có loop) -->
         <div class="video-post">
-            <video class="video-player" loop playsinline webkit-playsinline preload="auto" muted src="video4.mp4"></video>
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video4.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-           
+            
             <div class="info-area">
                 <div class="username">디엡 안 <i class="fas fa-check-circle" style="color: #20D5EC; font-size: 12px;"></i></div>
                 <div class="caption">#xuhuong #pthida_22</div>
@@ -253,6 +255,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="avatarda.jpeg" class="avatar">
@@ -271,12 +274,12 @@
             </div>
         </div>
 
-        <!-- VIDEO 5 -->
+         <!-- VIDEO 5 (có loop) -->
         <div class="video-post">
-            <video class="video-player" loop playsinline webkit-playsinline preload="auto" muted src="video5.mp4"></video>
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video5.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-           
+            
             <div class="info-area">
                 <div class="username">디엡 안 <i class="fas fa-check-circle" style="color: #20D5EC; font-size: 12px;"></i></div>
                 <div class="caption">Nhấn màn hình để nghe tiếng nữa nhá#xuhuong #pthida_22</div>
@@ -287,6 +290,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="avatarda.jpeg" class="avatar">
@@ -305,12 +309,12 @@
             </div>
         </div>
 
-        <!-- VIDEO 6 -->
+        <!-- VIDEO 6 (có loop) -->
         <div class="video-post">
-            <video class="video-player" loop playsinline webkit-playsinline preload="auto" muted src="video6.mp4"></video>
+            <video class="video-player" loop playsinline webkit-playsinline preload="metadata" src="video6.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-           
+            
             <div class="info-area">
                 <div class="username">디엡 안 <i class="fas fa-check-circle" style="color: #20D5EC; font-size: 12px;"></i></div>
                 <div class="caption">#xuhuong #pthida_22</div>
@@ -321,6 +325,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="avatarda.jpeg" class="avatar">
@@ -339,12 +344,12 @@
             </div>
         </div>
 
-        <!-- VIDEO CUỐI - KHÔNG LOOP - CHUYỂN TRANG KHI XEM HẾT -->
+        <!-- VIDEO CUỐI CÙNG - KHÔNG LOOP - CHUYỂN TRANG 100% -->
         <div class="video-post" data-last-video="true">
-            <video class="video-player" playsinline webkit-playsinline preload="auto" muted src="video7.mp4"></video>
+            <video class="video-player" playsinline webkit-playsinline preload="metadata" src="video7.mp4"></video>
             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             <div class="overlay-gradient"></div>
-           
+            
             <div class="info-area">
                 <div class="username">Nguyễn Thanh Sang (阮清尚) <i class="fas fa-check-circle" style="color: #20D5EC; font-size: 12px;"></i></div>
                 <div class="caption">Xem hết video để chuyển trang nha em... #pthida_22</div>
@@ -355,6 +360,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="sidebar">
                 <div class="sidebar-item avatar-container">
                     <img src="avatarnts.jpg" class="avatar">
@@ -377,68 +383,92 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const videoPosts = document.querySelectorAll('.video-post');
-            const videos = document.querySelectorAll('.video-player');
-            const dummyVideo = document.getElementById('audio-unlock');
-            let audioUnlocked = false;
+            let hasUserInteracted = false;
             let hasNavigated = false;
 
-            // Unlock audio context (rất quan trọng trên iOS)
+            // Unlock âm thanh sau lần chạm đầu tiên
             const unlockAudio = () => {
-                if (audioUnlocked) return;
-                audioUnlocked = true;
-
-                dummyVideo.play().then(() => {
-                    dummyVideo.pause();
-                    videos.forEach(v => v.muted = false);
-                }).catch(() => {
-                    // Nếu dummy fail, vẫn thử unmuted
-                    videos.forEach(v => v.muted = false);
+                if (hasUserInteracted) return;
+                hasUserInteracted = true;
+                
+                // Thử phát tất cả video với âm thanh
+                videoPosts.forEach(post => {
+                    const video = post.querySelector('video');
+                    video.muted = false;
                 });
-
+                
                 document.removeEventListener('touchstart', unlockAudio);
                 document.removeEventListener('click', unlockAudio);
             };
-
             document.addEventListener('touchstart', unlockAudio, { once: true });
             document.addEventListener('click', unlockAudio, { once: true });
 
-            // Observer: phát video khi vào tầm nhìn
+            // Phát video khi vào tầm nhìn
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     const video = entry.target.querySelector('video');
                     const playIcon = entry.target.querySelector('.play-icon-overlay');
-
                     if (entry.isIntersecting) {
                         video.currentTime = 0;
-                        video.play().catch(() => {});
+                        
+                        // Luôn phát với muted = false nếu đã tương tác
+                        if (hasUserInteracted) {
+                            video.muted = false;
+                        } else {
+                            video.muted = true;
+                        }
+                        
+                        video.play().catch(e => {
+                            // Nếu bị chặn, thử muted
+                            if (!hasUserInteracted) {
+                                video.muted = true;
+                                video.play().catch(err => console.log('Autoplay prevented:', err));
+                            }
+                        });
+                        
                         playIcon.style.opacity = 0;
                     } else {
                         video.pause();
                     }
                 });
             }, { threshold: 0.7 });
-
             videoPosts.forEach(post => observer.observe(post));
 
-            // Video cuối: chuyển trang khi xem hết
+            // XỬ LÝ VIDEO CUỐI - CHUYỂN TRANG 100%
             const lastPost = document.querySelector('[data-last-video="true"]');
             if (lastPost) {
                 const lastVideo = lastPost.querySelector('video');
+
                 const goToNextPage = () => {
                     if (hasNavigated) return;
                     hasNavigated = true;
+                    console.log('Đang chuyển trang...');
+                    
+                    // ĐỔI LINK TẠI ĐÂY
                     window.location.href = "ketthuc.html";
                 };
 
-                lastVideo.addEventListener('ended', goToNextPage);
+                // Lắng nghe sự kiện ended
+                lastVideo.addEventListener('ended', () => {
+                    console.log('Video ended event fired');
+                    goToNextPage();
+                });
+
+                // Kiểm tra timeupdate - khi gần hết video
                 lastVideo.addEventListener('timeupdate', () => {
-                    if (lastVideo.duration && lastVideo.currentTime >= lastVideo.duration - 0.5) {
+                    if (lastVideo.duration > 0 && lastVideo.currentTime >= lastVideo.duration - 0.5) {
+                        console.log('Video near end');
                         goToNextPage();
                     }
                 });
+
+                // Thêm log để debug
+                lastVideo.addEventListener('loadedmetadata', () => {
+                    console.log('Last video duration:', lastVideo.duration);
+                });
             }
 
-            // Video loop: tự scroll khi kết thúc
+            // Các video khác (có loop) → next khi kết thúc
             videoPosts.forEach((post, i) => {
                 if (post.hasAttribute('data-last-video')) return;
                 const video = post.querySelector('video');
@@ -448,29 +478,30 @@
                 });
             });
 
-            // Tap xử lý: single tap = play/pause, double tap = like
+            // Double tap = like, single tap = play/pause
             videoPosts.forEach(post => {
                 const video = post.querySelector('video');
                 const playIcon = post.querySelector('.play-icon-overlay');
                 let lastTap = 0;
 
                 post.addEventListener('click', e => {
-                    unlockAudio(); // Đảm bảo unlock mỗi lần tap
-
+                    // Bật âm thanh ngay khi click
+                    hasUserInteracted = true;
+                    video.muted = false;
+                    
                     const now = Date.now();
                     const diff = now - lastTap;
 
                     if (diff < 350 && diff > 0) {
-                        // Double tap → like
+                        // Double tap
                         createHeartAnimation(e.clientX, e.clientY);
                         const likeBtn = post.querySelectorAll('.sidebar-item')[1];
                         toggleLike(likeBtn);
                     } else {
                         setTimeout(() => {
                             if (Date.now() - now >= 350) {
-                                // Single tap → play/pause
                                 if (video.paused) {
-                                    video.play().catch(() => {});
+                                    video.play().catch(e => console.log('Play error:', e));
                                     playIcon.style.opacity = 0;
                                 } else {
                                     video.pause();
@@ -505,3 +536,4 @@
     </script>
 </body>
 </html>
+
