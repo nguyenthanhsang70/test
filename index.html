@@ -1,964 +1,1553 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Game - NTS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="logos3.png">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
-        h1, h2 { font-family: 'Orbitron', sans-serif; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#12213a">
+<meta name="color-scheme" content="light">
+<!-- iOS: cho phép chạy như app khi lưu ra Home Screen, set màu status bar -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nguyễn Văn Tùng">
+<!-- Android: tương tự cho Chrome/WebView -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>Nguyễn Văn A — CV</title>
 
-        .bg-animated {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 10% 20%, rgb(33, 21, 86) 0%, rgb(16, 23, 41) 90%);
-        }
-        .blob {
-            position: absolute;
-            background: linear-gradient(180deg, rgba(79,70,229,.4) 0%, rgba(147,51,234,.4) 100%);
-            filter: blur(60px); border-radius: 50%;
-            animation: moveBlob 10s infinite alternate; z-index: -1;
-        }
-        .blob-1 { top:10%; left:10%; width:300px; height:300px; }
-        .blob-2 { bottom:20%; right:10%; width:400px; height:400px; animation-duration:15s; background:linear-gradient(180deg,rgba(236,72,153,.4) 0%,rgba(239,68,68,.4) 100%); }
-        @keyframes moveBlob { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(20px,-20px) scale(1.1);} }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-        .game-card {
-            background: rgba(255,255,255,.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,.1);
-            transition: all .4s cubic-bezier(.175,.885,.32,1.275);
-            animation: fadeInUp .8s ease-out forwards;
-            opacity: 0; transform: translateY(30px);
-        }
-        .game-card:nth-child(1){animation-delay:.1s} .game-card:nth-child(2){animation-delay:.15s}
-        .game-card:nth-child(3){animation-delay:.2s}  .game-card:nth-child(4){animation-delay:.25s}
-        .game-card:nth-child(5){animation-delay:.3s}  .game-card:nth-child(6){animation-delay:.35s}
-        .game-card:nth-child(7){animation-delay:.4s}  .game-card:nth-child(8){animation-delay:.45s}
-        .game-card:nth-child(9){animation-delay:.5s}  .game-card:nth-child(10){animation-delay:.55s}
-        .game-card:nth-child(11){animation-delay:.6s} .game-card:nth-child(12){animation-delay:.65s}
-        .game-card:nth-child(13){animation-delay:.7s} .game-card:nth-child(14){animation-delay:.75s}
-        .game-card:nth-child(15){animation-delay:.8s} .game-card:nth-child(16){animation-delay:.85s}
-        .game-card:nth-child(17){animation-delay:.9s} .game-card:nth-child(18){animation-delay:.95s}
-        @keyframes fadeInUp { to { opacity:1; transform:translateY(0); } }
+<style>
 
-        .game-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            background: rgba(255,255,255,.1);
-            border-color: rgba(167,139,250,.5);
-            box-shadow: 0 20px 40px rgba(0,0,0,.4), 0 0 20px rgba(167,139,250,.2);
-        }
-        .game-card img { transition:transform .5s ease; mask-image:linear-gradient(to bottom,black 80%,transparent 100%); }
-        .game-card:hover img { transform:scale(1.1); }
+/* ============================================================
+   MỤC LỤC (TABLE OF CONTENTS)
+   1. Reset & biến màu (CSS variables)
+   2. Bố cục trang tổng thể
+   3. Sidebar: hồ sơ / liên hệ / kỹ năng / ngôn ngữ
+   4. Nội dung chính: tiêu đề section & hero
+   5. Khối thẻ dùng chung (info-card / info-row)
+   6. Dòng thời gian (timeline): học vấn & kinh nghiệm
+   7. Banner liên hệ cuối trang & footer
+   8. Bộ chuyển ngôn ngữ
+   9. Accessibility (focus state)
+   10. Responsive (≤900px)
+   ============================================================ */
 
-        .play-btn {
-            background: linear-gradient(90deg,#4f46e5,#9333ea);
-            transition: all .3s ease;
-            box-shadow: 0 4px 15px rgba(79,70,229,.4);
-        }
-        .play-btn:hover {
-            background: linear-gradient(90deg,#4338ca,#7e22ce);
-            box-shadow: 0 6px 20px rgba(147,51,234,.6);
-            transform: translateY(-2px);
-        }
+/* ------------------------------------------------------------
+   1. RESET & BIẾN MÀU
+   ------------------------------------------------------------ */
 
-        .music-control {
-            position:fixed; bottom:30px; right:30px; z-index:1000;
-            background:rgba(15,23,42,.8); border:1px solid rgba(255,255,255,.2);
-            backdrop-filter:blur(5px); border-radius:50%;
-            width:60px; height:60px; display:flex; align-items:center; justify-content:center;
-            cursor:pointer; box-shadow:0 0 20px rgba(79,70,229,.3);
-            transition:all .3s ease; color:white;
-        }
-        .music-control:hover { transform:scale(1.1) rotate(10deg); background:#4f46e5; box-shadow:0 0 30px rgba(79,70,229,.6); }
-        .tooltip {
-            position:absolute; right:70px; background:rgba(0,0,0,.8); color:#fff;
-            padding:6px 12px; border-radius:6px; font-size:12px; white-space:nowrap;
-            opacity:0; transform:translateX(10px); transition:all .3s; pointer-events:none;
-            border:1px solid rgba(255,255,255,.1);
-        }
-        .music-control:hover .tooltip { opacity:1; transform:translateX(0); }
+:root{
+  --color-paper:        #f6f3ec;
+  --color-paper-dim:    #efeade;
+  --color-ink:          #1c1b18;
+  --color-ink-soft:     #5b584f;
+  --color-navy:         #12213a;
+  --color-navy-soft:    #1c3153;
+  --color-brass:        #b8802f;
+  --color-brass-soft:   #e3b871;
+  --color-line:         #dcd5c4;
+  --color-line-on-navy: rgba(255,255,255,.14);
 
-        ::-webkit-scrollbar { width:8px; }
-        ::-webkit-scrollbar-track { background:#0f172a; }
-        ::-webkit-scrollbar-thumb { background:#4f46e5; border-radius:4px; }
-        ::-webkit-scrollbar-thumb:hover { background:#818cf8; }
-    </style>
+  --font-display: 'Playfair Display', serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* Bỏ hiệu ứng highlight xanh khi chạm trên Android/iOS */
+  -webkit-tap-highlight-color: transparent;
+}
+
+html{
+  scroll-behavior: smooth;
+  /* Ngăn Safari/Chrome mobile tự phóng to chữ khi xoay ngang */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body{
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  user-select: text;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a, button{
+  /* Vùng chạm phản hồi nhanh hơn, không delay 300ms trên mobile */
+  touch-action: manipulation;
+}
+
+a{
+  color: inherit;
+}
+
+.eyebrow-label{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-brass);
+}
+
+.profile-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-brass-soft);
+  background: rgba(227,184,113,.14);
+  border: 1px solid rgba(227,184,113,.4);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.profile-badge::before{
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-brass-soft);
+  box-shadow: 0 0 0 3px rgba(227,184,113,.25);
+}
+
+/* ------------------------------------------------------------
+   2. BỐ CỤC TRANG TỔNG THỂ (2 CỘT: SIDEBAR + NỘI DUNG CHÍNH)
+   ------------------------------------------------------------ */
+
+.page-layout{
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  align-items: start;
+  min-height: 100vh;
+}
+
+/* ------------------------------------------------------------
+   3. SIDEBAR — HỒ SƠ, LIÊN HỆ, KỸ NĂNG, NGÔN NGỮ
+   ------------------------------------------------------------ */
+
+.sidebar{
+  background: var(--color-navy);
+  color: #e9e7df;
+  padding: 56px 40px 40px;
+  padding-top: max(56px, calc(env(safe-area-inset-top) + 32px));
+  /* FIX: bỏ sticky + height:100vh + overflow-y:auto (bị ẩn scrollbar)
+     vì khiến nội dung dài (kỹ năng, ngôn ngữ...) bị cắt mất khi mở
+     toàn trang. Sidebar giờ chỉ cao đúng bằng nội dung của nó
+     (không bị kéo giãn theo cột nội dung chính bên phải), luôn
+     hiện đủ thông tin và cuộn cùng trang như bình thường. */
+  position: relative;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+.sidebar-section h3{
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #e9e7df;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  padding-left: 14px;
+  border-bottom: 1px solid var(--color-line-on-navy);
+}
+
+.sidebar-section h3::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  bottom: 11px;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--color-brass), var(--color-brass-soft));
+}
+
+/* --- Ảnh đại diện & tên --- */
+
+.profile-identity{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+
+.profile-avatar{
+  position: relative;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto;
+}
+
+.profile-avatar img{
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(.15);
+  transition: filter .35s ease, transform .35s ease;
+}
+
+.profile-avatar::after{
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid var(--color-brass-soft);
+  border-radius: 50%;
+  transition: inset .35s ease, border-color .35s ease;
+}
+
+.profile-avatar:hover img{
+  filter: grayscale(0);
+  transform: scale(1.04);
+}
+
+.profile-avatar:hover::after{
+  inset: -9px;
+  border-color: var(--color-brass);
+}
+
+.profile-name{
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  overflow-wrap: break-word;
+}
+
+.profile-title{
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  color: var(--color-brass-soft);
+  overflow-wrap: anywhere;
+}
+
+/* --- Danh sách liên hệ (icon + nội dung, có thể bấm) --- */
+
+.contact-list{
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  font-size: 13.5px;
+}
+
+.contact-list li{
+  list-style: none;
+}
+
+.contact-list li a,
+.contact-list li .static-item{
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  color: #d6d4c9;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.contact-list li a{
+  transition: color .25s ease, transform .25s ease;
+}
+
+.contact-list li a:hover{
+  color: #fff;
+  transform: translateX(3px);
+}
+
+.contact-icon{
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  background: rgba(227,184,113,.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .25s ease, transform .25s ease;
+}
+
+.contact-icon svg{
+  width: 15px;
+  height: 15px;
+  stroke: var(--color-brass-soft);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.contact-list li a:hover .contact-icon{
+  background: var(--color-brass-soft);
+  transform: scale(1.06);
+}
+
+.contact-list li a:hover .contact-icon svg{
+  stroke: var(--color-navy);
+}
+
+/* --- Thanh mức độ kỹ năng --- */
+
+.skill-row{
+  margin-bottom: 16px;
+}
+
+.skill-row:last-child{
+  margin-bottom: 0;
+}
+
+.skill-row-header{
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.skill-row-header span:first-child{
+  font-weight: 500;
+  color: #f1efe6;
+  overflow-wrap: anywhere;
+}
+
+.skill-row-header span:last-child{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-brass-soft);
+  overflow-wrap: anywhere;
+}
+
+.skill-level{
+  display: flex;
+  gap: 5px;
+}
+
+.skill-level i{
+  width: 16px;
+  height: 4px;
+  display: block;
+  border-radius: 2px;
+  background: var(--color-line-on-navy);
+  transition: transform .3s ease, background .3s ease;
+}
+
+.skill-level i.is-filled{
+  background: linear-gradient(90deg, var(--color-brass), var(--color-brass-soft));
+}
+
+.skill-row:hover .skill-level i.is-filled{
+  transform: scaleY(1.4);
+}
+
+/* --- Danh sách sở thích (dạng tag) --- */
+
+.hobby-list{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.hobby-tag{
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: #e9e7df;
+  background: rgba(227,184,113,.1);
+  border: 1px solid var(--color-line-on-navy);
+  border-radius: 999px;
+  padding: 6px 13px;
+  transition: background .25s ease, border-color .25s ease, transform .25s ease;
+}
+
+.hobby-tag:hover{
+  background: rgba(227,184,113,.18);
+  border-color: var(--color-brass-soft);
+  transform: translateY(-2px);
+}
+
+.hobby-tag span{
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------
+   4. NỘI DUNG CHÍNH — KHUNG, TIÊU ĐỀ SECTION & HERO
+   ------------------------------------------------------------ */
+
+.main-content{
+  position: relative;
+  padding: 64px 5% 40px;
+  padding-bottom: max(40px, calc(env(safe-area-inset-bottom) + 24px));
+}
+
+.main-content section{
+  margin-bottom: 64px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+
+.main-content section.in-view{
+  opacity: 1;
+  transform: none;
+}
+
+.main-content section:last-of-type{
+  margin-bottom: 24px;
+}
+
+.section-heading{
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.section-heading h2{
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  white-space: nowrap;
+  position: relative;
+  padding-left: 16px;
+}
+
+.section-heading h2::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--color-brass), var(--color-brass-soft));
+}
+
+.section-heading::after{
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+
+/* --- Khối giới thiệu đầu trang (hero) --- */
+
+.hero{
+  padding-bottom: 48px;
+  margin-bottom: 48px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.hero h1{
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(18px, 2.5vw, 42px);
+  line-height: 1.3;
+  width: 100%;
+  color: var(--color-ink);
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.hero h1 em{
+  font-style: italic;
+  color: var(--color-brass);
+}
+
+.hero h1 .hero-highlight{
+  display: block;
+  width: 100%;
+  text-align: center;
+  transform: translateX(-16%);
+  margin-top: 4px;
+}
+
+.hero p{
+  margin-top: 22px;
+  margin-left: 50px;
+  max-width: 560px;
+  color: var(--color-ink-soft);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.fade-in-item{
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+@media (prefers-reduced-motion: no-preference){
+  .fade-in-item{
+    animation: fadeInUp .7s ease forwards;
+  }
+  .fade-in-item:nth-child(1){ animation-delay: .05s; }
+  .fade-in-item:nth-child(2){ animation-delay: .15s; }
+  .fade-in-item:nth-child(3){ animation-delay: .25s; }
+
+  @keyframes fadeInUp{
+    to{ opacity: 1; transform: none; }
+  }
+}
+
+/* ------------------------------------------------------------
+   5. KHỐI THẺ DÙNG CHUNG (Mục tiêu, Công việc mong muốn...)
+   ------------------------------------------------------------ */
+
+.card-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+.info-card{
+  background: var(--color-paper-dim);
+  border: 1px solid var(--color-line);
+  border-left: 3px solid var(--color-brass);
+  padding: 28px;
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+
+.info-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(28,27,24,.08);
+  border-left-color: var(--color-navy);
+}
+
+.info-card h4{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-brass);
+  margin-bottom: 16px;
+}
+
+.info-card p{
+  color: var(--color-ink-soft);
+  line-height: 1.75;
+}
+
+.info-row{
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 11px 0;
+  border-bottom: 1px dashed var(--color-line);
+  font-size: 14px;
+}
+
+.info-row:last-child{
+  border-bottom: none;
+}
+
+.info-row span:first-child{
+  color: var(--color-ink-soft);
+  flex: none;
+  min-width: 150px;
+}
+
+.info-row span:last-child{
+  font-weight: 600;
+  color: var(--color-navy);
+  text-align: right;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------
+   6. DÒNG THỜI GIAN (HỌC VẤN / KINH NGHIỆM)
+   ------------------------------------------------------------ */
+
+.timeline{
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item{
+  display: grid;
+  grid-template-columns: 132px 1px 1fr;
+  column-gap: 28px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.timeline-item:first-child{
+  padding-top: 0;
+}
+
+.timeline-item:last-child{
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.timeline-date{
+  padding-top: 3px;
+}
+
+.timeline-period{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--color-brass);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.timeline-item.is-current .timeline-period{
+  display: inline-block;
+  background: var(--color-brass);
+  color: #fff;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+.timeline-divider{
+  position: relative;
+  background: var(--color-line);
+}
+
+.timeline-item.is-current .timeline-divider{
+  background: var(--color-brass);
+}
+
+.timeline-divider::before{
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-brass);
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 4px var(--color-paper);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.timeline-item:hover .timeline-divider::before{
+  transform: translateX(-50%) scale(1.4);
+  box-shadow: 0 0 0 4px var(--color-paper), 0 0 0 7px rgba(184,128,47,.22);
+}
+
+.timeline-content{
+  min-width: 0;
+}
+
+.timeline-item h3{
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  overflow-wrap: break-word;
+}
+
+.timeline-item h3 .timeline-org{
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--color-ink-soft);
+  display: inline-block;
+}
+
+.timeline-item p{
+  max-width: 560px;
+  color: var(--color-ink-soft);
+  line-height: 1.75;
+  overflow-wrap: break-word;
+}
+
+.timeline-item p strong{
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+.timeline-meta{
+  margin-top: 8px;
+  font-size: 13.5px;
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+}
+
+.timeline-list{
+  max-width: 560px;
+  padding-left: 18px;
+  color: var(--color-ink-soft);
+}
+
+.timeline-list li{
+  margin-bottom: 8px;
+  line-height: 1.75;
+}
+
+.timeline-list li::marker{
+  color: var(--color-brass);
+}
+
+.timeline-list li strong{
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------
+   7. BANNER LIÊN HỆ CUỐI TRANG & FOOTER
+   ------------------------------------------------------------ */
+
+.contact-banner{
+  background: var(--color-navy);
+  color: #e9e7df;
+  padding: 48px 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  border-radius: 4px;
+}
+
+.contact-banner h2{
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.contact-banner p{
+  margin-top: 8px;
+  max-width: 420px;
+  color: #a9b0c2;
+}
+
+.contact-banner .email-link{
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--color-brass-soft);
+  border-bottom: 1px solid var(--color-brass-soft);
+  padding-bottom: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .25s ease, border-color .25s ease, letter-spacing .25s ease;
+}
+
+.contact-banner .email-link:hover{
+  color: #fff;
+  border-color: #fff;
+  letter-spacing: .02em;
+}
+
+.site-footer{
+  text-align: center;
+  padding: 26px;
+  font-size: 12px;
+  color: var(--color-ink-soft);
+  font-family: var(--font-mono);
+}
+
+/* ------------------------------------------------------------
+   8. BỘ CHUYỂN NGÔN NGỮ (góc phải trên)
+   ------------------------------------------------------------ */
+
+.lang-switcher{
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 20;
+}
+
+.lang-toggle{
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper-dim);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.lang-toggle:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(28,27,24,.1);
+}
+
+/* Trạng thái đang gọi API dịch — nhấp nháy nhẹ để báo hiệu đang chờ */
+.lang-toggle.is-translating{
+  animation: langTranslatingPulse 1s ease-in-out infinite;
+}
+
+@keyframes langTranslatingPulse{
+  0%, 100%{ opacity: 1; }
+  50%{ opacity: .45; }
+}
+
+.lang-menu{
+  position: absolute;
+  top: 52px;
+  right: 0;
+  min-width: 190px;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(28,27,24,.14);
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lang-menu.is-open{
+  display: flex;
+}
+
+.lang-option{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--color-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: background .2s ease;
+}
+
+.lang-option span{
+  font-size: 17px;
+}
+
+.lang-option:hover{
+  background: var(--color-paper-dim);
+}
+
+.lang-option.is-active{
+  background: rgba(184,128,47,.12);
+  color: var(--color-brass);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------
+   9. ACCESSIBILITY — TRẠNG THÁI FOCUS (BÀN PHÍM)
+   ------------------------------------------------------------ */
+
+a:focus-visible,
+button:focus-visible{
+  outline: 2px solid var(--color-brass-soft);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------
+   10. RESPONSIVE — MÀN HÌNH NHỎ (≤900px)
+   ------------------------------------------------------------ */
+
+@media (max-width: 900px){
+  .page-layout{
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar{
+    position: relative;
+    height: auto;
+    padding: 40px 28px;
+  }
+
+  .main-content{
+    padding: 48px 6% 40px;
+  }
+
+  .card-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .contact-banner{
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 40px 32px;
+  }
+
+  .info-card p,
+  .timeline-item p,
+  .timeline-list{
+    max-width: 100%;
+  }
+
+  .timeline-item{
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+    padding: 22px 0;
+  }
+
+  .timeline-divider{
+    display: none;
+  }
+
+  .info-row{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .info-row span:first-child{
+    min-width: 0;
+  }
+
+  .info-row span:last-child{
+    text-align: left;
+  }
+
+  .lang-switcher{
+    position: fixed;
+    top: max(16px, calc(env(safe-area-inset-top) + 10px));
+    right: max(16px, calc(env(safe-area-inset-right) + 10px));
+  }
+
+  .hero h1{
+    font-size: clamp(13px, 3.6vw, 42px);
+  }
+}
+
+/* ------------------------------------------------------------
+   10b. RESPONSIVE — ĐIỆN THOẠI NHỎ (≤480px, Android/iOS phổ biến)
+   ------------------------------------------------------------ */
+
+@media (max-width: 480px){
+  .sidebar{
+    padding: max(32px, calc(env(safe-area-inset-top) + 20px)) 20px 32px;
+    gap: 32px;
+  }
+
+  .profile-avatar,
+  .profile-avatar img{
+    width: 92px;
+    height: 92px;
+  }
+
+  .profile-name{
+    font-size: 20px;
+  }
+
+  .main-content{
+    padding: 40px 5.5% 32px;
+    padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 20px));
+  }
+
+  .hero h1{
+    font-size: clamp(12px, 5.2vw, 42px);
+    white-space: normal;
+  }
+
+  .hero h1 .hero-highlight{
+    transform: none;
+    white-space: normal;
+  }
+
+  .hero p{
+    margin-left: 0;
+  }
+
+  .section-heading h2{
+    font-size: 20px;
+    white-space: normal;
+  }
+
+  .contact-banner{
+    padding: 32px 22px;
+    padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 20px));
+  }
+
+  .contact-banner h2{
+    font-size: 21px;
+  }
+
+  /* Tăng vùng chạm cho các nút/link trên màn hình cảm ứng nhỏ */
+  .contact-list li a,
+  .lang-option{
+    min-height: 44px;
+  }
+
+  .lang-toggle{
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* Bỏ hiệu ứng "dính hover" trên thiết bị cảm ứng (Android/iOS không có con trỏ chuột) */
+@media (hover: none) and (pointer: coarse){
+  .profile-avatar:hover img,
+  .profile-avatar:hover::after,
+  .contact-list li a:hover,
+  .contact-list li a:hover .contact-icon,
+  .contact-list li a:hover .contact-icon svg,
+  .skill-row:hover .skill-level i.is-filled,
+  .info-card:hover,
+  .timeline-item:hover .timeline-divider::before,
+  .lang-toggle:hover,
+  .contact-banner .email-link:hover,
+  .hobby-tag:hover{
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+</style>
 </head>
 <body>
-    <div class="bg-animated"></div>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
 
-    <audio id="backgroundMusic" loop>
-        <source src="nhacnen2.mp3" type="audio/mpeg">
-    </audio>
+<div class="page-layout">
 
-    <div class="music-control" id="musicControl">
-        <i class="fas fa-music text-xl"></i>
-        <span class="tooltip" data-i18n="music.tooltip">Bật/Tắt nhạc nền</span>
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+
+    <div class="profile-identity">
+      <p class="profile-badge" data-i18n="badge">Hồ sơ xin việc</p>
+      <div class="profile-avatar">
+        <img src="c:\Users\Administrator\Downloads\doves logo.jpg" alt="Ảnh đại diện Nguyễn Văn Tùng">
+      </div>
+      <div>
+        <h1 class="profile-name" data-i18n="name">Nguyễn Văn Tùng</h1>
+        <p class="profile-title" data-i18n="role">Web Developer</p>
+      </div>
     </div>
 
-    <header class="fixed top-0 w-full z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10 transition-all duration-300 shadow-lg">
-        <div class="container mx-auto px-4 py-4 relative flex justify-center items-center">
-            <a href="index.html" class="absolute left-4 bg-white/10 hover:bg-red-500/80 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border border-white/10 hover:border-red-500 group">
-                <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
-            </a>
-            <h1 class="text-2xl md:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-lg" data-i18n="page.heading">
-                DANH SÁCH GAME
-            </h1>
+    <div class="sidebar-section">
+      <h3 data-i18n="contactHeading">Liên hệ</h3>
+      <ul class="contact-list">
+        <li>
+          <a href="tel:0123456789">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            0923 856 725
+          </a>
+        </li>
+        <li>
+          <span class="static-item">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 9h18"/></svg>
+            </span>
+            15/03/1996
+          </span>
+        </li>
+        <li>
+          <a href="mailto:example@gmail.com">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+            </span>
+            nguyenvantung12@gmail.com
+          </a>
+        </li>
+
+        <li>
+          <a href="https://www.google.com/maps/search/?api=1&query=TP.+H%E1%BB%93+Ch%C3%AD+Minh" target="_blank" rel="noopener">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3"/><path d="M12 22s7-6.14 7-12a7 7 0 0 0-14 0c0 5.86 7 12 7 12z"/></svg>
+            </span>
+            TP. Hồ Chí Minh
+          </a>
+        </li>
+        <li>
+          <a href="https://www.website.com" target="_blank" rel="noopener">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"/></svg>
+            </span>
+            www.website.com
+          </a>
+        </li>
+
+      </ul>
+    </div>
+
+    <div class="sidebar-section">
+      <h3 data-i18n="skillsHeading">Kỹ năng</h3>
+
+      <div class="skill-row">
+        <div class="skill-row-header"><span>HTML</span><span>95%</span></div>
+        <div class="skill-level">
+          <i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i>
         </div>
-    </header>
+      </div>
 
-    <main class="flex-grow container mx-auto px-4 py-24 mt-8">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden group h-48">
-                    <img src="dice-dices-vector-image-logo-260nw-2514727833.webp" alt="Xúc Xắc" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <i class="fas fa-gamepad text-3xl text-white"></i>
-                    </div>
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.dice.title">Xúc Xắc</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow line-clamp-3" data-i18n="game.dice.desc">Trò chơi may rủi đầy kịch tính. Nơi người chơi chờ đợi kết quả bất ngờ.</p>
-                    <div class="text-center mt-auto">
-                        <a href="xucxac.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="hinhquayten.png" alt="Quay Tên" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.spin.title">Quay Tên</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.spin.desc">Trò chơi may rủi thú vị. Gây phấn khích cho mọi người tham gia!</p>
-                    <div class="text-center mt-auto">
-                        <a href="quayten.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="screenshot_1739700866.png" alt="Đua Xe Ngẫu Nhiên" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.race.title">Đua Xe Ngẫu Nhiên</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.race.desc">Game đua số mang đến trải nghiệm gay cấn và thú vị!</p>
-                    <div class="text-center mt-auto">
-                        <a href="dua.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="ttnthcp.jpg" alt="Thật Hay Thách" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.tod.title">Thật Hay Thách</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.tod.desc">Thử thách, nói thật hay chịu phạt ngẫu nhiên cùng bạn bè.</p>
-                    <div class="text-center mt-auto">
-                        <a href="tthcp.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="thi-dau-co-caro.jpg" alt="Cờ Caro" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.caro.title">Cờ Caro</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.caro.desc">Trò chơi kinh điển, ai xếp 5 quân liên tiếp trước sẽ thắng.</p>
-                    <div class="text-center mt-auto">
-                        <a href="caro.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="timkiemqua3so.png" alt="Tìm 3 Số Phép Tính" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.math.title">Tìm 3 Số Phép Tính</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.math.desc">Rèn luyện tư duy logic và tính toán nhanh.</p>
-                    <div class="text-center mt-auto">
-                        <a href="timketqua3so.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="solitaire-classic.jpg" alt="Đánh Bài" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.cards.title">Đánh Bài</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.cards.desc">Sử dụng bộ bài Tây 52 lá để thử vận may và chiến thuật.</p>
-                    <div class="text-center mt-auto">
-                        <a href="danhbai.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="taixiu.png" alt="Tài Xỉu" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.taixiu.title">Tài Xỉu</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.taixiu.desc">Trò chơi dự đoán kết quả xúc xắc kinh điển.</p>
-                    <div class="text-center mt-auto">
-                        <a href="taixiu.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="dovui.jpg" alt="Đố Vui" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.quiz.title">Đố Vui</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.quiz.desc">Rèn luyện tư duy logic, suy luận qua các câu hỏi thú vị.</p>
-                    <div class="text-center mt-auto">
-                        <a href="dovui.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="mecung.jpg" alt="Mê Cung" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.maze.title">Mê Cung</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.maze.desc">Tìm lối thoát khỏi mê cung phức tạp.</p>
-                    <div class="text-center mt-auto">
-                        <a href="mecung.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="MemoryCardGame1.jpg" alt="Memory Card" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.memory.title">Memory Card</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.memory.desc">Rèn luyện trí nhớ bằng cách tìm các cặp thẻ giống nhau.</p>
-                    <div class="text-center mt-auto">
-                        <a href="cardgame.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="dapchuota.png" alt="Đập Chuột" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.mole.title">Đập Chuột</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.mole.desc">Thử thách phản xạ nhanh tay lẹ mắt.</p>
-                    <div class="text-center mt-auto">
-                        <a href="dapchuot.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="keobuabao.png" alt="Oẳn Tù Tì" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.rps.title">Oẳn Tù Tì</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.rps.desc">Trò chơi đối kháng cổ điển, đơn giản và vui nhộn.</p>
-                    <div class="text-center mt-auto">
-                        <a href="keobuabao.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="doanso.png" alt="Đoán Số" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.guess.title">Đoán Số</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.guess.desc">Cố gắng đoán đúng số bí mật máy chọn.</p>
-                    <div class="text-center mt-auto">
-                        <a href="doanso.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="trinhomausac.png" alt="Trí Nhớ Màu Sắc" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.color.title">Trí Nhớ Màu Sắc</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.color.desc">Cải thiện trí nhớ ngắn hạn và sự tập trung.</p>
-                    <div class="text-center mt-auto">
-                        <a href="trinhomausac.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="nhamgiay.png" alt="Nhẩm Giây" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.timer.title">Nhẩm Giây</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.timer.desc">Rèn luyện khả năng cảm nhận và ước lượng thời gian.</p>
-                    <div class="text-center mt-auto">
-                        <a href="nhamgiay.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="thamtumk.png" alt="Thám Tử Mật Khẩu" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.detective.title">Thám Tử Mật Khẩu</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.detective.desc">Vào vai thám tử phá giải mật khẩu bí ẩn.</p>
-                    <div class="text-center mt-auto">
-                        <a href="thamtumk.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card rounded-2xl overflow-hidden flex flex-col h-full">
-                <div class="relative overflow-hidden h-48">
-                    <img src="goboom.png" alt="Giải Mã Gỡ Bom" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-white mb-2 text-center tracking-wide" data-i18n="game.bomb.title">Giải Mã Gỡ Bom</h2>
-                    <p class="text-gray-400 text-sm mb-6 text-center flex-grow" data-i18n="game.bomb.desc">Gỡ bom hẹn giờ trước khi nó phát nổ cực căng thẳng.</p>
-                    <div class="text-center mt-auto">
-                        <a href="goboom.html" class="play-btn inline-block text-white px-8 py-2.5 rounded-full text-sm font-semibold tracking-wider" data-i18n="btn.play">CHƠI NGAY</a>
-                    </div>
-                </div>
-            </div>
-
+      <div class="skill-row">
+        <div class="skill-row-header"><span>CSS</span><span>90%</span></div>
+        <div class="skill-level">
+          <i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i></i>
         </div>
-    </main>
+      </div>
 
-    <footer class="bg-slate-900 border-t border-white/10 text-white py-10 mt-12">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-center space-x-8 mb-6">
-                <a href="https://www.facebook.com/nguyenthanhsang70" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-blue-600 hover:text-white transition-all duration-300 transform hover:-translate-y-1">
-                    <i class="fab fa-facebook-f text-xl"></i>
-                </a>
-                <a href="https://www.instagram.com/ngth.sang70/" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-pink-600 hover:text-white transition-all duration-300 transform hover:-translate-y-1">
-                    <i class="fab fa-instagram text-xl"></i>
-                </a>
-                <a href="https://www.tiktok.com/@thanh.sang70" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-black hover:text-white hover:border hover:border-white transition-all duration-300 transform hover:-translate-y-1">
-                    <i class="fab fa-tiktok text-xl"></i>
-                </a>
-            </div>
-            <div class="text-center">
-                <p class="text-gray-400 text-sm mb-2">© 2026 <span class="text-purple-400 font-bold">NTS</span></p>
-                <p class="text-gray-500 text-xs">
-                  <span data-i18n="footer.prefix">Thiết kế bởi</span>
-                  <a href="profile.html" class="text-indigo-400 hover:text-indigo-300 transition-colors" data-i18n="footer.author">Nguyễn Thanh Sang</a>.
-                </p>
-            </div>
+      <div class="skill-row">
+        <div class="skill-row-header"><span>JavaScript</span><span>80%</span></div>
+        <div class="skill-level">
+          <i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i></i><i></i>
         </div>
-    </footer>
+      </div>
 
-    <script>
-    'use strict';
+      <div class="skill-row">
+        <div class="skill-row-header"><span>Photoshop</span><span>70%</span></div>
+        <div class="skill-level">
+          <i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i></i><i></i>
+        </div>
+      </div>
+    </div>
 
-    /* ================================================================
-       TRANSLATIONS
-       ================================================================ */
-    const TRANSLATIONS = {
-      vi: {
-        'page.title':            'Danh Sách Game - NTS',
-        'page.heading':          'DANH SÁCH GAME',
-        'btn.play':              'CHƠI NGAY',
-        'music.tooltip':         'Bật/Tắt nhạc nền',
-        'game.dice.title':       'Xúc Xắc',
-        'game.dice.desc':        'Trò chơi may rủi đầy kịch tính. Nơi người chơi chờ đợi kết quả bất ngờ.',
-        'game.spin.title':       'Quay Tên',
-        'game.spin.desc':        'Trò chơi may rủi thú vị. Gây phấn khích cho mọi người tham gia!',
-        'game.race.title':       'Đua Xe Ngẫu Nhiên',
-        'game.race.desc':        'Game đua số mang đến trải nghiệm gay cấn và thú vị!',
-        'game.tod.title':        'Thật Hay Thách',
-        'game.tod.desc':         'Thử thách, nói thật hay chịu phạt ngẫu nhiên cùng bạn bè.',
-        'game.caro.title':       'Cờ Caro',
-        'game.caro.desc':        'Trò chơi kinh điển, ai xếp 5 quân liên tiếp trước sẽ thắng.',
-        'game.math.title':       'Tìm 3 Số Phép Tính',
-        'game.math.desc':        'Rèn luyện tư duy logic và tính toán nhanh.',
-        'game.cards.title':      'Đánh Bài',
-        'game.cards.desc':       'Sử dụng bộ bài Tây 52 lá để thử vận may và chiến thuật.',
-        'game.taixiu.title':     'Tài Xỉu',
-        'game.taixiu.desc':      'Trò chơi dự đoán kết quả xúc xắc kinh điển.',
-        'game.quiz.title':       'Đố Vui',
-        'game.quiz.desc':        'Rèn luyện tư duy logic, suy luận qua các câu hỏi thú vị.',
-        'game.maze.title':       'Mê Cung',
-        'game.maze.desc':        'Tìm lối thoát khỏi mê cung phức tạp.',
-        'game.memory.title':     'Memory Card',
-        'game.memory.desc':      'Rèn luyện trí nhớ bằng cách tìm các cặp thẻ giống nhau.',
-        'game.mole.title':       'Đập Chuột',
-        'game.mole.desc':        'Thử thách phản xạ nhanh tay lẹ mắt.',
-        'game.rps.title':        'Oẳn Tù Tì',
-        'game.rps.desc':         'Trò chơi đối kháng cổ điển, đơn giản và vui nhộn.',
-        'game.guess.title':      'Đoán Số',
-        'game.guess.desc':       'Cố gắng đoán đúng số bí mật máy chọn.',
-        'game.color.title':      'Trí Nhớ Màu Sắc',
-        'game.color.desc':       'Cải thiện trí nhớ ngắn hạn và sự tập trung.',
-        'game.timer.title':      'Nhẩm Giây',
-        'game.timer.desc':       'Rèn luyện khả năng cảm nhận và ước lượng thời gian.',
-        'game.detective.title':  'Thám Tử Mật Khẩu',
-        'game.detective.desc':   'Vào vai thám tử phá giải mật khẩu bí ẩn.',
-        'game.bomb.title':       'Giải Mã Gỡ Bom',
-        'game.bomb.desc':        'Gỡ bom hẹn giờ trước khi nó phát nổ cực căng thẳng.',
-        'footer.prefix':         'Thiết kế bởi',
-        'footer.author':         'Nguyễn Thanh Sang',
-      },
-      en: {
-        'page.title':            'Game List - NTS',
-        'page.heading':          'GAME LIST',
-        'btn.play':              'PLAY NOW',
-        'music.tooltip':         'Toggle music',
-        'game.dice.title':       'Dice',
-        'game.dice.desc':        'A thrilling game of chance where players await unexpected results.',
-        'game.spin.title':       'Name Spinner',
-        'game.spin.desc':        'An exciting lucky wheel that gets everyone pumped up!',
-        'game.race.title':       'Random Racing',
-        'game.race.desc':        'An intense and fun number racing experience!',
-        'game.tod.title':        'Truth or Dare',
-        'game.tod.desc':         'Challenge, tell the truth or face a random penalty with friends.',
-        'game.caro.title':       'Gomoku (Caro)',
-        'game.caro.desc':        'Classic board game — first to line up 5 pieces wins.',
-        'game.math.title':       'Find 3 Numbers',
-        'game.math.desc':        'Train your logic and quick calculation skills.',
-        'game.cards.title':      'Card Game',
-        'game.cards.desc':       'Use a 52-card deck to test your luck and strategy.',
-        'game.taixiu.title':     'Sic Bo (Tài Xỉu)',
-        'game.taixiu.desc':      'Classic dice prediction game.',
-        'game.quiz.title':       'Fun Quiz',
-        'game.quiz.desc':        'Train your logic and reasoning through interesting questions.',
-        'game.maze.title':       'Maze',
-        'game.maze.desc':        'Find the exit from a complex maze.',
-        'game.memory.title':     'Memory Card',
-        'game.memory.desc':      'Train your memory by finding matching pairs of cards.',
-        'game.mole.title':       'Whack-a-Mole',
-        'game.mole.desc':        'Test your fast reflexes and sharp eyes.',
-        'game.rps.title':        'Rock Paper Scissors',
-        'game.rps.desc':         'Classic rivalry game — simple and fun.',
-        'game.guess.title':      'Number Guess',
-        'game.guess.desc':       'Try to guess the secret number the machine chose.',
-        'game.color.title':      'Color Memory',
-        'game.color.desc':       'Improve short-term memory and concentration.',
-        'game.timer.title':      'Second Guesser',
-        'game.timer.desc':       'Train your ability to sense and estimate time.',
-        'game.detective.title':  'Password Detective',
-        'game.detective.desc':   'Play as a detective and crack the mysterious password.',
-        'game.bomb.title':       'Bomb Defusal',
-        'game.bomb.desc':        'Defuse the ticking bomb before it explodes!',
-        'footer.prefix':         'Designed & Engineered by',
-        'footer.author':         'Nguyễn Thanh Sang',
-      },
-      ja: {
-        'page.title':            'ゲーム一覧 - NTS',
-        'page.heading':          'ゲーム一覧',
-        'btn.play':              '今すぐプレイ',
-        'music.tooltip':         '音楽のオン/オフ',
-        'game.dice.title':       'サイコロ',
-        'game.dice.desc':        'スリル満点の運試しゲーム。予想外の結果を待て！',
-        'game.spin.title':       '名前ルーレット',
-        'game.spin.desc':        'みんなを盛り上げる楽しいルーレット！',
-        'game.race.title':       'ランダムレース',
-        'game.race.desc':        '白熱した数字レース体験！',
-        'game.tod.title':        'トゥルース・オア・デア',
-        'game.tod.desc':         '友達と正直に答えるかチャレンジを受けるか！',
-        'game.caro.title':       '五目並べ',
-        'game.caro.desc':        '先に5つ並べた方が勝ちのクラシックゲーム。',
-        'game.math.title':       '3数式探し',
-        'game.math.desc':        'ロジカル思考と素早い計算を鍛えよう。',
-        'game.cards.title':      'カードゲーム',
-        'game.cards.desc':       '52枚のトランプで運と戦略を試そう。',
-        'game.taixiu.title':     'サイコロ予測',
-        'game.taixiu.desc':      'クラシックなサイコロ予測ゲーム。',
-        'game.quiz.title':       '楽しいクイズ',
-        'game.quiz.desc':        '面白い問題でロジック思考を鍛えよう。',
-        'game.maze.title':       '迷路',
-        'game.maze.desc':        '複雑な迷路から脱出せよ。',
-        'game.memory.title':     'メモリーカード',
-        'game.memory.desc':      'ペアを揃えて記憶力を鍛えよう。',
-        'game.mole.title':       'モグラたたき',
-        'game.mole.desc':        '素早い反射神経を試せ！',
-        'game.rps.title':        'じゃんけん',
-        'game.rps.desc':         'シンプルで楽しいじゃんけん勝負！',
-        'game.guess.title':      '数当てゲーム',
-        'game.guess.desc':       'マシンが選んだ秘密の数を当てよう。',
-        'game.color.title':      '色彩記憶',
-        'game.color.desc':       '短期記憶と集中力を高めよう。',
-        'game.timer.title':      'タイム感覚',
-        'game.timer.desc':       '時間感覚を鍛えよう。',
-        'game.detective.title':  'パスワード探偵',
-        'game.detective.desc':   '探偵として謎のパスワードを解読しよう。',
-        'game.bomb.title':       '爆弾解除',
-        'game.bomb.desc':        '爆発前に時限爆弾を解除せよ！',
-        'footer.prefix':         'デザイン・開発',
-        'footer.author':         'グエン・タイン・サン',
-      },
-      zh: {
-        'page.title':            '游戏列表 - NTS',
-        'page.heading':          '游戏列表',
-        'btn.play':              '立即游玩',
-        'music.tooltip':         '开/关背景音乐',
-        'game.dice.title':       '骰子',
-        'game.dice.desc':        '充满戏剧性的运气游戏，等待意想不到的结果。',
-        'game.spin.title':       '随机点名',
-        'game.spin.desc':        '有趣的幸运转盘，让所有人兴奋起来！',
-        'game.race.title':       '随机赛车',
-        'game.race.desc':        '带来激烈有趣的数字赛车体验！',
-        'game.tod.title':        '真心话大冒险',
-        'game.tod.desc':         '和朋友一起挑战、说实话或接受随机惩罚。',
-        'game.caro.title':       '五子棋',
-        'game.caro.desc':        '经典棋盘游戏，先连成5颗者获胜。',
-        'game.math.title':       '找3个数',
-        'game.math.desc':        '锻炼逻辑思维和快速计算能力。',
-        'game.cards.title':      '扑克牌',
-        'game.cards.desc':       '用52张牌测试你的运气和策略。',
-        'game.taixiu.title':     '大小',
-        'game.taixiu.desc':      '经典骰子预测游戏。',
-        'game.quiz.title':       '趣味问答',
-        'game.quiz.desc':        '通过有趣的问题锻炼逻辑推理能力。',
-        'game.maze.title':       '迷宫',
-        'game.maze.desc':        '从复杂的迷宫中找到出口。',
-        'game.memory.title':     '记忆卡片',
-        'game.memory.desc':      '通过配对卡片锻炼记忆力。',
-        'game.mole.title':       '打地鼠',
-        'game.mole.desc':        '考验你的快速反应能力！',
-        'game.rps.title':        '猜拳',
-        'game.rps.desc':         '经典对抗游戏，简单又好玩。',
-        'game.guess.title':      '猜数字',
-        'game.guess.desc':       '尽力猜出机器选择的秘密数字。',
-        'game.color.title':      '色彩记忆',
-        'game.color.desc':       '提高短期记忆力和专注力。',
-        'game.timer.title':      '时间感知',
-        'game.timer.desc':       '锻炼感知和估算时间的能力。',
-        'game.detective.title':  '密码侦探',
-        'game.detective.desc':   '扮演侦探破解神秘密码。',
-        'game.bomb.title':       '拆弹解码',
-        'game.bomb.desc':        '在定时炸弹爆炸前将其拆除！',
-        'footer.prefix':         '设计与开发',
-        'footer.author':         '阮清尚',
-      },
-      ko: {
-        'page.title':            '게임 목록 - NTS',
-        'page.heading':          '게임 목록',
-        'btn.play':              '지금 플레이',
-        'music.tooltip':         '음악 켜기/끄기',
-        'game.dice.title':       '주사위',
-        'game.dice.desc':        '스릴 넘치는 운 게임. 예상치 못한 결과를 기다려라!',
-        'game.spin.title':       '이름 뽑기',
-        'game.spin.desc':        '모두를 흥분시키는 재미있는 룰렛!',
-        'game.race.title':       '랜덤 레이싱',
-        'game.race.desc':        '치열하고 재미있는 숫자 레이싱 체험!',
-        'game.tod.title':        '진실 혹은 도전',
-        'game.tod.desc':         '친구들과 진실을 말하거나 도전을 받아라.',
-        'game.caro.title':       '오목',
-        'game.caro.desc':        '먼저 5개를 연속으로 놓으면 이기는 클래식 게임.',
-        'game.math.title':       '숫자 3개 찾기',
-        'game.math.desc':        '논리력과 빠른 계산 능력을 키워보세요.',
-        'game.cards.title':      '카드 게임',
-        'game.cards.desc':       '52장의 카드로 운과 전략을 시험하세요.',
-        'game.taixiu.title':     '타이슈',
-        'game.taixiu.desc':      '클래식 주사위 예측 게임.',
-        'game.quiz.title':       '퀴즈',
-        'game.quiz.desc':        '흥미로운 질문으로 논리 추론 능력을 키우세요.',
-        'game.maze.title':       '미로',
-        'game.maze.desc':        '복잡한 미로에서 탈출구를 찾아라.',
-        'game.memory.title':     '메모리 카드',
-        'game.memory.desc':      '짝을 맞추며 기억력을 훈련하세요.',
-        'game.mole.title':       '두더지 잡기',
-        'game.mole.desc':        '빠른 반응 속도를 테스트하세요!',
-        'game.rps.title':        '가위바위보',
-        'game.rps.desc':         '단순하고 재미있는 클래식 대결 게임.',
-        'game.guess.title':      '숫자 맞추기',
-        'game.guess.desc':       '기계가 선택한 비밀 숫자를 맞춰보세요.',
-        'game.color.title':      '색깔 기억',
-        'game.color.desc':       '단기 기억력과 집중력을 향상시키세요.',
-        'game.timer.title':      '초 감각',
-        'game.timer.desc':       '시간을 감지하고 추정하는 능력을 키우세요.',
-        'game.detective.title':  '비밀번호 탐정',
-        'game.detective.desc':   '탐정이 되어 신비로운 비밀번호를 해독하세요.',
-        'game.bomb.title':       '폭탄 해제',
-        'game.bomb.desc':        '폭발 전에 시한폭탄을 해제하세요!',
-        'footer.prefix':         '디자인 & 개발',
-        'footer.author':         '응우옌 탄 상',
-      },
-      th: {
-        'page.title':            'รายการเกม - NTS',
-        'page.heading':          'รายการเกม',
-        'btn.play':              'เล่นเลย',
-        'music.tooltip':         'เปิด/ปิดเพลง',
-        'game.dice.title':       'ลูกเต๋า',
-        'game.dice.desc':        'เกมแห่งโชคชะตา รอดูผลที่ไม่คาดคิด!',
-        'game.spin.title':       'วงล้อจับสลาก',
-        'game.spin.desc':        'วงล้อโชคลาภที่ทำให้ทุกคนตื่นเต้น!',
-        'game.race.title':       'แข่งรถสุ่ม',
-        'game.race.desc':        'ประสบการณ์แข่งรถตัวเลขที่เข้มข้นและสนุก!',
-        'game.tod.title':        'ความจริงหรือท้าทาย',
-        'game.tod.desc':         'ท้าทาย พูดความจริง หรือรับโทษสุ่มกับเพื่อน',
-        'game.caro.title':       'โกะ (คาโร)',
-        'game.caro.desc':        'เกมกระดานคลาสสิก ใครเรียง 5 ตัวก่อนชนะ',
-        'game.math.title':       'หา 3 ตัวเลข',
-        'game.math.desc':        'ฝึกทักษะตรรกะและการคำนวณเร็ว',
-        'game.cards.title':      'ไพ่',
-        'game.cards.desc':       'ใช้ไพ่ 52 ใบทดสอบโชคและกลยุทธ์',
-        'game.taixiu.title':     'ไฮโล',
-        'game.taixiu.desc':      'เกมทายผลลูกเต๋าคลาสสิก',
-        'game.quiz.title':       'ทายปัญหา',
-        'game.quiz.desc':        'ฝึกตรรกะและการใช้เหตุผลผ่านคำถามสนุก',
-        'game.maze.title':       'เขาวงกต',
-        'game.maze.desc':        'หาทางออกจากเขาวงกตที่ซับซ้อน',
-        'game.memory.title':     'เกมจับคู่การ์ด',
-        'game.memory.desc':      'ฝึกความจำด้วยการหาคู่การ์ดที่เหมือนกัน',
-        'game.mole.title':       'ตีตุ่น',
-        'game.mole.desc':        'ทดสอบปฏิกิริยาตอบสนองที่รวดเร็ว!',
-        'game.rps.title':        'เป่ายิงฉุบ',
-        'game.rps.desc':         'เกมต่อสู้คลาสสิก เรียบง่ายและสนุก',
-        'game.guess.title':      'ทายตัวเลข',
-        'game.guess.desc':       'ลองทายตัวเลขลับที่เครื่องเลือก',
-        'game.color.title':      'จำสี',
-        'game.color.desc':       'พัฒนาความจำระยะสั้นและสมาธิ',
-        'game.timer.title':      'จับเวลา',
-        'game.timer.desc':       'ฝึกความสามารถในการรับรู้และประมาณเวลา',
-        'game.detective.title':  'นักสืบรหัสผ่าน',
-        'game.detective.desc':   'รับบทนักสืบเพื่อถอดรหัสลับ',
-        'game.bomb.title':       'ปลดชนวนระเบิด',
-        'game.bomb.desc':        'ปลดชนวนระเบิดก่อนที่มันจะระเบิด!',
-        'footer.prefix':         'ออกแบบและพัฒนาโดย',
-        'footer.author':         'เหงียน ทาน ซัง',
-      },
-      fr: {
-        'page.title':            'Liste des Jeux - NTS',
-        'page.heading':          'LISTE DES JEUX',
-        'btn.play':              'JOUER',
-        'music.tooltip':         'Activer/Désactiver la musique',
-        'game.dice.title':       'Dés',
-        'game.dice.desc':        'Un jeu de chance palpitant avec des résultats inattendus.',
-        'game.spin.title':       'Roue des Noms',
-        'game.spin.desc':        'Une roue de la chance qui enthousiasme tout le monde !',
-        'game.race.title':       'Course Aléatoire',
-        'game.race.desc':        'Une expérience de course intense et amusante !',
-        'game.tod.title':        'Action ou Vérité',
-        'game.tod.desc':         'Défis, vérités ou pénalités aléatoires entre amis.',
-        'game.caro.title':       'Gomoku',
-        'game.caro.desc':        'Jeu classique — alignez 5 pièces en premier pour gagner.',
-        'game.math.title':       'Trouver 3 Nombres',
-        'game.math.desc':        'Entraînez votre logique et vos calculs rapides.',
-        'game.cards.title':      'Jeu de Cartes',
-        'game.cards.desc':       'Testez chance et stratégie avec 52 cartes.',
-        'game.taixiu.title':     'Sic Bo',
-        'game.taixiu.desc':      'Jeu classique de prédiction de dés.',
-        'game.quiz.title':       'Quiz Amusant',
-        'game.quiz.desc':        'Raisonnement et logique à travers des questions intéressantes.',
-        'game.maze.title':       'Labyrinthe',
-        'game.maze.desc':        'Trouvez la sortie du labyrinthe complexe.',
-        'game.memory.title':     'Memory',
-        'game.memory.desc':      'Entraînez votre mémoire en trouvant des paires.',
-        'game.mole.title':       'Taupe !!',
-        'game.mole.desc':        'Testez vos réflexes rapides !',
-        'game.rps.title':        'Pierre Feuille Ciseaux',
-        'game.rps.desc':         'Jeu de rivalité classique, simple et amusant.',
-        'game.guess.title':      'Deviner le Nombre',
-        'game.guess.desc':       'Devinez le nombre secret choisi par la machine.',
-        'game.color.title':      'Mémoire des Couleurs',
-        'game.color.desc':       'Améliorez la mémoire à court terme et la concentration.',
-        'game.timer.title':      'Sens du Temps',
-        'game.timer.desc':       'Entraînez votre capacité à estimer le temps.',
-        'game.detective.title':  'Détective Mot de Passe',
-        'game.detective.desc':   'Jouez au détective pour craquer le mot de passe.',
-        'game.bomb.title':       'Désamorçage de Bombe',
-        'game.bomb.desc':        'Désamorcez la bombe avant qu\'elle explose !',
-        'footer.prefix':         'Conçu & développé par',
-        'footer.author':         'Nguyễn Thanh Sang',
-      },
-      de: {
-        'page.title':            'Spielliste - NTS',
-        'page.heading':          'SPIELLISTE',
-        'btn.play':              'JETZT SPIELEN',
-        'music.tooltip':         'Musik an/aus',
-        'game.dice.title':       'Würfel',
-        'game.dice.desc':        'Ein spannendes Glücksspiel mit unerwarteten Ergebnissen.',
-        'game.spin.title':       'Namensrad',
-        'game.spin.desc':        'Ein Glücksrad, das alle begeistert!',
-        'game.race.title':       'Zufallsrennen',
-        'game.race.desc':        'Ein intensives und spaßiges Zahlenrennen!',
-        'game.tod.title':        'Wahrheit oder Pflicht',
-        'game.tod.desc':         'Herausforderungen, Wahrheit oder Strafe mit Freunden.',
-        'game.caro.title':       'Gomoku',
-        'game.caro.desc':        'Klassisches Brettspiel — wer zuerst 5 in Folge hat, gewinnt.',
-        'game.math.title':       '3 Zahlen finden',
-        'game.math.desc':        'Trainiere logisches Denken und schnelles Rechnen.',
-        'game.cards.title':      'Kartenspiel',
-        'game.cards.desc':       'Teste Glück und Strategie mit 52 Karten.',
-        'game.taixiu.title':     'Würfelvorhersage',
-        'game.taixiu.desc':      'Klassisches Würfelvorhersagespiel.',
-        'game.quiz.title':       'Spaß-Quiz',
-        'game.quiz.desc':        'Logik und Schlussfolgerung durch interessante Fragen.',
-        'game.maze.title':       'Labyrinth',
-        'game.maze.desc':        'Finde den Ausgang aus dem komplexen Labyrinth.',
-        'game.memory.title':     'Memory',
-        'game.memory.desc':      'Trainiere dein Gedächtnis durch Paare finden.',
-        'game.mole.title':       'Maulwurf klopfen',
-        'game.mole.desc':        'Teste deine schnellen Reflexe!',
-        'game.rps.title':        'Stein Schere Papier',
-        'game.rps.desc':         'Klassisches Rivalitätsspiel — einfach und spaßig.',
-        'game.guess.title':      'Zahl raten',
-        'game.guess.desc':       'Errate die geheime Zahl der Maschine.',
-        'game.color.title':      'Farb-Gedächtnis',
-        'game.color.desc':       'Verbessere Kurzzeitgedächtnis und Konzentration.',
-        'game.timer.title':      'Zeitgefühl',
-        'game.timer.desc':       'Trainiere dein Gefühl für Zeit.',
-        'game.detective.title':  'Passwort-Detektiv',
-        'game.detective.desc':   'Spiele als Detektiv und knacke das Passwort.',
-        'game.bomb.title':       'Bombenentschärfung',
-        'game.bomb.desc':        'Entschärfe die Bombe bevor sie explodiert!',
-        'footer.prefix':         'Gestaltet & entwickelt von',
-        'footer.author':         'Nguyễn Thanh Sang',
-      },
-      es: {
-        'page.title':            'Lista de Juegos - NTS',
-        'page.heading':          'LISTA DE JUEGOS',
-        'btn.play':              'JUGAR',
-        'music.tooltip':         'Activar/Desactivar música',
-        'game.dice.title':       'Dados',
-        'game.dice.desc':        'Un emocionante juego de azar con resultados inesperados.',
-        'game.spin.title':       'Ruleta de Nombres',
-        'game.spin.desc':        '¡Una ruleta de la suerte que emociona a todos!',
-        'game.race.title':       'Carrera Aleatoria',
-        'game.race.desc':        '¡Una intensa y divertida experiencia de carreras!',
-        'game.tod.title':        'Verdad o Reto',
-        'game.tod.desc':         'Retos, verdades o penalizaciones aleatorias con amigos.',
-        'game.caro.title':       'Gomoku',
-        'game.caro.desc':        'Juego clásico — el primero en alinear 5 piezas gana.',
-        'game.math.title':       'Encuentra 3 Números',
-        'game.math.desc':        'Entrena tu lógica y cálculo rápido.',
-        'game.cards.title':      'Juego de Cartas',
-        'game.cards.desc':       'Prueba tu suerte y estrategia con 52 cartas.',
-        'game.taixiu.title':     'Sic Bo',
-        'game.taixiu.desc':      'Clásico juego de predicción de dados.',
-        'game.quiz.title':       'Quiz Divertido',
-        'game.quiz.desc':        'Razonamiento lógico a través de preguntas interesantes.',
-        'game.maze.title':       'Laberinto',
-        'game.maze.desc':        'Encuentra la salida del laberinto complejo.',
-        'game.memory.title':     'Memory',
-        'game.memory.desc':      'Entrena tu memoria encontrando pares de cartas.',
-        'game.mole.title':       'Golpea al Topo',
-        'game.mole.desc':        '¡Pon a prueba tus reflejos rápidos!',
-        'game.rps.title':        'Piedra Papel Tijera',
-        'game.rps.desc':         'Juego de rivalidad clásico, simple y divertido.',
-        'game.guess.title':      'Adivina el Número',
-        'game.guess.desc':       'Intenta adivinar el número secreto de la máquina.',
-        'game.color.title':      'Memoria de Colores',
-        'game.color.desc':       'Mejora la memoria a corto plazo y la concentración.',
-        'game.timer.title':      'Sentido del Tiempo',
-        'game.timer.desc':       'Entrena tu capacidad de estimar el tiempo.',
-        'game.detective.title':  'Detective de Contraseña',
-        'game.detective.desc':   'Actúa como detective y descifra la contraseña.',
-        'game.bomb.title':       'Desactivar Bomba',
-        'game.bomb.desc':        '¡Desactiva la bomba antes de que explote!',
-        'footer.prefix':         'Diseñado & desarrollado por',
-        'footer.author':         'Nguyễn Thanh Sang',
-      },
-      ru: {
-        'page.title':            'Список Игр - NTS',
-        'page.heading':          'СПИСОК ИГР',
-        'btn.play':              'ИГРАТЬ',
-        'music.tooltip':         'Вкл/Выкл музыку',
-        'game.dice.title':       'Кости',
-        'game.dice.desc':        'Захватывающая игра удачи с неожиданными результатами.',
-        'game.spin.title':       'Колесо Имён',
-        'game.spin.desc':        'Колесо фортуны, которое приведёт всех в восторг!',
-        'game.race.title':       'Случайные Гонки',
-        'game.race.desc':        'Интенсивные и захватывающие числовые гонки!',
-        'game.tod.title':        'Правда или Действие',
-        'game.tod.desc':         'Вызов, правда или случайное наказание с друзьями.',
-        'game.caro.title':       'Гомоку',
-        'game.caro.desc':        'Классическая игра — первый собравший 5 в ряд побеждает.',
-        'game.math.title':       'Найти 3 Числа',
-        'game.math.desc':        'Тренируй логику и быстрые вычисления.',
-        'game.cards.title':      'Карточная Игра',
-        'game.cards.desc':       'Проверь удачу и стратегию с 52 картами.',
-        'game.taixiu.title':     'Сик-Бо',
-        'game.taixiu.desc':      'Классическая игра предсказания кубиков.',
-        'game.quiz.title':       'Весёлая Викторина',
-        'game.quiz.desc':        'Логика и рассуждения через интересные вопросы.',
-        'game.maze.title':       'Лабиринт',
-        'game.maze.desc':        'Найди выход из сложного лабиринта.',
-        'game.memory.title':     'Мемори',
-        'game.memory.desc':      'Тренируй память, находя пары карточек.',
-        'game.mole.title':       'Ударь Крота',
-        'game.mole.desc':        'Проверь быстроту реакции!',
-        'game.rps.title':        'Камень Ножницы Бумага',
-        'game.rps.desc':         'Классическая простая и весёлая игра.',
-        'game.guess.title':      'Угадай Число',
-        'game.guess.desc':       'Угадай секретное число машины.',
-        'game.color.title':      'Память Цветов',
-        'game.color.desc':       'Улучшай кратковременную память и концентрацию.',
-        'game.timer.title':      'Чувство Времени',
-        'game.timer.desc':       'Тренируй способность оценивать время.',
-        'game.detective.title':  'Детектив Паролей',
-        'game.detective.desc':   'Сыграй детективом и взломай пароль.',
-        'game.bomb.title':       'Обезвреживание Бомбы',
-        'game.bomb.desc':        'Обезвредь бомбу до взрыва!',
-        'footer.prefix':         'Дизайн & разработка',
-        'footer.author':         'Нгуен Тхань Санг',
-      },
-      ar: {
-        'page.title':            'قائمة الألعاب - NTS',
-        'page.heading':          'قائمة الألعاب',
-        'btn.play':              'العب الآن',
-        'music.tooltip':         'تشغيل/إيقاف الموسيقى',
-        'game.dice.title':       'النرد',
-        'game.dice.desc':        'لعبة حظ مثيرة بنتائج غير متوقعة.',
-        'game.spin.title':       'عجلة الأسماء',
-        'game.spin.desc':        'عجلة الحظ التي تثير الجميع!',
-        'game.race.title':       'سباق عشوائي',
-        'game.race.desc':        'تجربة سباق أرقام مكثفة وممتعة!',
-        'game.tod.title':        'الحقيقة أم التحدي',
-        'game.tod.desc':         'تحديات أو حقائق أو عقوبات عشوائية مع الأصدقاء.',
-        'game.caro.title':       'غوموكو',
-        'game.caro.desc':        'لعبة لوحية كلاسيكية — من يصطف 5 أولاً يفوز.',
-        'game.math.title':       'ابحث عن 3 أرقام',
-        'game.math.desc':        'تدريب المنطق والحساب السريع.',
-        'game.cards.title':      'لعبة الورق',
-        'game.cards.desc':       'اختبر الحظ والاستراتيجية بـ 52 ورقة.',
-        'game.taixiu.title':     'سيك بو',
-        'game.taixiu.desc':      'لعبة التنبؤ بالنرد الكلاسيكية.',
-        'game.quiz.title':       'مسابقة ممتعة',
-        'game.quiz.desc':        'المنطق والاستدلال عبر أسئلة مثيرة.',
-        'game.maze.title':       'المتاهة',
-        'game.maze.desc':        'ابحث عن مخرج من المتاهة المعقدة.',
-        'game.memory.title':     'بطاقات الذاكرة',
-        'game.memory.desc':      'درب ذاكرتك بإيجاد أزواج البطاقات.',
-        'game.mole.title':       'اضرب الخلد',
-        'game.mole.desc':        'اختبر ردود فعلك السريعة!',
-        'game.rps.title':        'حجر ورقة مقص',
-        'game.rps.desc':         'لعبة كلاسيكية بسيطة وممتعة.',
-        'game.guess.title':      'خمّن الرقم',
-        'game.guess.desc':       'حاول تخمين الرقم السري الذي اختاره الكمبيوتر.',
-        'game.color.title':      'ذاكرة الألوان',
-        'game.color.desc':       'حسّن الذاكرة قصيرة المدى والتركيز.',
-        'game.timer.title':      'الإحساس بالوقت',
-        'game.timer.desc':       'درب قدرتك على تقدير الوقت.',
-        'game.detective.title':  'محقق كلمة المرور',
-        'game.detective.desc':   'العب دور المحقق وافك رموز كلمة المرور.',
-        'game.bomb.title':       'نزع فتيل القنبلة',
-        'game.bomb.desc':        'نزّع القنبلة قبل أن تنفجر!',
-        'footer.prefix':         'تصميم وتطوير بواسطة',
-        'footer.author':         'نغوين ثانه سانغ',
-      },
-    };
+    <div class="sidebar-section">
+      <h3 data-i18n="langHeading">Ngôn ngữ</h3>
 
-    /* Fallback: ngôn ngữ không có bản dịch riêng → dùng tiếng Anh */
-    const LANG_FALLBACK = {
-      'zh-TW':'zh','zh-HK':'zh','zh-MO':'zh',
-      'en-US':'en','en-NZ':'en',
-      'de-CH':'de','es-MX':'es',
-      'km':'vi','lo':'vi','id':'en','ms':'en',
-      'hi':'en','tr':'en','it':'en','pt':'en',
-      'nl':'en','fi':'en','sv':'en','kp':'ko',
-    };
+      <div class="skill-row">
+        <div class="skill-row-header"><span data-i18n="langEnglishLabel">Tiếng Anh</span><span data-i18n="langEnglishLevel">Khá</span></div>
+      </div>
 
-    /* ================================================================
-       APPLY TRANSLATIONS
-       ================================================================ */
-    function applyTranslations(lang) {
-      const resolved = LANG_FALLBACK[lang] || lang;
-      const t = TRANSLATIONS[resolved] || TRANSLATIONS['vi'];
+      <div class="skill-row">
+        <div class="skill-row-header"><span data-i18n="langChineseLabel">Tiếng Trung</span><span data-i18n="langChineseLevel">Cơ bản</span></div>
+      </div>
+    </div>
 
-      document.documentElement.lang = lang;
-      document.documentElement.dir  = (lang === 'ar') ? 'rtl' : 'ltr';
-      if (t['page.title']) document.title = t['page.title'];
+    <div class="sidebar-section">
+      <h3 data-i18n="hobbyHeading">Sở thích</h3>
+      <div class="hobby-list">
+        <span class="hobby-tag"><span>💻</span><span data-i18n="hobby1">Lập trình cá nhân</span></span>
+        <span class="hobby-tag"><span>🎨</span><span data-i18n="hobby2">Thiết kế UI/UX</span></span>
+        <span class="hobby-tag"><span>📚</span><span data-i18n="hobby3">Đọc sách công nghệ</span></span>
+        <span class="hobby-tag"><span>🎮</span><span data-i18n="hobby4">Chơi game</span></span>
+        <span class="hobby-tag"><span>🎵</span><span data-i18n="hobby5">Nghe nhạc</span></span>
+        <span class="hobby-tag"><span>🚴</span><span data-i18n="hobby6">Đạp xe</span></span>
+      </div>
+    </div>
 
-      document.querySelectorAll('[data-i18n]').forEach(function(el) {
-        const key = el.dataset.i18n;
-        if (!t[key]) return;
+  </aside>
 
-        // Nếu element có children (ví dụ <span> trong <p>) thì chỉ cập nhật text node đầu tiên
-        // Với <a> và các element thuần text → dùng textContent thẳng
-        const hasChildElements = Array.from(el.childNodes).some(n => n.nodeType === Node.ELEMENT_NODE);
-        if (hasChildElements) {
-          // Tìm text node đầu tiên và cập nhật
-          const textNode = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
-          if (textNode) textNode.textContent = t[key];
-        } else {
-          el.textContent = t[key];
-        }
+  <!-- ============ NỘI DUNG CHÍNH ============ -->
+  <main class="main-content">
+
+    <!-- --- Bộ chuyển ngôn ngữ --- -->
+    <div class="lang-switcher" id="langSwitcher">
+      <button class="lang-toggle" id="langToggle" aria-label="Đổi ngôn ngữ" aria-haspopup="true" aria-expanded="false">
+        <span id="langCurrentFlag">🇻🇳</span>
+      </button>
+      <div class="lang-menu" id="langMenu" role="menu">
+        <button class="lang-option" data-lang="vi"><span>🇻🇳</span> Tiếng Việt</button>
+        <button class="lang-option" data-lang="zh"><span>🇨🇳</span> Tiếng Trung</button>
+        <button class="lang-option" data-lang="en"><span>🇬🇧</span> Tiếng Anh</button>
+        <button class="lang-option" data-lang="ko"><span>🇰🇷</span> Tiếng Hàn</button>
+        <button class="lang-option" data-lang="ja"><span>🇯🇵</span> Tiếng Nhật</button>
+        <button class="lang-option" data-lang="en-ca"><span>🇨🇦</span> Canada</button>
+        <button class="lang-option" data-lang="en-au"><span>🇦🇺</span> Úc</button>
+        <button class="lang-option" data-lang="fr"><span>🇫🇷</span> Pháp</button>
+        <button class="lang-option" data-lang="zh-tw"><span>🇹🇼</span> Đài Loan</button>
+      </div>
+    </div>
+
+    <!-- --- Hero --- -->
+    <section class="hero">
+      <p class="eyebrow-label fade-in-item" data-i18n="heroEyebrow">Xin chào, tôi là</p>
+      <h1 class="fade-in-item"><span data-i18n="name">Nguyễn Văn Tùng</span><span data-i18n-html="heroTitleRest"> — xây dựng những giao diện<br><em class="hero-highlight">gọn, nhanh và đáng tin</em></span></h1>
+      <p class="fade-in-item" data-i18n="heroSubtitle">Lập trình viên 20 tuổi yêu thích thiết kế website hiện đại, tối ưu trải nghiệm người dùng và luôn học hỏi công nghệ mới.</p>
+    </section>
+
+    <!-- --- Giới thiệu --- -->
+    <section id="about">
+      <div class="section-heading"><h2 data-i18n="aboutHeading">Giới thiệu</h2></div>
+      <div class="card-grid">
+        <div class="info-card">
+          <h4 data-i18n="goalHeading">Mục tiêu</h4>
+          <p data-i18n="goalText">Với 6 năm trong nghề lập trình, triển khai trực tiếp hơn 30 dự án, tôi mong muốn ứng tuyển vào vị trí Senior của Công ty để có thể áp dụng những kiến thức, kinh nghiệm lập trình của bản thân để nâng cấp sản phẩm và mang lại những giá trị hữu ích cho doanh nghiệp. Đồng thời, mục tiêu phát triển trong vòng 2 năm tới của tôi sẽ trở thành một Lead giỏi.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- --- Học vấn --- -->
+    <section id="education">
+      <div class="section-heading"><h2 data-i18n="eduHeading">Học vấn</h2></div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-date"><span class="timeline-period">2022 — 2026</span></div>
+          <div class="timeline-divider"></div>
+          <div class="timeline-content">
+            <h3 data-i18n="edu1Title">Cử nhân Công nghệ Thông tin <span class="timeline-org" data-i18n="edu1Org">· Trường Đại học ABC</span></h3>
+            <p data-i18n="edu1Desc">Chuyên ngành Kỹ thuật phần mềm, tập trung phát triển web front-end.</p>
+            <p class="timeline-meta" data-i18n-html="edu1Meta">Tốt nghiệp tháng 6/2026<br>Xếp loại <strong>Giỏi</strong> · GPA 3.6/4.0</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date"><span class="timeline-period">2019 — 2022</span></div>
+          <div class="timeline-divider"></div>
+          <div class="timeline-content">
+            <h3 data-i18n="edu2Title">Trung học phổ thông <span class="timeline-org" data-i18n="edu2Org">· Trường THPT XYZ</span></h3>
+            <p data-i18n="edu2Desc">Tham gia câu lạc bộ Tin học của trường.</p>
+            <p class="timeline-meta" data-i18n-html="edu2Meta">Tốt nghiệp tháng 6/2022<br>Xếp loại <strong>Giỏi</strong></p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- --- Kinh nghiệm làm việc --- -->
+    <section id="experience">
+      <div class="section-heading"><h2 data-i18n="expHeading">Kinh nghiệm làm việc</h2></div>
+      <div class="timeline">
+
+        <div class="timeline-item is-current">
+          <div class="timeline-date"><span class="timeline-period">2025 — <span data-i18n="present">Hiện tại</span></span></div>
+          <div class="timeline-divider"></div>
+          <div class="timeline-content">
+            <h3 data-i18n="exp1Title">Front-end Developer <span class="timeline-org" data-i18n="exp1Org">· Công ty TNHH MTV SVT</span></h3>
+            <ul class="timeline-list">
+              <li data-i18n-html="exp1Li1">Xây dựng và bảo trì giao diện website cho <strong>3+ dự án khách hàng</strong> bằng HTML, CSS, JavaScript.</li>
+              <li data-i18n="exp1Li2">Phối hợp cùng designer chuyển đổi file Figma thành giao diện responsive, tối ưu tốc độ tải trang.</li>
+              <li data-i18n="exp1Li3">Tham gia sửa lỗi, tối ưu trải nghiệm người dùng theo phản hồi thực tế.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date"><span class="timeline-period">2021 — 2025</span></div>
+          <div class="timeline-divider"></div>
+          <div class="timeline-content">
+            <h3 data-i18n="exp2Title">Thực tập sinh Web Developer <span class="timeline-org" data-i18n="exp2Org">· Công ty CP Công nghệ NDS</span></h3>
+            <ul class="timeline-list">
+              <li data-i18n="exp2Li1">Hỗ trợ xây dựng landing page và các thành phần giao diện dùng lại được (component).</li>
+              <li data-i18n="exp2Li2">Học và áp dụng quy trình làm việc nhóm với Git, review code cùng mentor.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date"><span class="timeline-period">2019 — 2021</span></div>
+          <div class="timeline-divider"></div>
+          <div class="timeline-content">
+            <h3 data-i18n="exp3Title">Freelance Web Developer</h3>
+            <ul class="timeline-list">
+              <li data-i18n="exp3Li1">Nhận và hoàn thành các dự án website nhỏ cho khách hàng cá nhân, cửa hàng.</li>
+              <li data-i18n="exp3Li2">Tự học và thực hành thiết kế giao diện thông qua các dự án thực tế.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- --- Công việc mong muốn --- -->
+    <section id="job-preference">
+      <div class="section-heading"><h2 data-i18n="jobPrefHeading">Công việc mong muốn</h2></div>
+      <div class="info-card">
+        <div class="info-row"><span data-i18n="jp1Label">Cấp bậc</span><span data-i18n="jp1Value">Nhân viên / Fresher</span></div>
+        <div class="info-row"><span data-i18n="jp2Label">Mức lương mong muốn</span><span data-i18n="jp2Value">10 — 15 triệu VNĐ</span></div>
+        <div class="info-row"><span data-i18n="jp3Label">Phúc lợi mong muốn</span><span data-i18n="jp3Value">BHXH đầy đủ, thưởng hiệu suất, đào tạo nâng cao</span></div>
+        <div class="info-row"><span data-i18n="jp4Label">Hình thức làm việc</span><span data-i18n="jp4Value">Toàn thời gian</span></div>
+        <div class="info-row"><span data-i18n="jp5Label">Ngành nghề</span><span data-i18n="jp5Value">Công nghệ thông tin — Front-end Developer</span></div>
+        <div class="info-row"><span data-i18n="jp6Label">Nơi làm việc</span><span data-i18n="jp6Value">TP. Hồ Chí Minh</span></div>
+      </div>
+    </section>
+
+    <!-- --- Banner liên hệ --- -->
+    <section class="contact-banner" id="contact">
+      <div>
+        <h2 data-i18n="ctaHeading">Cùng trao đổi công việc?</h2>
+        <p data-i18n="ctaText">Luôn sẵn sàng cho những cơ hội và dự án mới.</p>
+      </div>
+      <a class="email-link" href="mailto:example@gmail.com">nguyenvantung12@gmail.com →</a>
+    </section>
+
+    <footer class="site-footer">© 2026 <span data-i18n="name">Nguyễn Văn tùng</span> — <span data-i18n="footerTagline">Personal CV</span></footer>
+
+  </main>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     MODULE 1 — HIỆU ỨNG XUẤT HIỆN KHI CUỘN TRANG (SCROLL REVEAL)
+     ============================================================ */
+
+  function initScrollReveal(){
+    var sections = document.querySelectorAll(".main-content section");
+
+    if(!("IntersectionObserver" in window)){
+      sections.forEach(function(section){
+        section.classList.add("in-view");
       });
+      return;
     }
 
-    /* ================================================================
-       INIT — đọc ngôn ngữ từ localStorage (đồng bộ với trang chủ)
-       ================================================================ */
-    (function init() {
-      const lang = localStorage.getItem('nts-lang') || 'vi';
-      applyTranslations(lang);
-    })();
-
-    /* ================================================================
-       MUSIC CONTROL
-       ================================================================ */
-    document.addEventListener('DOMContentLoaded', function() {
-      const music        = document.getElementById('backgroundMusic');
-      const musicControl = document.getElementById('musicControl');
-      let isPlaying = false;
-
-      music.volume = 0.3;
-
-      const playPromise = music.play();
-      if (playPromise !== undefined) {
-        playPromise.then(function() {
-          isPlaying = true;
-          musicControl.querySelector('i').className = 'fas fa-pause text-xl';
-          musicControl.classList.add('animate-pulse');
-        }).catch(function() {
-          isPlaying = false;
-          musicControl.querySelector('i').className = 'fas fa-play text-xl';
-        });
-      }
-
-      musicControl.addEventListener('click', function() {
-        if (isPlaying) {
-          music.pause();
-          musicControl.querySelector('i').className = 'fas fa-play text-xl';
-          musicControl.classList.remove('animate-pulse');
-        } else {
-          music.play();
-          musicControl.querySelector('i').className = 'fas fa-pause text-xl';
-          musicControl.classList.add('animate-pulse');
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("in-view");
+          observer.unobserve(entry.target);
         }
-        isPlaying = !isPlaying;
+      });
+    }, { threshold: 0.12 });
+
+    sections.forEach(function(section){
+      observer.observe(section);
+    });
+  }
+
+  /* ============================================================
+     MODULE 2 — ĐA NGÔN NGỮ (I18N) — DỊCH TỰ ĐỘNG
+     ------------------------------------------------------------
+     Không còn dùng từ điển dịch cố định (hardcoded). Toàn bộ nội
+     dung tiếng Việt hiện có trong HTML được coi là "bản gốc".
+     Khi người dùng chọn ngôn ngữ khác, nội dung gốc này được gửi
+     đi dịch tự động qua API dịch của Google Translate (endpoint
+     công khai, không cần API key) và hiển thị kết quả. Vì vậy,
+     chỉ cần sửa chữ tiếng Việt trực tiếp trong
+     file, mọi ngôn ngữ khác sẽ tự động dịch theo nội dung mới —
+     không cần sửa lại danh sách dịch ở bất kỳ đâu khác.
+     ============================================================ */
+
+  // Ánh xạ mã ngôn ngữ trong giao diện -> mã ngôn ngữ API dịch hiểu được
+  var API_LANG_CODE = {
+    en: "en", "en-ca": "en", "en-au": "en",
+    zh: "zh-CN", "zh-tw": "zh-TW",
+    ko: "ko", ja: "ja", fr: "fr"
+  };
+
+  var FLAG_BY_LANG = {
+    vi: "🇻🇳", zh: "🇨🇳", en: "🇬🇧", ko: "🇰🇷", ja: "🇯🇵",
+    "en-ca": "🇨🇦", "en-au": "🇦🇺", fr: "🇫🇷", "zh-tw": "🇹🇼"
+  };
+
+  var SOURCE_LANG = "vi";
+
+  // Nội dung gốc (tiếng Việt), được chụp lại một lần duy nhất lúc tải trang
+  var sourceContent = {};
+
+  // Bộ nhớ đệm bản dịch: translationCache[lang][key + "::" + bản gốc] = bản dịch
+  // Vì khoá đệm gồm cả nội dung gốc, nếu bạn sửa chữ tiếng Việt thì khoá
+  // đổi theo và bản dịch cũ sẽ tự động không được dùng lại (sẽ dịch lại).
+  var translationCache = {};
+
+  /**
+   * Chụp lại toàn bộ nội dung tiếng Việt đang có trong HTML,
+   * dùng làm "bản gốc" duy nhất để dịch sang các ngôn ngữ khác.
+   *
+   * Nhiều phần tử có thể dùng chung một khoá (ví dụ: tên trong sidebar,
+   * trong tiêu đề Hero, và trong dòng bản quyền cuối trang đều dùng khoá
+   * "name") — khi đó bản dịch chỉ cần gọi API một lần rồi áp dụng cho
+   * TẤT CẢ các phần tử cùng khoá, đảm bảo hiển thị giống nhau tuyệt đối
+   * ở mọi vị trí trên trang.
+   */
+  function captureSourceContent(){
+    sourceContent = {};
+
+    function registerElement(key, type, el){
+      if(!sourceContent[key]){
+        var original = type === "text" ? el.textContent : el.innerHTML;
+        sourceContent[key] = { type: type, original: original, elements: [] };
+      }
+      sourceContent[key].elements.push(el);
+    }
+
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      registerElement(el.getAttribute("data-i18n"), "text", el);
+    });
+
+    document.querySelectorAll("[data-i18n-html]").forEach(function(el){
+      registerElement(el.getAttribute("data-i18n-html"), "html", el);
+    });
+  }
+
+  /**
+   * Gọi API dịch của Google Translate (endpoint công khai, không cần API key)
+   * để dịch một đoạn văn bản thuần. Nếu gọi API thất bại (mất mạng, bị chặn,
+   * hết hạn mức...), trả lại nguyên văn bản gốc để trang không bị vỡ nội dung.
+   */
+  function translatePlainText(text, targetLangCode){
+    if(!text || !text.trim()){ return Promise.resolve(text); }
+
+    var endpoint = "https://translate.googleapis.com/translate_a/single"
+      + "?client=gtx&dt=t"
+      + "&sl=" + SOURCE_LANG
+      + "&tl=" + targetLangCode
+      + "&q=" + encodeURIComponent(text);
+
+    return fetch(endpoint)
+      .then(function(response){ return response.json(); })
+      .then(function(data){
+        // Cấu trúc trả về: [[["đoạn dịch 1","đoạn gốc 1",...], ["đoạn dịch 2",...], ...], ...]
+        if(!data || !data[0]){ return text; }
+        return data[0].map(function(segment){ return segment[0]; }).join("");
+      })
+      .catch(function(){ return text; });
+  }
+
+  /**
+   * Dịch một đoạn HTML (có thể chứa <strong>, <em>, <br>...) bằng cách
+   * chỉ dịch phần chữ trong từng text node, giữ nguyên toàn bộ thẻ HTML
+   * xung quanh — nhờ vậy định dạng in đậm / nghiêng / xuống dòng không
+   * bị mất khi dịch sang ngôn ngữ khác.
+   */
+  function translateHtmlFragment(html, targetLangCode){
+    var wrapper = document.createElement("div");
+    wrapper.innerHTML = html;
+
+    var textNodes = [];
+    (function collectTextNodes(node){
+      node.childNodes.forEach(function(child){
+        if(child.nodeType === Node.TEXT_NODE && child.textContent.trim()){
+          textNodes.push(child);
+        } else if(child.nodeType === Node.ELEMENT_NODE){
+          collectTextNodes(child);
+        }
+      });
+    })(wrapper);
+
+    var jobs = textNodes.map(function(node){
+      return translatePlainText(node.textContent, targetLangCode).then(function(translated){
+        node.textContent = translated;
       });
     });
-    </script>
+
+    return Promise.all(jobs).then(function(){
+      return wrapper.innerHTML;
+    });
+  }
+
+  /**
+   * Hiện/ẩn trạng thái "đang dịch" trên nút chuyển ngôn ngữ,
+   * để người dùng biết trang đang chờ kết quả dịch trả về.
+   */
+  function setTranslatingState(isTranslating){
+    var toggle = document.getElementById("langToggle");
+    if(toggle){ toggle.classList.toggle("is-translating", isTranslating); }
+  }
+
+  function updateActiveLanguageUi(lang){
+    document.documentElement.setAttribute("lang", lang.split("-")[0]);
+
+    var flagEl = document.getElementById("langCurrentFlag");
+    if(flagEl){ flagEl.textContent = FLAG_BY_LANG[lang] || "🇻🇳"; }
+
+    document.querySelectorAll(".lang-option").forEach(function(btn){
+      btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
+    });
+  }
+
+  function applyTranslatedValue(item, value){
+    item.elements.forEach(function(el){
+      if(item.type === "text"){ el.textContent = value; }
+      else { el.innerHTML = value; }
+    });
+  }
+
+  /**
+   * Áp dụng một ngôn ngữ lên toàn trang.
+   * - Nếu chọn lại tiếng Việt: khôi phục nguyên văn bản gốc, không cần gọi API.
+   * - Nếu chọn ngôn ngữ khác: dịch từng đoạn nội dung gốc (có dùng bộ nhớ đệm
+   *   để tránh dịch lại những đoạn không đổi), rồi hiển thị kết quả.
+   */
+  function applyLanguage(lang){
+    updateActiveLanguageUi(lang);
+
+    if(lang === SOURCE_LANG){
+      Object.keys(sourceContent).forEach(function(key){
+        applyTranslatedValue(sourceContent[key], sourceContent[key].original);
+      });
+      setTranslatingState(false);
+      return;
+    }
+
+    var targetCode = API_LANG_CODE[lang] || "en";
+    var cacheForLang = translationCache[lang] || (translationCache[lang] = {});
+
+    setTranslatingState(true);
+
+    var jobs = Object.keys(sourceContent).map(function(key){
+      var item = sourceContent[key];
+      var cacheKey = key + "::" + item.original;
+
+      if(cacheForLang[cacheKey] !== undefined){
+        applyTranslatedValue(item, cacheForLang[cacheKey]);
+        return Promise.resolve();
+      }
+
+      var translateJob = item.type === "text"
+        ? translatePlainText(item.original, targetCode)
+        : translateHtmlFragment(item.original, targetCode);
+
+      return translateJob.then(function(translated){
+        cacheForLang[cacheKey] = translated;
+        applyTranslatedValue(item, translated);
+      });
+    });
+
+    Promise.all(jobs).then(function(){
+      setTranslatingState(false);
+    });
+  }
+
+  function initLanguageSwitcher(){
+    captureSourceContent();
+
+    var toggle = document.getElementById("langToggle");
+    var menu = document.getElementById("langMenu");
+
+    if(!toggle || !menu){ return; }
+
+    toggle.addEventListener("click", function(event){
+      event.stopPropagation();
+      var isOpen = menu.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    document.querySelectorAll(".lang-option").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        applyLanguage(btn.getAttribute("data-lang"));
+        menu.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    document.addEventListener("click", function(event){
+      if(!menu.contains(event.target) && event.target !== toggle){
+        menu.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  /* ============================================================
+     KHỞI CHẠY
+     ============================================================ */
+
+  initScrollReveal();
+  initLanguageSwitcher();
+
+})();
+</script>
 </body>
 </html>
