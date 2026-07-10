@@ -1,2116 +1,1232 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#060712" />
-  <meta name="description" content="Kho tiện ích NTS gồm Minigames, Lời Tỏ Tình, Birthday, Kiểm Tra Thiết Bị, Tạo QR và Bể Cá." />
-  <title>Trang Chủ NTS - Fun Portal</title>
-  <link rel="icon" type="image/png" href="logos3.png" />
-
-  <style>
-    :root {
-      --bg: #060712;
-      --bg-soft: #0c1022;
-      --surface: rgba(255, 255, 255, 0.075);
-      --surface-strong: rgba(255, 255, 255, 0.12);
-      --border: rgba(255, 255, 255, 0.14);
-      --border-strong: rgba(255, 255, 255, 0.28);
-      --text: #ffffff;
-      --muted: #aeb7d8;
-      --muted-2: #7882aa;
-      --cyan: #00e5ff;
-      --violet: #8b5cff;
-      --pink: #ff4fa3;
-      --yellow: #ffcf5a;
-      --green: #38ff9f;
-      --blue: #4aa3ff;
-      --radius-lg: 34px;
-      --radius-md: 24px;
-      --shadow: 0 28px 90px rgba(0, 0, 0, 0.48);
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --vh: 1vh;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      background: var(--bg);
-    }
-
-    body {
-      min-height: 100vh;
-      min-height: calc(var(--vh) * 100);
-      color: var(--text);
-      background: var(--bg);
-      font-family: Outfit, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-    }
-
-    body.no-scroll {
-      overflow: hidden;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button,
-    a,
-    select {
-      -webkit-tap-highlight-color: transparent;
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-    ::selection {
-      color: #05111a;
-      background: var(--cyan);
-    }
-
-    ::-webkit-scrollbar {
-      width: 9px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #050610;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      border-radius: 999px;
-      background: linear-gradient(var(--violet), var(--cyan));
-    }
-
-    .container {
-      width: min(1180px, calc(100% - 32px));
-      margin-inline: auto;
-    }
-
-    .background-stage {
-      position: fixed;
-      inset: 0;
-      z-index: -5;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 40%, rgba(15, 21, 52, 0.88), transparent 40%),
-        linear-gradient(140deg, #050610 0%, #070816 48%, #090516 100%);
-    }
-
-    .background-stage::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.42;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-      background-size: 46px 46px;
-      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), transparent 82%);
-    }
-
-    .background-stage::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.13;
-      background-image:
-        radial-gradient(circle at 15% 18%, #fff 0 1px, transparent 1.5px),
-        radial-gradient(circle at 82% 12%, #fff 0 1px, transparent 1.5px),
-        radial-gradient(circle at 70% 78%, #fff 0 1px, transparent 1.5px),
-        radial-gradient(circle at 30% 70%, #fff 0 1px, transparent 1.5px);
-      background-size: 180px 180px, 220px 220px, 260px 260px, 200px 200px;
-      animation: starDrift 18s linear infinite;
-    }
-
-    @keyframes starDrift {
-      to {
-        transform: translate3d(-60px, 40px, 0);
-      }
-    }
-
-    .orb {
-      position: absolute;
-      width: var(--size);
-      height: var(--size);
-      left: var(--left);
-      top: var(--top);
-      border-radius: 50%;
-      background: radial-gradient(circle, var(--color), transparent 68%);
-      filter: blur(var(--blur));
-      opacity: var(--opacity);
-      animation: orbFloat var(--duration) ease-in-out infinite alternate;
-    }
-
-    @keyframes orbFloat {
-      from {
-        transform: translate3d(0, 0, 0) scale(1);
-      }
-      to {
-        transform: translate3d(var(--move-x), var(--move-y), 0) scale(1.12);
-      }
-    }
-
-    .cursor-glow {
-      position: fixed;
-      width: 420px;
-      height: 420px;
-      left: var(--cursor-x, 50%);
-      top: var(--cursor-y, 20%);
-      z-index: -4;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 229, 255, 0.13), transparent 64%);
-      filter: blur(12px);
-      opacity: 0.9;
-      transition: opacity 0.3s ease;
-    }
-
-    .preloader {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: grid;
-      place-items: center;
-      padding: 28px;
-      background:
-        radial-gradient(circle at 50% 40%, rgba(0, 229, 255, 0.16), transparent 28%),
-        #02030a;
-      transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.55s ease;
-    }
-
-    .preloader.is-hidden {
-      transform: translateY(-104%);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .loader-box {
-      display: grid;
-      gap: 26px;
-      justify-items: center;
-      text-align: center;
-    }
-
-    .loader-ring {
-      position: relative;
-      width: clamp(150px, 34vw, 220px);
-      height: clamp(150px, 34vw, 220px);
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      isolation: isolate;
-    }
-
-    .loader-ring::before,
-    .loader-ring::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      border: 2px solid transparent;
-    }
-
-    .loader-ring::before {
-      border-top-color: var(--cyan);
-      border-bottom-color: var(--cyan);
-      box-shadow: 0 0 32px rgba(0, 229, 255, 0.18);
-      animation: spin 1.65s linear infinite;
-    }
-
-    .loader-ring::after {
-      inset: 22px;
-      border-left-color: var(--violet);
-      border-right-color: var(--pink);
-      animation: spinReverse 1.25s linear infinite;
-    }
-
-    .loader-scan {
-      position: absolute;
-      width: 112%;
-      height: 2px;
-      background: var(--cyan);
-      box-shadow: 0 0 18px var(--cyan);
-      opacity: 0.65;
-      animation: scan 1.85s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes spinReverse {
-      to { transform: rotate(-360deg); }
-    }
-
-    @keyframes scan {
-      0%, 100% { top: 16%; opacity: 0; }
-      50% { top: 84%; opacity: 0.78; }
-    }
-
-    .loader-percent {
-      font-size: clamp(2rem, 8vw, 3.4rem);
-      font-weight: 950;
-      letter-spacing: -0.08em;
-      text-shadow: 0 0 26px rgba(0, 229, 255, 0.7);
-    }
-
-    .loader-title {
-      max-width: 620px;
-      color: #bff9ff;
-      font-size: clamp(0.72rem, 2vw, 0.9rem);
-      font-weight: 900;
-      letter-spacing: 0.45em;
-      text-transform: uppercase;
-    }
-
-    .loader-status {
-      color: var(--muted-2);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.78rem;
-      margin-top: 10px;
-    }
-
-    .site-nav {
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      padding-top: var(--safe-top);
-      background: linear-gradient(to bottom, rgba(6, 7, 18, 0.86), rgba(6, 7, 18, 0.48));
-      backdrop-filter: blur(22px) saturate(160%);
-      -webkit-backdrop-filter: blur(22px) saturate(160%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.085);
-    }
-
-    .nav-shell {
-      min-height: 74px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-      font-weight: 950;
-      letter-spacing: -0.045em;
-    }
-
-    .brand-mark {
-      position: relative;
-      width: 44px;
-      height: 44px;
-      flex: 0 0 44px;
-      display: grid;
-      place-items: center;
-      border-radius: 16px;
-      overflow: hidden;
-      background: linear-gradient(135deg, var(--cyan), var(--violet) 55%, var(--pink));
-      box-shadow: 0 14px 42px rgba(0, 229, 255, 0.24);
-    }
-
-    .brand-mark::after {
-      content: "";
-      position: absolute;
-      inset: 2px;
-      border-radius: 14px;
-      background: rgba(6, 7, 18, 0.22);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-    }
-
-    .brand-mark span {
-      position: relative;
-      z-index: 1;
-      font-size: 0.9rem;
-      font-weight: 950;
-    }
-
-    .brand-text {
-      font-size: clamp(1.05rem, 3vw, 1.32rem);
-      white-space: nowrap;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      display: inline-flex;
-      align-items: center;
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      font-weight: 760;
-      transition: color 0.22s ease, background 0.22s ease, transform 0.22s ease;
-    }
-
-    .nav-links a:hover,
-    .nav-links a:focus-visible {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.1);
-      outline: none;
-      transform: translateY(-1px);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .language {
-      position: relative;
-    }
-
-    .lang-button,
-    .menu-toggle,
-    .music-control {
-      min-height: 44px;
-      border-radius: 999px;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.085);
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
-    }
-
-    .lang-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 0 13px;
-      font-size: 0.82rem;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .lang-button:hover,
-    .menu-toggle:hover,
-    .music-control:hover {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(0, 229, 255, 0.5);
-    }
-
-    .lang-arrow {
-      font-size: 0.68rem;
-      color: var(--muted);
-      transition: transform 0.24s ease;
-    }
-
-    .language.is-open .lang-arrow {
-      transform: rotate(180deg);
-    }
-
-    .lang-menu {
-      position: absolute;
-      top: calc(100% + 10px);
-      right: 0;
-      width: 185px;
-      padding: 8px;
-      border-radius: 20px;
-      background: rgba(4, 5, 14, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(24px) saturate(170%);
-      -webkit-backdrop-filter: blur(24px) saturate(170%);
-      opacity: 0;
-      transform: translateY(-8px) scale(0.96);
-      pointer-events: none;
-      transform-origin: top right;
-      transition: 0.22s ease;
-    }
-
-    .language.is-open .lang-menu {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-    }
-
-    .lang-option {
-      width: 100%;
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 10px;
-      border-radius: 14px;
-      color: var(--muted);
-      background: transparent;
-      font-size: 0.9rem;
-      font-weight: 760;
-      text-align: left;
-    }
-
-    .lang-option:hover,
-    .lang-option.is-active {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .flag {
-      font-size: 1rem;
-      line-height: 1;
-    }
-
-    .menu-toggle {
-      display: none;
-      width: 44px;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      font-size: 1.18rem;
-    }
-
-    .hero {
-      position: relative;
-      min-height: calc(var(--vh) * 100 - 74px);
-      display: grid;
-      align-items: center;
-      padding: clamp(60px, 8vw, 112px) 0 clamp(56px, 8vw, 96px);
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.04fr) minmax(330px, 0.96fr);
-      gap: clamp(28px, 5vw, 64px);
-      align-items: center;
-    }
-
-    .eyebrow {
-      width: fit-content;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 40px;
-      padding: 0 14px;
-      border-radius: 999px;
-      color: #dffbff;
-      background: rgba(0, 229, 255, 0.075);
-      border: 1px solid rgba(0, 229, 255, 0.22);
-      box-shadow: 0 0 32px rgba(0, 229, 255, 0.08);
-      font-size: 0.84rem;
-      font-weight: 850;
-    }
-
-    .status-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 18px var(--green);
-    }
-
-    .hero-title {
-      margin-top: 24px;
-      max-width: 820px;
-      font-size: clamp(2.85rem, 9vw, 7.7rem);
-      font-weight: 950;
-      line-height: 0.92;
-      letter-spacing: -0.085em;
-    }
-
-    .gradient-text {
-      color: transparent;
-      background: linear-gradient(92deg, #ffffff 0%, #93f7ff 30%, #c7a7ff 64%, #ffd36c 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      text-shadow: 0 0 70px rgba(0, 229, 255, 0.18);
-    }
-
-    .hero-subtitle {
-      max-width: 720px;
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: clamp(1rem, 2.2vw, 1.16rem);
-      line-height: 1.78;
-    }
-
-    .typewriter {
-      min-height: 30px;
-      margin-top: 22px;
-      color: #8ff5ff;
-      font-size: clamp(0.82rem, 2vw, 1rem);
-      font-weight: 850;
-      letter-spacing: 0.17em;
-      text-transform: uppercase;
-    }
-
-    .typewriter::after {
-      content: "";
-      display: inline-block;
-      width: 2px;
-      height: 1em;
-      margin-left: 4px;
-      background: var(--cyan);
-      transform: translateY(2px);
-      animation: blink 0.85s steps(2, start) infinite;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 34px;
-    }
-
-    .btn {
-      position: relative;
-      min-height: 52px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      overflow: hidden;
-      padding: 0 22px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      font-weight: 900;
-      letter-spacing: 0.05em;
-      isolation: isolate;
-      transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
-      touch-action: manipulation;
-    }
-
-    .btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.34), transparent);
-      transform: translateX(-120%);
-      transition: transform 0.65s ease;
-    }
-
-    .btn:hover::before {
-      transform: translateX(120%);
-    }
-
-    .btn-primary {
-      color: #04111c;
-      background: linear-gradient(135deg, #ffffff, #8cf4ff 45%, #bfa3ff 100%);
-      box-shadow: 0 20px 58px rgba(0, 229, 255, 0.24);
-    }
-
-    .btn-soft {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.09);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 24px 58px rgba(0, 0, 0, 0.28);
-    }
-
-    .hero-panel {
-      position: relative;
-      min-height: 520px;
-      border-radius: 40px;
-      padding: 1px;
-      overflow: hidden;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.05));
-      box-shadow: var(--shadow);
-      isolation: isolate;
-    }
-
-    .hero-panel::before {
-      content: "";
-      position: absolute;
-      inset: -50%;
-      z-index: -1;
-      background: conic-gradient(from 0deg, transparent, rgba(0, 229, 255, 0.45), transparent, rgba(139, 92, 255, 0.5), transparent, rgba(255, 79, 163, 0.42), transparent);
-      animation: spin 9s linear infinite;
-      opacity: 0.72;
-    }
-
-    .hero-panel-inner {
-      height: 100%;
-      min-height: inherit;
-      position: relative;
-      overflow: hidden;
-      padding: clamp(22px, 4vw, 32px);
-      border-radius: inherit;
-      background:
-        radial-gradient(circle at 25% 18%, rgba(0, 229, 255, 0.22), transparent 32%),
-        radial-gradient(circle at 82% 72%, rgba(255, 79, 163, 0.2), transparent 34%),
-        rgba(7, 9, 24, 0.9);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .hero-panel-inner::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.12;
-      background-image:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
-        linear-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
-      background-size: 34px 34px;
-    }
-
-    .panel-content {
-      position: relative;
-      z-index: 1;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 28px;
-    }
-
-    .panel-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .chip {
-      min-height: 36px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 12px;
-      border-radius: 999px;
-      color: #eafcff;
-      background: rgba(0, 0, 0, 0.23);
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      font-size: 0.82rem;
-      font-weight: 800;
-    }
-
-    .panel-logo {
-      position: relative;
-      margin: 40px auto 22px;
-      width: min(260px, 70vw);
-      aspect-ratio: 1;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.96), transparent 14%),
-        radial-gradient(circle at 45% 38%, rgba(0, 229, 255, 0.9), transparent 23%),
-        radial-gradient(circle at 67% 63%, rgba(139, 92, 255, 0.9), transparent 38%),
-        linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(255, 79, 163, 0.2));
-      box-shadow:
-        inset 0 0 50px rgba(255, 255, 255, 0.11),
-        0 0 80px rgba(0, 229, 255, 0.22),
-        0 0 120px rgba(139, 92, 255, 0.18);
-      animation: orbBreath 4.5s ease-in-out infinite;
-    }
-
-    .panel-logo::before,
-    .panel-logo::after {
-      content: "";
-      position: absolute;
-      inset: -18px;
-      border-radius: inherit;
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      animation: spin 18s linear infinite;
-    }
-
-    .panel-logo::after {
-      inset: -34px;
-      border-color: rgba(0, 229, 255, 0.14);
-      animation-duration: 28s;
-      animation-direction: reverse;
-    }
-
-    @keyframes orbBreath {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-10px) scale(1.04); }
-    }
-
-    .panel-logo span {
-      position: relative;
-      z-index: 2;
-      color: #fff;
-      font-size: clamp(3rem, 9vw, 4.9rem);
-      font-weight: 950;
-      letter-spacing: -0.12em;
-      text-shadow: 0 0 38px rgba(255, 255, 255, 0.45);
-    }
-
-    .panel-copy h2 {
-      max-width: 420px;
-      font-size: clamp(1.55rem, 4vw, 2.35rem);
-      line-height: 1.05;
-      letter-spacing: -0.055em;
-    }
-
-    .panel-copy p {
-      max-width: 460px;
-      margin-top: 12px;
-      color: var(--muted);
-      line-height: 1.74;
-    }
-
-    .panel-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 22px;
-    }
-
-    .stat {
-      min-height: 92px;
-      padding: 14px;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.075);
-      border: 1px solid rgba(255, 255, 255, 0.11);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: clamp(1.35rem, 4vw, 2rem);
-      line-height: 1;
-      letter-spacing: -0.06em;
-    }
-
-    .stat span {
-      display: block;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 760;
-    }
-
-    .section {
-      position: relative;
-      z-index: 2;
-      padding: clamp(64px, 9vw, 112px) 0;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 32px;
-      margin-bottom: 34px;
-    }
-
-    .section-kicker {
-      color: var(--cyan);
-      font-size: 0.84rem;
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-    }
-
-    .section-title {
-      max-width: 720px;
-      margin-top: 10px;
-      font-size: clamp(2.2rem, 5vw, 4.4rem);
-      font-weight: 950;
-      line-height: 0.98;
-      letter-spacing: -0.075em;
-    }
-
-    .section-desc {
-      max-width: 510px;
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.75;
-    }
-
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .module-card {
-      --accent: var(--cyan);
-      --accent-rgb: 0 229 255;
-      position: relative;
-      min-height: 340px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 22px;
-      padding: clamp(22px, 3vw, 30px);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      isolation: isolate;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045)),
-        rgba(8, 11, 29, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      box-shadow: 0 18px 62px rgba(0, 0, 0, 0.24);
-      transform-style: preserve-3d;
-      transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
-      outline: none;
-      touch-action: manipulation;
-    }
-
-    .module-card[data-theme="cyan"] { --accent: #00e5ff; --accent-rgb: 0 229 255; }
-    .module-card[data-theme="pink"] { --accent: #ff4fa3; --accent-rgb: 255 79 163; }
-    .module-card[data-theme="yellow"] { --accent: #ffcf5a; --accent-rgb: 255 207 90; }
-    .module-card[data-theme="violet"] { --accent: #8b5cff; --accent-rgb: 139 92 255; }
-    .module-card[data-theme="green"] { --accent: #38ff9f; --accent-rgb: 56 255 159; }
-    .module-card[data-theme="blue"] { --accent: #4aa3ff; --accent-rgb: 74 163 255; }
-
-    .module-card::before {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      z-index: -2;
-      border-radius: inherit;
-      background:
-        radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 0%), rgb(var(--accent-rgb) / 0.42), transparent 32%),
-        linear-gradient(135deg, rgb(var(--accent-rgb) / 0.42), transparent 28%, rgba(255, 255, 255, 0.08));
-      opacity: 0;
-      transition: opacity 0.28s ease;
-    }
-
-    .module-card::after {
-      content: "";
-      position: absolute;
-      right: -62px;
-      bottom: -70px;
-      width: 190px;
-      height: 190px;
-      z-index: -1;
-      border-radius: 50%;
-      background: radial-gradient(circle at 34% 28%, #fff, var(--accent) 22%, rgb(var(--accent-rgb) / 0.36) 54%, transparent 72%);
-      opacity: 0.78;
-      filter: blur(2px);
-      transition: transform 0.35s ease, opacity 0.35s ease;
-    }
-
-    .module-card:hover,
-    .module-card:focus-visible {
-      transform: translateY(-9px);
-      border-color: rgb(var(--accent-rgb) / 0.52);
-      box-shadow: 0 26px 76px rgba(0, 0, 0, 0.36), 0 0 0 1px rgb(var(--accent-rgb) / 0.12);
-    }
-
-    .module-card:hover::before,
-    .module-card:focus-visible::before {
-      opacity: 1;
-    }
-
-    .module-card:hover::after,
-    .module-card:focus-visible::after {
-      transform: scale(1.2) rotate(14deg);
-      opacity: 0.95;
-    }
-
-    .card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .card-icon {
-      position: relative;
-      width: 62px;
-      height: 62px;
-      display: grid;
-      place-items: center;
-      border-radius: 22px;
-      font-size: 1.8rem;
-      background: rgb(var(--accent-rgb) / 0.12);
-      border: 1px solid rgb(var(--accent-rgb) / 0.24);
-      box-shadow: 0 18px 46px rgb(var(--accent-rgb) / 0.15);
-    }
-
-    .card-index {
-      color: rgba(255, 255, 255, 0.56);
-      font-size: 0.82rem;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-    }
-
-    .card-body {
-      transform: translateZ(24px);
-    }
-
-    .module-card h3 {
-      margin-bottom: 12px;
-      font-size: clamp(1.36rem, 3vw, 1.7rem);
-      font-weight: 930;
-      letter-spacing: -0.045em;
-    }
-
-    .module-card p {
-      color: var(--muted);
-      line-height: 1.74;
-      font-size: 0.98rem;
-    }
-
-    .card-action {
-      width: fit-content;
-      min-height: 46px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 16px;
-      border-radius: 999px;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.095);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      font-size: 0.86rem;
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      transition: background 0.24s ease, gap 0.24s ease;
-    }
-
-    .module-card:hover .card-action,
-    .module-card:focus-visible .card-action {
-      gap: 16px;
-      background: rgb(var(--accent-rgb) / 0.2);
-    }
-
-    .api-panel {
-      margin-top: 32px;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 22px;
-      align-items: center;
-      padding: clamp(22px, 4vw, 32px);
-      border-radius: 32px;
-      background:
-        radial-gradient(circle at 12% 18%, rgba(255, 207, 90, 0.16), transparent 28%),
-        radial-gradient(circle at 82% 70%, rgba(0, 229, 255, 0.14), transparent 34%),
-        rgba(255, 255, 255, 0.075);
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      box-shadow: var(--shadow);
-    }
-
-    .api-panel h3 {
-      font-size: clamp(1.45rem, 4vw, 2.35rem);
-      font-weight: 930;
-      letter-spacing: -0.055em;
-      line-height: 1.05;
-    }
-
-    .api-panel p {
-      max-width: 780px;
-      margin-top: 10px;
-      color: var(--muted);
-      line-height: 1.75;
-    }
-
-    .music-control {
-      position: fixed;
-      left: max(18px, env(safe-area-inset-left, 0px));
-      bottom: max(18px, var(--safe-bottom));
-      z-index: 55;
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      min-height: 52px;
-      padding: 6px 15px 6px 6px;
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
-    }
-
-    .music-icon {
-      width: 40px;
-      height: 40px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.12);
-      transition: background 0.24s ease, color 0.24s ease, transform 0.24s ease;
-    }
-
-    .music-control.is-playing .music-icon {
-      color: #04111c;
-      background: var(--cyan);
-      animation: spin 2.6s linear infinite;
-    }
-
-    .music-text small {
-      display: block;
-      color: var(--muted-2);
-      font-size: 0.65rem;
-      font-weight: 900;
-      letter-spacing: 0.17em;
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
-    .music-text span {
-      display: block;
-      margin-top: 4px;
-      color: var(--text);
-      font-size: 0.78rem;
-      font-weight: 900;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: max(22px, calc(var(--safe-bottom) + 12px));
-      z-index: 100;
-      max-width: min(92vw, 460px);
-      padding: 12px 16px;
-      border-radius: 999px;
-      color: var(--text);
-      background: rgba(8, 10, 25, 0.93);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      transform: translateX(-50%) translateY(140%);
-      opacity: 0;
-      transition: 0.32s ease;
-      font-size: 0.9rem;
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .toast.is-visible {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    footer {
-      position: relative;
-      z-index: 2;
-      margin-top: 22px;
-      padding: clamp(48px, 7vw, 76px) 0 calc(58px + var(--safe-bottom));
-      text-align: center;
-      color: var(--muted);
-      background: rgba(0, 0, 0, 0.36);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .socials {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .socials a {
-      width: 46px;
-      height: 46px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.075);
-      border: 1px solid rgba(255, 255, 255, 0.11);
-      transition: transform 0.24s ease, background 0.24s ease, border-color 0.24s ease;
-    }
-
-    .socials a:hover,
-    .socials a:focus-visible {
-      transform: translateY(-4px);
-      background: rgba(255, 255, 255, 0.13);
-      border-color: rgba(0, 229, 255, 0.42);
-      outline: none;
-    }
-
-    .footer-author {
-      color: #fff;
-      font-weight: 950;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.65s ease, transform 0.65s ease;
-    }
-
-    .reveal.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (max-width: 1050px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-panel {
-        min-height: 470px;
-      }
-
-      .modules-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .section-head {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-    }
-
-    @media (max-width: 820px) {
-      .menu-toggle {
-        display: inline-flex;
-      }
-
-      .nav-links {
-        position: fixed;
-        top: calc(74px + var(--safe-top));
-        left: 16px;
-        right: 16px;
-        display: grid;
-        gap: 6px;
-        padding: 12px;
-        border-radius: 24px;
-        background: rgba(5, 6, 17, 0.92);
-        border: 1px solid rgba(255, 255, 255, 0.13);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(24px) saturate(170%);
-        -webkit-backdrop-filter: blur(24px) saturate(170%);
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(-10px) scale(0.98);
-        transition: 0.24s ease;
-      }
-
-      .nav-links.is-open {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0) scale(1);
-      }
-
-      .nav-links a {
-        width: 100%;
-        justify-content: flex-start;
-        min-height: 48px;
-      }
-
-      .brand-text {
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .api-panel {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 680px) {
-      .container {
-        width: min(100% - 24px, 1180px);
-      }
-
-      .hero {
-        padding-top: 44px;
-      }
-
-      .hero-actions,
-      .api-panel .btn {
-        width: 100%;
-      }
-
-      .btn {
-        width: 100%;
-      }
-
-      .modules-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .module-card {
-        min-height: 300px;
-      }
-
-      .panel-stats {
-        grid-template-columns: 1fr;
-      }
-
-      .music-control {
-        max-width: calc(100vw - 36px);
-      }
-
-      .music-text small {
-        display: none;
-      }
-    }
-
-    @media (max-width: 390px) {
-      .brand-mark {
-        width: 40px;
-        height: 40px;
-        flex-basis: 40px;
-      }
-
-      .brand-text {
-        display: none;
-      }
-
-      .lang-button {
-        padding-inline: 11px;
-      }
-    }
-
-    @media (hover: none) {
-      .btn:hover,
-      .module-card:hover,
-      .socials a:hover {
-        transform: none;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-      }
-
-      .typewriter::after {
-        display: none;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title id="site-title" data-vi="Trang Chủ NTS" data-en="NTS Home" data-zh="NTS 首页">Trang Chủ NTS</title>
+    <link rel="icon" type="image/png" href="logos3.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #bd00ff;
+            --accent: #ff007a;
+            --dark: #030303;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark);
+            color: #e0e0e0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .loader-wrapper {
+            position: relative;
+            width: 160px; height: 160px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        @media (min-width: 768px) {
+            .loader-wrapper { width: 200px; height: 200px; }
+        }
+
+        .loader-circle-outer {
+            position: absolute;
+            width: 100%; height: 100%;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        .loader-circle-inner {
+            position: absolute;
+            width: 75%; height: 75%;
+            border: 2px solid transparent;
+            border-left: 2px solid var(--secondary);
+            border-right: 2px solid var(--secondary);
+            border-radius: 50%;
+            animation: spin-reverse 1.5s linear infinite;
+        }
+
+        .loader-percent {
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 20px var(--primary);
+        }
+        @media (min-width: 768px) {
+            .loader-percent { font-size: 2.5rem; }
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 120%; height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            animation: scan 2s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes scan {
+            0%, 100% { top: 10%; opacity: 0; }
+            50% { top: 90%; opacity: 1; }
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        .preloader-finish { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+
+        /* --- GIAO DIỆN CHÍNH --- */
+        .bg-gradient-dynamic {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #0a051a 0%, #030303 100%);
+        }
+
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(80px);
+            opacity: 0.25; animation: float 20s infinite alternate;
+        }
+        @media (min-width: 768px) {
+            .orb { filter: blur(120px); opacity: 0.35; }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 20px) scale(1.05); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+        }
+
+        @media (min-width: 1024px) {
+            .glass-card:hover {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: var(--primary);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                transform: translateY(-10px) scale(1.02);
+            }
+        }
+
+        .text-glow {
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0.5), 0 0 60px rgba(189, 0, 255, 0.3);
+        }
+
+        .btn-modern {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .btn-modern::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.6s;
+        }
+
+        .btn-modern:hover::after { left: 100%; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--secondary), var(--primary)); border-radius: 10px; }
+
+        /* --- HIỆU ỨNG TITAN NTS (PULSE GLOW & GLITCH) --- */
+        @keyframes pulseGlow {
+            0%, 100% {
+                text-shadow: 0 0 30px rgba(0, 242, 255, 0.4), 0 0 60px rgba(189, 0, 255, 0.2);
+                filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.2));
+            }
+            50% {
+                text-shadow: 0 0 50px rgba(0, 242, 255, 0.8), 0 0 100px rgba(189, 0, 255, 0.5);
+                filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.5));
+                transform: scale(1.01);
+            }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes glitchTime {
+            0% { transform: translate(0) }
+            20% { transform: translate(-3px, 3px) }
+            40% { transform: translate(-3px, -3px) }
+            60% { transform: translate(3px, 3px) }
+            80% { transform: translate(3px, -3px) }
+            100% { transform: translate(0) }
+        }
+        @keyframes glitchAnim1 {
+            0%, 100% { clip-path: inset(40% 0 61% 0); opacity: 0; }
+            20% { clip-path: inset(92% 0 1% 0); opacity: 1; transform: translate(-5px, -3px); }
+            40% { clip-path: inset(15% 0 80% 0); opacity: 1; transform: translate(5px, 3px); }
+            60% { clip-path: inset(80% 0 5% 0); opacity: 1; transform: translate(-5px, 5px); }
+            80% { clip-path: inset(3% 0 92% 0); opacity: 1; transform: translate(5px, -5px); }
+        }
+        @keyframes glitchAnim2 {
+            0%, 100% { clip-path: inset(25% 0 58% 0); opacity: 0; }
+            21% { clip-path: inset(12% 0 85% 0); opacity: 1; transform: translate(5px, 3px); }
+            39% { clip-path: inset(88% 0 5% 0); opacity: 1; transform: translate(-5px, -3px); }
+            61% { clip-path: inset(5% 0 90% 0); opacity: 1; transform: translate(5px, -5px); }
+            79% { clip-path: inset(70% 0 25% 0); opacity: 1; transform: translate(-5px, 5px); }
+        }
+
+        .hover\:animate-glitch-active:hover {
+            animation: glitchTime 0.3s linear infinite, pulseGlow 1s ease-in-out infinite;
+        }
+        .hover\:before\:animate-glitch-1:hover::before {
+            animation: glitchAnim1 0.2s linear infinite;
+        }
+        .hover\:after\:animate-glitch-2:hover::after {
+            animation: glitchAnim2 0.25s linear infinite;
+        }
+
+
+        /* --- MODERN PROFESSIONAL GAMING / 3D SYSTEM --- */
+        :root {
+            --panel: rgba(7, 11, 24, 0.68);
+            --line: rgba(90, 230, 255, 0.22);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+        }
+
+        html { color-scheme: dark; }
+        body {
+            min-height: 100dvh;
+            background:
+                linear-gradient(rgba(0,242,255,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(189,0,255,.025) 1px, transparent 1px),
+                #030303;
+            background-size: 48px 48px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: .22;
+            background: repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px);
+            mix-blend-mode: soft-light;
+        }
+
+        .safe-top { margin-top: var(--safe-top); }
+        .safe-right { margin-right: var(--safe-right); }
+
+        .cyber-control {
+            box-shadow: 0 0 0 1px rgba(0,242,255,.06) inset, 0 16px 40px rgba(0,0,0,.38), 0 0 28px rgba(0,242,255,.08);
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            scrollbar-width: thin;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            min-width: 0;
+            padding: .7rem .75rem;
+            border-radius: .8rem;
+            color: #c8d2e2;
+            font-size: .72rem;
+            font-weight: 700;
+            text-align: left;
+            transition: .22s ease;
+        }
+        .language-option:hover, .language-option.active {
+            color: white;
+            background: linear-gradient(135deg, rgba(0,242,255,.12), rgba(189,0,255,.12));
+            box-shadow: 0 0 0 1px rgba(0,242,255,.18) inset;
+        }
+        .language-option .flag { font-size: 1.15rem; flex: 0 0 auto; }
+        .language-option .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        header { perspective: 1400px; isolation: isolate; }
+        header::before {
+            content: '';
+            position: absolute;
+            inset: 8% 4%;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 45%, rgba(0,242,255,.11), transparent 38%),
+                conic-gradient(from 0deg at 50% 50%, transparent, rgba(189,0,255,.10), transparent 25%, rgba(0,242,255,.08), transparent 55%);
+            filter: blur(26px);
+            transform: translateZ(-120px) rotateX(64deg) scale(1.05);
+            animation: arenaPulse 7s ease-in-out infinite;
+        }
+
+        @keyframes arenaPulse {
+            0%,100% { opacity:.45; transform: translateZ(-120px) rotateX(64deg) scale(1.02); }
+            50% { opacity:.85; transform: translateZ(-80px) rotateX(61deg) scale(1.08); }
+        }
+
+        .glass-card {
+            position: relative;
+            transform-style: preserve-3d;
+            background: linear-gradient(145deg, rgba(11,18,38,.78), rgba(3,6,16,.62));
+            border-color: rgba(128, 225, 255, .13);
+            box-shadow: 0 28px 80px rgba(0,0,0,.30), inset 0 1px rgba(255,255,255,.04);
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: .7;
+            background: linear-gradient(135deg, rgba(0,242,255,.10), transparent 28%, transparent 70%, rgba(189,0,255,.10));
+            transform: translateZ(1px);
+        }
+        .glass-card > * { position: relative; transform: translateZ(24px); }
+        .glass-card h3 { transform: translateZ(38px); }
+        .glass-card a { transform: translateZ(46px); }
+
+        .btn-modern {
+            transform: translateZ(0);
+            box-shadow: 0 14px 40px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.28);
+        }
+
+        @media (hover:hover) and (pointer:fine) {
+            .btn-modern:hover { transform: translateY(-3px) translateZ(18px); }
+        }
+
+        /* Device-adaptive rendering */
+        .device-ios .glass-card { -webkit-backdrop-filter: blur(18px) saturate(170%); }
+        .device-android .glass-card { backdrop-filter: blur(12px) saturate(150%); }
+        .device-desktop .glass-card { backdrop-filter: blur(20px) saturate(180%); }
+
+        @media (max-width: 767px) {
+            .language-grid { grid-template-columns: 1fr 1fr; }
+            .glass-card { border-radius: 26px !important; }
+            .glass-card > * { transform: none; }
+            header::before { inset: 12% -30%; filter: blur(34px); }
+            #typewriter { min-height: 2.4rem; line-height: 1.4; }
+        }
+
+        @media (max-width: 380px) {
+            .language-grid { grid-template-columns: 1fr; width: min(86vw, 280px); }
+            #langDropdownBtn { padding-inline: .8rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    
+
+        /* --- TOP NAVIGATION BAR --- */
+        .topbar-shell {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            padding: calc(.65rem + var(--safe-top)) calc(1rem + var(--safe-right)) .65rem calc(1rem + var(--safe-left));
+            pointer-events: none;
+        }
+        .topbar {
+            pointer-events: auto;
+            width: min(1280px, 100%);
+            margin: 0 auto;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: .55rem .7rem;
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(3,8,20,.88), rgba(8,3,20,.78));
+            -webkit-backdrop-filter: blur(22px) saturate(170%);
+            backdrop-filter: blur(22px) saturate(170%);
+            box-shadow: 0 18px 55px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.05), 0 0 35px rgba(0,242,255,.05);
+        }
+        .brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            flex: 0 0 46px;
+            width: 46px;
+            min-width: 0;
+        }
+        .brand-logo-wrap {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border-radius: 14px;
+            border: 1px solid rgba(0,242,255,.24);
+            background: linear-gradient(145deg, rgba(0,242,255,.12), rgba(189,0,255,.12));
+            box-shadow: 0 0 24px rgba(0,242,255,.13), inset 0 1px rgba(255,255,255,.12);
+        }
+        .brand-logo { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+        .brand-name { font-size: .95rem; font-weight: 900; letter-spacing: .18em; color: white; line-height: 1; }
+        .brand-sub { margin-top: .28rem; font-size: .52rem; font-weight: 700; letter-spacing: .2em; color: #6ee7f9; text-transform: uppercase; white-space: nowrap; }
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .25rem;
+            margin-left: auto;
+            flex-wrap: nowrap;
+            min-width: 733px;
+        }
+        .nav-link {
+            position: relative;
+            width: 118px;
+            min-width: 118px;
+            height: 44px;
+            justify-content: center;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            padding: .72rem .85rem;
+            border-radius: 12px;
+            color: #aeb9ca;
+            font-size: .68rem;
+            font-weight: 800;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            transition: .25s ease;
+            white-space: nowrap;
+        }
+        .nav-link > span {
+            display: block;
+            min-width: 0;
+            max-width: 78px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .nav-link > i { flex: 0 0 auto; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 20%; right: 20%; bottom: .35rem;
+            height: 1px;
+            opacity: 0;
+            transform: scaleX(.35);
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 10px var(--primary);
+            transition: .25s ease;
+        }
+        .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,.045); }
+        .nav-link:hover::after, .nav-link.active::after { opacity: 1; transform: scaleX(1); }
+        .topbar-actions { display: flex; align-items: center; gap: .5rem; margin-left: .35rem; }
+        .menu-toggle {
+            display: none;
+            width: 43px;
+            height: 43px;
+            place-items: center;
+            border-radius: 13px;
+            color: white;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255,255,255,.045);
+        }
+        .mobile-nav-panel {
+            display: none;
+            width: min(1280px, 100%);
+            margin: .55rem auto 0;
+            padding: .55rem;
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 18px;
+            background: rgba(3,7,18,.94);
+            -webkit-backdrop-filter: blur(22px);
+            backdrop-filter: blur(22px);
+            box-shadow: 0 20px 55px rgba(0,0,0,.45);
+            pointer-events: auto;
+        }
+        .mobile-nav-panel.open { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; animation: menuReveal .22s ease-out; }
+        @keyframes menuReveal { from { opacity:0; transform:translateY(-8px) scale(.98); } to { opacity:1; transform:none; } }
+        .mobile-nav-panel .nav-link { width: 100%; min-width: 0; height: 48px; justify-content: flex-start; padding: .85rem; }
+        .mobile-nav-panel .nav-link > span { max-width: none; text-align: left; }
+        header { padding-top: 92px; }
+
+        @media (max-width: 1080px) {
+            .desktop-nav { display: none; }
+            .topbar-actions { margin-left: auto; }
+            .menu-toggle { display: grid; }
+        }
+        @media (max-width: 560px) {
+            .topbar-shell { padding-left: calc(.55rem + var(--safe-left)); padding-right: calc(.55rem + var(--safe-right)); }
+            .topbar { min-height: 58px; border-radius: 17px; padding: .45rem .5rem; }
+            .brand-logo-wrap { width: 42px; height: 42px; border-radius: 12px; }
+            .brand-name { font-size: .82rem; }
+            .brand-sub { display: none; }
+            #langDropdownBtn { min-width: 43px; justify-content: center; padding: .62rem .7rem; }
+            #langText, #dropdownArrow { display: none; }
+            .mobile-nav-panel.open { grid-template-columns: 1fr; }
+            header { padding-top: 82px; }
+        }
+
+
+        /* --- HERO: 3D GAMING COMPUTER --- */
+        .gaming-hero-stage {
+            width: min(1120px, 96vw);
+            min-height: clamp(520px, 72vh, 760px);
+            display: grid;
+            place-items: center;
+            perspective: 1500px;
+            position: relative;
+            isolation: isolate;
+        }
+        .gaming-hero-stage::before {
+            content: '';
+            position: absolute;
+            width: min(820px, 88vw);
+            height: min(520px, 58vw);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,242,255,.16), rgba(189,0,255,.08) 42%, transparent 72%);
+            filter: blur(22px);
+            transform: translateY(40px);
+            z-index: -2;
+        }
+        .gaming-rig {
+            --rx: -5deg;
+            --ry: -10deg;
+            --float-y: 0px;
+            position: relative;
+            width: min(980px, 94vw);
+            height: clamp(430px, 55vw, 630px);
+            transform-style: preserve-3d;
+            transform: rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--float-y));
+            transition: transform .18s ease-out;
+            animation: rigFloat 5s ease-in-out infinite;
+        }
+        @keyframes rigFloat {
+            0%,100% { --float-y: 0px; }
+            50% { --float-y: -12px; }
+        }
+        .rig-desk {
+            position: absolute;
+            left: 6%; right: 5%; bottom: 7%; height: 8%;
+            border-radius: 18px 18px 30px 30px;
+            background: linear-gradient(180deg,#202838,#090d16 64%,#02040a);
+            border: 1px solid rgba(255,255,255,.12);
+            box-shadow: 0 24px 38px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.08), 0 0 30px rgba(0,242,255,.08);
+            transform: translateZ(-40px) rotateX(3deg);
+        }
+        .monitor-wrap {
+            position: absolute;
+            left: 11%; top: 5%; width: 59%; height: 61%;
+            transform-style: preserve-3d;
+            transform: translateZ(35px);
+        }
+        .monitor {
+            width: 100%; height: 100%; position: relative;
+            border-radius: 24px;
+            padding: 10px;
+            background: linear-gradient(145deg,#242b3a,#05070c 62%);
+            border: 1px solid rgba(255,255,255,.17);
+            box-shadow: 0 28px 60px rgba(0,0,0,.6), 0 0 45px rgba(0,242,255,.18), inset 0 0 0 2px rgba(0,0,0,.8);
+        }
+        .monitor::after {
+            content:''; position:absolute; inset:12px; border-radius:16px; pointer-events:none;
+            box-shadow: inset 0 0 24px rgba(0,0,0,.75), inset 0 0 4px rgba(255,255,255,.15);
+        }
+        .screen {
+            width:100%; height:100%; overflow:hidden; position:relative; border-radius:16px;
+            background:
+                radial-gradient(circle at 68% 34%, rgba(189,0,255,.5), transparent 23%),
+                radial-gradient(circle at 32% 58%, rgba(0,242,255,.42), transparent 28%),
+                linear-gradient(135deg,#03050a 8%,#08041a 48%,#020b15);
+        }
+        .screen-grid { position:absolute; inset:-20%; opacity:.34; transform:perspective(500px) rotateX(64deg) translateY(28%); transform-origin:center bottom; background-image:linear-gradient(rgba(0,242,255,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(0,242,255,.25) 1px,transparent 1px); background-size:34px 34px; animation:gridMove 3.2s linear infinite; }
+        @keyframes gridMove { to { background-position:0 34px,34px 0; } }
+        .screen-orbit { position:absolute; border:1px solid rgba(0,242,255,.25); border-radius:50%; animation:spin 16s linear infinite; }
+        .screen-orbit.one { width:64%; aspect-ratio:1; left:18%; top:-7%; }
+        .screen-orbit.two { width:46%; aspect-ratio:1; left:27%; top:4%; border-style:dashed; border-color:rgba(255,0,122,.32); animation-direction:reverse; animation-duration:11s; }
+        .screen-core { position:absolute; left:50%; top:47%; transform:translate(-50%,-50%); font-size:clamp(52px,10vw,138px); line-height:1; font-weight:900; letter-spacing:-.08em; color:transparent; background:linear-gradient(180deg,#fff,#a9faff 38%,#526079); -webkit-background-clip:text; background-clip:text; filter:drop-shadow(0 0 18px rgba(0,242,255,.55)); animation:corePulse 2.8s ease-in-out infinite; }
+        @keyframes corePulse { 50% { filter:drop-shadow(0 0 32px rgba(189,0,255,.75)); transform:translate(-50%,-50%) scale(1.025); } }
+        .screen-status { position:absolute; left:5%; right:5%; bottom:6%; display:flex; align-items:center; justify-content:space-between; gap:12px; font:700 clamp(7px,1.1vw,11px)/1 'Outfit',sans-serif; letter-spacing:.18em; color:#9ffaff; text-transform:uppercase; }
+        .screen-status span:first-child::before { content:''; display:inline-block; width:7px; height:7px; margin-right:8px; border-radius:50%; background:#29ff9f; box-shadow:0 0 12px #29ff9f; animation:pulse 1.2s infinite; }
+        .monitor-neck { position:absolute; left:43%; bottom:-18%; width:14%; height:19%; background:linear-gradient(90deg,#090c13,#2a3140 50%,#080b11); transform:translateZ(-10px); clip-path:polygon(30% 0,70% 0,86% 100%,14% 100%); }
+        .monitor-base { position:absolute; left:31%; bottom:-24%; width:38%; height:7%; border-radius:50%; background:linear-gradient(180deg,#333b4a,#07090d); box-shadow:0 12px 24px rgba(0,0,0,.6),0 0 18px rgba(0,242,255,.14); }
+        .pc-case {
+            position:absolute; right:7%; top:12%; width:22%; height:58%; border-radius:22px;
+            background:linear-gradient(145deg,rgba(29,36,50,.96),rgba(5,7,12,.98));
+            border:1px solid rgba(255,255,255,.16); transform:translateZ(75px) rotateY(-4deg);
+            box-shadow:0 30px 60px rgba(0,0,0,.62),0 0 44px rgba(189,0,255,.2),inset 0 0 0 2px rgba(0,0,0,.65);
+            overflow:hidden;
+        }
+        .pc-case::before { content:''; position:absolute; inset:8%; border-radius:14px; border:1px solid rgba(0,242,255,.23); background:linear-gradient(135deg,rgba(0,242,255,.05),rgba(189,0,255,.08)); box-shadow:inset 0 0 30px rgba(0,242,255,.06); }
+        .rgb-strip { position:absolute; left:7px; top:8%; bottom:8%; width:4px; border-radius:8px; background:linear-gradient(#00f2ff,#8a2cff,#ff007a,#00f2ff); background-size:100% 220%; box-shadow:0 0 14px #00f2ff; animation:rgbFlow 2.3s linear infinite; }
+        @keyframes rgbFlow { to { background-position:0 220%; } }
+        .fan { position:absolute; left:50%; width:47%; aspect-ratio:1; transform:translateX(-50%); border-radius:50%; border:4px solid rgba(255,255,255,.06); background:radial-gradient(circle,#06080d 17%,transparent 19%),conic-gradient(from 0deg,rgba(0,242,255,.9),rgba(189,0,255,.9),rgba(255,0,122,.9),rgba(0,242,255,.9)); box-shadow:0 0 20px rgba(0,242,255,.35),inset 0 0 18px #000; animation:fanSpin 2.1s linear infinite; }
+        .fan::after { content:''; position:absolute; inset:16%; border-radius:50%; background:repeating-conic-gradient(rgba(5,8,14,.95) 0 10deg,transparent 10deg 28deg); }
+        .fan.one { top:13%; } .fan.two { top:52%; animation-direction:reverse; animation-duration:2.7s; }
+        @keyframes fanSpin { to { transform:translateX(-50%) rotate(360deg); } }
+        .keyboard { position:absolute; left:20%; bottom:13%; width:50%; height:11%; transform:translateZ(90px) rotateX(64deg); transform-origin:center bottom; border-radius:13px; padding:8px 10px; background:linear-gradient(180deg,#242a36,#07090d); border:1px solid rgba(255,255,255,.14); box-shadow:0 18px 30px rgba(0,0,0,.55),0 0 24px rgba(0,242,255,.12); display:grid; grid-template-columns:repeat(14,1fr); gap:3px; overflow:hidden; }
+        .keyboard i { border-radius:2px; background:linear-gradient(180deg,#252c38,#0c1018); box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 4px rgba(0,242,255,.28); animation:keyGlow 2.8s ease-in-out infinite; animation-delay:calc(var(--i)*.04s); }
+        @keyframes keyGlow { 50% { background:#182c35; box-shadow:0 0 7px rgba(0,242,255,.8); } }
+        .mouse3d { position:absolute; right:21%; bottom:15%; width:7%; aspect-ratio:.75; border-radius:48% 48% 44% 44%; background:linear-gradient(145deg,#303746,#080a0f 65%); border:1px solid rgba(255,255,255,.14); transform:translateZ(105px) rotateX(60deg); box-shadow:0 15px 24px rgba(0,0,0,.5),0 0 16px rgba(255,0,122,.25); }
+        .mouse3d::before { content:''; position:absolute; left:49%; top:10%; width:2px; height:38%; background:#00f2ff; box-shadow:0 0 8px #00f2ff; }
+        .rig-shadow { position:absolute; left:9%; right:7%; bottom:2%; height:12%; border-radius:50%; background:rgba(0,0,0,.72); filter:blur(24px); transform:translateZ(-80px); z-index:-1; }
+        .floating-chip { position:absolute; display:grid; place-items:center; width:clamp(34px,4.2vw,52px); aspect-ratio:1; border-radius:12px; color:#bafcff; border:1px solid rgba(0,242,255,.28); background:rgba(3,8,16,.72); box-shadow:0 0 18px rgba(0,242,255,.14); backdrop-filter:blur(8px); animation:chipFloat 4s ease-in-out infinite; }
+        .floating-chip.c1 { left:2%; top:24%; } .floating-chip.c2 { right:1%; top:8%; animation-delay:-1.3s; color:#f3b7ff; border-color:rgba(189,0,255,.35); } .floating-chip.c3 { right:3%; bottom:21%; animation-delay:-2.2s; color:#ffadd2; border-color:rgba(255,0,122,.32); }
+        @keyframes chipFloat { 50% { transform:translateY(-14px) rotate(8deg); } }
+        @media (max-width: 700px) {
+            .gaming-hero-stage { min-height: 520px; }
+            .gaming-rig { height: 460px; width: 98vw; transform:rotateX(-3deg) rotateY(-5deg) scale(.96); }
+            .monitor-wrap { left:5%; top:10%; width:67%; height:51%; }
+            .pc-case { right:3%; top:17%; width:24%; height:50%; }
+            .keyboard { left:12%; width:58%; bottom:18%; }
+            .mouse3d { right:20%; bottom:19%; }
+            .rig-desk { left:2%; right:2%; bottom:11%; }
+            .screen-status span:last-child { display:none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .gaming-rig,.screen-grid,.screen-orbit,.screen-core,.rgb-strip,.fan,.keyboard i,.floating-chip { animation:none !important; }
+        }
+
+    </style>
+
+<style id="professional-redesign-v4">
+:root{
+  --primary:#35e7ff;
+  --primary-2:#00a8ff;
+  --secondary:#8b5cff;
+  --accent:#ff3d9a;
+  --surface:#07101f;
+  --surface-2:#0d1830;
+  --text:#f7fbff;
+  --muted:#93a4bd;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+}
+html{background:#02050d}
+body{
+  background:
+    radial-gradient(circle at 15% 10%,rgba(0,168,255,.16),transparent 30%),
+    radial-gradient(circle at 86% 18%,rgba(139,92,255,.16),transparent 29%),
+    linear-gradient(180deg,#02050d 0%,#050b17 48%,#02050d 100%);
+  color:var(--text);
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:48px 48px;mask-image:linear-gradient(to bottom,black,transparent 86%);
+}
+.bg-gradient-dynamic{background:linear-gradient(180deg,rgba(2,5,13,.35),rgba(2,5,13,.72));}
+.orb{opacity:.18;filter:blur(125px)}
+
+/* Premium navigation */
+.topbar-shell{padding:calc(.7rem + var(--safe-top)) calc(1rem + var(--safe-right)) .65rem calc(1rem + var(--safe-left));}
+.topbar{
+  width:min(1320px,100%);min-height:74px;padding:.62rem .75rem;
+  display:grid;grid-template-columns:74px minmax(0,1fr) auto;align-items:center;column-gap:1.55rem;
+  border-radius:24px;border:1px solid rgba(121,211,255,.16);
+  background:linear-gradient(135deg,rgba(6,13,29,.92),rgba(9,8,28,.87));
+  box-shadow:0 22px 70px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.07),0 0 55px rgba(0,168,255,.07);
+  position:relative;overflow:visible;
+}
+.topbar::after{content:"";position:absolute;left:92px;top:16px;bottom:16px;width:1px;background:linear-gradient(transparent,rgba(111,219,255,.35),transparent)}
+.brand-link{width:58px;height:58px;display:grid;place-items:center;flex:none;margin:0;justify-self:start}
+.brand-logo-wrap{
+  width:58px;height:58px;border-radius:18px;display:grid;place-items:center;overflow:hidden;
+  border:1px solid rgba(53,231,255,.35);
+  background:linear-gradient(145deg,rgba(53,231,255,.14),rgba(139,92,255,.14));
+  box-shadow:0 0 28px rgba(53,231,255,.14),inset 0 0 18px rgba(255,255,255,.05);
+  transform:none!important;
+}
+.brand-logo{width:100%;height:100%;object-fit:contain;object-position:center;padding:7px;display:block;transform:none!important}
+.desktop-nav{
+  margin:0;min-width:0;width:100%;display:flex;justify-content:center;align-items:center;gap:.42rem;
+}
+.nav-link{
+  width:auto;min-width:104px;height:46px;padding:.7rem 1rem;border-radius:14px;
+  color:#9facc1;font-size:.68rem;letter-spacing:.055em;white-space:nowrap;
+  border:1px solid transparent;background:transparent;
+  transition:transform .22s ease,color .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+.nav-link i{font-size:.88rem;color:#6f819d;transition:.22s ease}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.08);transform:translateY(-2px)}
+.nav-link:hover i{color:var(--primary)}
+.nav-link.active{
+  color:#fff;border-color:rgba(53,231,255,.28);
+  background:linear-gradient(135deg,rgba(0,168,255,.18),rgba(139,92,255,.16));
+  box-shadow:inset 0 1px rgba(255,255,255,.08),0 10px 28px rgba(0,168,255,.1);
+}
+.nav-link.active i{color:var(--primary);filter:drop-shadow(0 0 8px rgba(53,231,255,.55))}
+.topbar-actions{display:flex;align-items:center;gap:.6rem;justify-self:end}
+.cyber-control{min-width:96px;height:46px;border-radius:14px!important;background:rgba(2,7,17,.72)!important;border-color:rgba(255,255,255,.1)!important}
+.cyber-control:hover{border-color:rgba(53,231,255,.42)!important;background:rgba(10,21,40,.92)!important}
+.language-grid{border-color:rgba(53,231,255,.2)!important;background:rgba(3,8,20,.96)!important;box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 40px rgba(53,231,255,.08)}
+.menu-toggle{width:46px;height:46px;border-radius:14px}
+
+/* Hero stage */
+header{padding-top:106px;min-height:100svh;background:radial-gradient(circle at 50% 43%,rgba(18,61,113,.22),transparent 35%)}
+header::after{content:"";position:absolute;left:50%;bottom:6%;width:min(900px,88vw);height:220px;transform:translateX(-50%) perspective(600px) rotateX(67deg);background:repeating-linear-gradient(90deg,rgba(53,231,255,.12) 0 1px,transparent 1px 54px),repeating-linear-gradient(0deg,rgba(53,231,255,.12) 0 1px,transparent 1px 54px);mask-image:linear-gradient(to top,black,transparent);opacity:.42;pointer-events:none}
+.gaming-hero-stage{width:min(1180px,96vw);display:grid;place-items:center}
+.gaming-rig{filter:drop-shadow(0 35px 40px rgba(0,0,0,.55));}
+.monitor,.pc-case,.keyboard,.mouse3d{box-shadow:0 25px 70px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.08)}
+.screen{background:radial-gradient(circle at 50% 55%,rgba(13,124,255,.23),transparent 38%),linear-gradient(145deg,#020814,#06152b)}
+.screen-core{font-weight:900;letter-spacing:.16em;text-shadow:0 0 20px rgba(53,231,255,.85),0 0 52px rgba(139,92,255,.55)}
+.screen-status{background:linear-gradient(90deg,rgba(0,168,255,.12),rgba(139,92,255,.12));border-top:1px solid rgba(53,231,255,.15)}
+
+/* Main content */
+#explore{padding-top:7.5rem;background:linear-gradient(180deg,transparent,rgba(4,10,22,.78) 22%,rgba(2,5,13,.95));}
+#explore .max-w-7xl{max-width:1280px}
+#explore h2{background:linear-gradient(90deg,#fff,#9feeff 55%,#b7a1ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 28px rgba(53,231,255,.12)}
+#explore .grid{gap:1.35rem}
+.glass-card{
+  min-height:345px;padding:2rem!important;border-radius:28px!important;
+  background:linear-gradient(145deg,rgba(13,26,51,.84),rgba(5,10,23,.86));
+  border:1px solid rgba(139,188,255,.14);
+  box-shadow:0 24px 68px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.045);
+  overflow:hidden;
+}
+.glass-card::after{content:"";position:absolute;width:170px;height:170px;right:-85px;top:-85px;border-radius:50%;background:radial-gradient(circle,rgba(53,231,255,.18),transparent 66%);transition:.45s ease}
+.glass-card:hover{border-color:rgba(53,231,255,.36)!important;box-shadow:0 34px 90px rgba(0,0,0,.45),0 0 34px rgba(53,231,255,.08)!important}
+.glass-card:hover::after{transform:scale(1.5)}
+.glass-card h3{font-size:1.35rem;letter-spacing:.02em;color:#f8fbff}
+.glass-card p{color:#92a3bc;line-height:1.72}
+.glass-card a{padding:.72rem 0;border-top:1px solid rgba(255,255,255,.055);width:100%;justify-content:space-between}
+footer{background:linear-gradient(180deg,rgba(2,5,13,.88),#010207)!important;border-color:rgba(255,255,255,.07)!important}
+
+@media(max-width:1180px){
+  .topbar{grid-template-columns:68px minmax(0,1fr) auto;column-gap:1rem}
+  .topbar::after{left:83px}
+  .desktop-nav{gap:.15rem}
+  .nav-link{min-width:88px;padding:.7rem .6rem;font-size:.62rem}
+}
+@media(max-width:920px){
+  .topbar{display:flex;gap:.85rem;min-height:68px;border-radius:20px}
+  .topbar::after{display:none}
+  .brand-link,.brand-logo-wrap{width:50px;height:50px}
+  .desktop-nav{display:none}
+  .topbar-actions{margin-left:auto}
+  .mobile-nav-panel{margin-top:.55rem;border:1px solid rgba(53,231,255,.16);background:rgba(4,10,23,.96);border-radius:20px;box-shadow:0 22px 60px rgba(0,0,0,.5)}
+  .mobile-nav-panel .nav-link{width:100%;justify-content:flex-start;min-width:0}
+}
+@media(max-width:640px){
+  .topbar-shell{padding-left:calc(.65rem + var(--safe-left));padding-right:calc(.65rem + var(--safe-right))}
+  .topbar{padding:.5rem .55rem}
+  .brand-link,.brand-logo-wrap{width:46px;height:46px;border-radius:15px}
+  .cyber-control{min-width:82px;padding-inline:.7rem!important}
+  header{padding-top:90px}
+  #explore{padding-top:5.5rem}
+  .glass-card{min-height:auto;padding:1.55rem!important;border-radius:23px!important}
+}
+</style>
+
 </head>
+<body id="top">
 
-<body>
-  <div class="preloader" id="preloader" aria-live="polite">
-    <div class="loader-box">
-      <div class="loader-ring">
-        <div class="loader-scan"></div>
-        <strong class="loader-percent" id="loaderPercent">0%</strong>
-      </div>
-      <div>
-        <div class="loader-title" data-i18n="loading_title">Đang khởi tạo giao diện</div>
-        <p class="loader-status" id="loaderStatus">Đang dựng nền neon...</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="background-stage" aria-hidden="true">
-    <div class="orb" style="--size: 620px; --left: -180px; --top: -160px; --color: rgba(139, 92, 255, 0.45); --blur: 110px; --opacity: .72; --duration: 16s; --move-x: 80px; --move-y: 44px;"></div>
-    <div class="orb" style="--size: 680px; --left: calc(100% - 420px); --top: 40px; --color: rgba(0, 229, 255, 0.32); --blur: 120px; --opacity: .62; --duration: 18s; --move-x: -70px; --move-y: 68px;"></div>
-    <div class="orb" style="--size: 520px; --left: 35%; --top: 72%; --color: rgba(255, 79, 163, 0.26); --blur: 120px; --opacity: .58; --duration: 20s; --move-x: 40px; --move-y: -56px;"></div>
-  </div>
-  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
-
-  <audio id="backgroundMusic" loop preload="none">
-    <source src="nhacnen.mp3" type="audio/mpeg" />
-  </audio>
-
-  <nav class="site-nav" aria-label="Main navigation">
-    <div class="container nav-shell">
-      <a class="brand" href="#home" aria-label="NTS Portal">
-        <span class="brand-mark"><span>NTS</span></span>
-        <span class="brand-text" data-i18n="brand">NTS Portal</span>
-      </a>
-
-      <div class="nav-links" id="navLinks">
-        <a href="#home" data-i18n="nav_home">Trang chủ</a>
-        <a href="#explore" data-i18n="nav_explore">Khám phá</a>
-        <a href="#modules" data-i18n="nav_modules">Tiện ích</a>
-        <a href="#contact" data-i18n="nav_contact">Liên hệ</a>
-      </div>
-
-      <div class="nav-actions">
-        <div class="language" id="languageBox">
-          <button class="lang-button" id="langButton" type="button" aria-haspopup="true" aria-expanded="false">
-            <span class="flag" id="currentFlag">🇻🇳</span>
-            <span id="currentLangText">VI</span>
-            <span class="lang-arrow">▾</span>
-          </button>
-
-          <div class="lang-menu" id="langMenu" role="menu">
-            <button class="lang-option" type="button" data-lang-option="vi" role="menuitem">
-              <span class="flag">🇻🇳</span>
-              <span data-i18n="lang_vi">Tiếng Việt</span>
-            </button>
-            <button class="lang-option" type="button" data-lang-option="en" role="menuitem">
-              <span class="flag">🇬🇧</span>
-              <span data-i18n="lang_en">English</span>
-            </button>
-            <button class="lang-option" type="button" data-lang-option="zh" role="menuitem">
-              <span class="flag">🇨🇳</span>
-              <span data-i18n="lang_zh">简体中文</span>
-            </button>
-          </div>
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="loader-wrapper">
+            <div class="loader-circle-outer"></div>
+            <div class="loader-circle-inner"></div>
+            <div class="scan-line"></div>
+            <div class="loader-percent" id="load-percentage">0%</div>
         </div>
-
-        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
-      </div>
-    </div>
-  </nav>
-
-  <main>
-    <section class="hero" id="home">
-      <div class="container hero-grid">
-        <div class="hero-copy reveal">
-          <span class="eyebrow">
-            <span class="status-dot"></span>
-            <span data-i18n="badge">Website tiện ích giải trí thế hệ mới</span>
-          </span>
-
-          <h1 class="hero-title">
-            <span data-i18n="hero_title_top">Một cổng tiện ích</span><br />
-            <span class="gradient-text" data-i18n="hero_title_highlight">đẹp, vui và chuyên nghiệp</span>
-          </h1>
-
-          <p class="hero-subtitle" data-i18n="hero_subtitle">
-            Giao diện được thiết kế lại với hiệu ứng neon, glassmorphism, chuyển động mượt, API đổi ngôn ngữ và bố cục responsive cho Android, iOS, tablet, laptop và PC.
-          </p>
-
-          <p class="typewriter" id="typewriter" aria-label="Typing slogan"></p>
-
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#modules">
-              <span>🚀</span>
-              <span data-i18n="primary_cta">Khám phá 6 mục</span>
-            </a>
-            <a class="btn btn-soft" href="totinh.html">
-              <span>💌</span>
-              <span data-i18n="secondary_cta">Mở lời tỏ tình</span>
-            </a>
-          </div>
+        <div class="mt-10 text-center px-4">
+            <h2 id="loader-title" class="text-xs tracking-[0.6em] md:tracking-[1em] text-cyan-400 font-black uppercase animate-pulse" data-vi="Đang thiết lập kết nối dữ liệu" data-en="Establishing data connection" data-zh="正在建立数据连接">
+                Đang thiết lập kết nối dữ liệu
+            </h2>
+            <p class="text-[10px] text-gray-500 mt-3 font-mono" id="loader-status">Đang giải mã tài nguyên...</p>
         </div>
+    </div>
 
-        <aside class="hero-panel reveal" aria-label="NTS preview">
-          <div class="hero-panel-inner">
-            <div class="panel-content">
-              <div class="panel-top">
-                <span class="chip">
-                  <span class="status-dot"></span>
-                  <span data-i18n="status_online">Sẵn sàng</span>
-                </span>
-                <span class="chip">
-                  <span>🌐</span>
-                  <span data-i18n="status_api">API ngôn ngữ</span>
-                </span>
-              </div>
+    <div class="bg-gradient-dynamic">
+        <div class="orb w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-purple-900 top-[-10%] left-[-10%]"></div>
+        <div class="orb w-[350px] h-[350px] md:w-[700px] md:h-[700px] bg-blue-900 bottom-[-10%] right-[-10%]" style="animation-delay: -5s;"></div>
+    </div>
+    <!-- THANH ĐIỀU HƯỚNG CHÍNH -->
+    <nav class="topbar-shell" aria-label="Điều hướng chính">
+        <div class="topbar">
+            <a href="#top" class="brand-link" aria-label="NTS Home">
+                <span class="brand-logo-wrap"><img src="logos3.png" alt="NTS Logo" class="brand-logo"></span>
+            </a>
 
-              <div class="panel-logo"><span>NTS</span></div>
+            <div class="desktop-nav" aria-label="Menu desktop">
+                <a href="#top" class="nav-link active" data-nav="home"><i class="fas fa-house"></i><span data-vi="Trang chủ">Trang chủ</span></a>
+                <a href="#explore" class="nav-link" data-nav="utilities"><i class="fas fa-grid-2"></i><span data-vi="Tiện ích">Tiện ích</span></a>
+                <a href="game.html" class="nav-link"><i class="fas fa-gamepad"></i><span data-vi="Trò chơi">Trò chơi</span></a>
+                <a href="totinh.html" class="nav-link"><i class="fas fa-heart"></i><span data-vi="Tỏ tình">Tỏ tình</span></a>
+                <a href="chucmungsinhnhat.html" class="nav-link"><i class="fas fa-gift"></i><span data-vi="Sinh nhật">Sinh nhật</span></a>
+                <a href="profile.html" class="nav-link"><i class="fas fa-user-astronaut"></i><span data-vi="Giới thiệu">Giới thiệu</span></a>
+            </div>
 
-              <div class="panel-copy">
-                <h2 class="gradient-text" data-i18n="hero_card_title">NTS Utility Hub</h2>
-                <p data-i18n="hero_card_desc">Tất cả công cụ được gom trong một giao diện nhanh, đẹp và dễ mở rộng.</p>
-
-                <div class="panel-stats">
-                  <div class="stat">
-                    <strong data-i18n="stat_modules">06</strong>
-                    <span data-i18n="stat_modules_label">mục chính</span>
-                  </div>
-                  <div class="stat">
-                    <strong data-i18n="stat_devices">100%</strong>
-                    <span data-i18n="stat_devices_label">responsive</span>
-                  </div>
-                  <div class="stat">
-                    <strong data-i18n="stat_languages">03</strong>
-                    <span data-i18n="stat_languages_label">ngôn ngữ</span>
-                  </div>
+            <div class="topbar-actions">
+                <div class="relative inline-block text-left">
+                    <button id="langDropdownBtn" aria-label="Chọn ngôn ngữ" aria-haspopup="true" aria-expanded="false" class="cyber-control flex items-center gap-2.5 bg-black/55 backdrop-blur-xl px-4 py-2.5 rounded-full border border-white/10 text-xs font-black tracking-widest text-gray-200 hover:text-white hover:border-cyan-400 transition-all uppercase select-none">
+                        <span id="currentFlag" class="text-lg leading-none">🇻🇳</span>
+                        <span id="langText">VI</span>
+                        <i class="fas fa-chevron-down text-[10px] text-gray-500 transition-transform duration-300" id="dropdownArrow"></i>
+                    </button>
+                    <div id="langMenu" class="language-grid absolute right-0 mt-2 w-[min(88vw,360px)] max-h-[70vh] overflow-y-auto bg-black/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-2 opacity-0 scale-95 pointer-events-none transition-all duration-300 transform origin-top-right z-[100]"></div>
                 </div>
-              </div>
+                <button id="menuToggle" class="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false"><i class="fas fa-bars"></i></button>
             </div>
-          </div>
-        </aside>
-      </div>
+        </div>
+
+        <div id="mobileNav" class="mobile-nav-panel" aria-label="Menu di động">
+            <a href="#top" class="nav-link active" data-nav="home"><i class="fas fa-house"></i><span data-vi="Trang chủ">Trang chủ</span></a>
+            <a href="#explore" class="nav-link" data-nav="utilities"><i class="fas fa-grid-2"></i><span data-vi="Tiện ích">Tiện ích</span></a>
+            <a href="game.html" class="nav-link"><i class="fas fa-gamepad"></i><span data-vi="Trò chơi">Trò chơi</span></a>
+            <a href="totinh.html" class="nav-link"><i class="fas fa-heart"></i><span data-vi="Tỏ tình">Tỏ tình</span></a>
+            <a href="chucmungsinhnhat.html" class="nav-link"><i class="fas fa-gift"></i><span data-vi="Sinh nhật">Sinh nhật</span></a>
+            <a href="profile.html" class="nav-link"><i class="fas fa-user-astronaut"></i><span data-vi="Giới thiệu">Giới thiệu</span></a>
+        </div>
+    </nav>
+
+    <!-- HEADER -->
+    <header class="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
+        <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+            <div class="w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] md:w-[900px] md:h-[900px] border border-white/10 rounded-full animate-[spin_80s_linear_infinite]"></div>
+            <div class="absolute w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] md:w-[700px] md:h-[700px] border border-cyan-500/10 rounded-full animate-[spin_50s_linear_infinite_reverse]"></div>
+        </div>
+
+        <div class="gaming-hero-stage relative z-10" data-aos="zoom-out" data-aos-duration="1500">
+            <div class="gaming-rig" id="gamingRig" aria-label="Máy tính chơi game 3D">
+                <div class="rig-shadow"></div>
+                <div class="rig-desk"></div>
+
+                <div class="monitor-wrap">
+                    <div class="monitor">
+                        <div class="screen">
+                            <div class="screen-grid"></div>
+                            <div class="screen-orbit one"></div>
+                            <div class="screen-orbit two"></div>
+                            <div class="screen-core">NTS</div>
+                            <div class="screen-status">
+                                <span data-vi="HỆ THỐNG GAMING SẴN SÀNG" data-en="GAMING SYSTEM READY" data-zh="游戏系统已就绪">HỆ THỐNG GAMING SẴN SÀNG</span>
+                                <span>RTX • RGB • 3D</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="monitor-neck"></div>
+                    <div class="monitor-base"></div>
+                </div>
+
+                <div class="pc-case">
+                    <div class="rgb-strip"></div>
+                    <div class="fan one"></div>
+                    <div class="fan two"></div>
+                </div>
+
+                <div class="keyboard" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i><i style="--i:12"></i><i style="--i:13"></i><i style="--i:14"></i><i style="--i:15"></i><i style="--i:16"></i><i style="--i:17"></i><i style="--i:18"></i><i style="--i:19"></i><i style="--i:20"></i><i style="--i:21"></i><i style="--i:22"></i><i style="--i:23"></i><i style="--i:24"></i><i style="--i:25"></i><i style="--i:26"></i><i style="--i:27"></i><i style="--i:28"></i><i style="--i:29"></i><i style="--i:30"></i><i style="--i:31"></i><i style="--i:32"></i><i style="--i:33"></i><i style="--i:34"></i><i style="--i:35"></i><i style="--i:36"></i><i style="--i:37"></i><i style="--i:38"></i><i style="--i:39"></i><i style="--i:40"></i><i style="--i:41"></i><i style="--i:42"></i><i style="--i:43"></i><i style="--i:44"></i><i style="--i:45"></i><i style="--i:46"></i><i style="--i:47"></i><i style="--i:48"></i><i style="--i:49"></i><i style="--i:50"></i><i style="--i:51"></i><i style="--i:52"></i><i style="--i:53"></i><i style="--i:54"></i><i style="--i:55"></i></div>
+                <div class="mouse3d" aria-hidden="true"></div>
+                <div class="floating-chip c1"><i class="fas fa-gamepad"></i></div>
+                <div class="floating-chip c2"><i class="fas fa-microchip"></i></div>
+                <div class="floating-chip c3"><i class="fas fa-bolt"></i></div>
+            </div>
+        </div>
+
+        <a href="#explore" aria-label="Scroll to explore" class="absolute bottom-5 md:bottom-9 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-cyan-300/50 hover:text-cyan-300 transition-colors">
+            <i class="fas fa-angles-down text-xl animate-bounce"></i>
+        </a>
+    </header>
+
+    <!-- EXPLORE SECTION -->
+    <section id="explore" class="py-20 md:py-32 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-6 md:gap-8" data-aos="fade-right">
+                <div>
+                    <h2 class="text-4xl md:text-6xl font-black mb-4 md:mb-6 tracking-tighter" data-vi="KHO TIỆN ÍCH" data-en="UTILITY HUB" data-zh="工具中心">KHO TIỆN ÍCH</h2>
+                    <div class="w-20 md:w-24 h-1.5 md:h-2 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full"></div>
+                </div>
+                <p class="text-gray-400 max-w-sm text-base md:text-lg font-light leading-relaxed" data-vi="Nơi hội tụ những công cụ số được phát triển bởi NTS nhằm mang lại trải nghiệm độc đáo nhất." data-en="The convergence of digital utilities developed by NTS to deliver the most unique experiences." data-zh="由 NTS 开发 committee 的数字工具集合，为您带来最独特的体验。">
+                    Nơi hội tụ những công cụ số được phát triển bởi NTS nhằm mang lại trải nghiệm độc đáo nhất.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <!-- Card 1 -->
+                <div class="glass-card group p-8 md:p-10 rounded-[30px] md:rounded-[40px]" data-aos="fade-up">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center mb-8 md:mb-10 border border-cyan-500/20 lg:group-hover:bg-cyan-500 lg:group-hover:text-black transition-all duration-500">
+                        <i class="fas fa-gamepad text-2xl md:text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 tracking-tight uppercase">Minigames</h3>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 md:mb-10" data-vi="Phòng lab trò chơi giải trí với những tựa game kinh điển được remake lại." data-en="Entertainment game lab featuring completely remade classic titles." data-zh="包含完美重制版经典游戏的娱乐游戏实验室。">Phòng lab trò chơi giải trí với những tựa game kinh điển được remake lại.</p>
+                    <a href="game.html" class="inline-flex items-center gap-3 text-cyan-400 font-black tracking-widest text-xs uppercase lg:hover:gap-6 transition-all">
+                        <span data-vi="Khởi chạy game" data-en="Launch Game" data-zh="启动游戏">Khởi chạy game</span> <i class="fas fa-terminal"></i>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card group p-8 md:p-10 rounded-[30px] md:rounded-[40px]" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-pink-500/10 flex items-center justify-center mb-8 md:mb-10 border border-pink-500/20 lg:group-hover:bg-pink-500 lg:group-hover:text-white transition-all duration-500">
+                        <i class="fas fa-heart-pulse text-2xl md:text-3xl animate-[pulse_1s_infinite]"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 tracking-tight uppercase" data-vi="Lời Tỏ Tình" data-en="Confession" data-zh="表白墙">Lời Tỏ Tình</h3>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 md:mb-10" data-vi="Giải mã trái tim Crush bằng những giao diện tỏ tình đầy sáng tạo (dành cho ai có người yêu)." data-en="Decode your Crush's heart with highly creative confession interfaces (for lovers)." data-zh="用富有创意的告白界面解锁心动女孩/男孩的心（情侣专用）。">Giải mã trái tim Crush bằng những giao diện tỏ tình đầy sáng tạo (dành cho ai có người yêu).</p>
+                    <a href="totinh.html" class="inline-flex items-center gap-3 text-pink-500 font-black tracking-widest text-xs uppercase lg:hover:gap-6 transition-all">
+                        <span data-vi="Gửi yêu thương" data-en="Send Love" data-zh="发送爱意">Gửi yêu thương</span> <i class="fas fa-heart"></i>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card group p-8 md:p-10 rounded-[30px] md:rounded-[40px]" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-yellow-500/10 flex items-center justify-center mb-8 md:mb-10 border border-yellow-500/20 lg:group-hover:bg-yellow-500 lg:group-hover:text-black transition-all duration-500">
+                        <i class="fas fa-gift text-2xl md:text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 tracking-tight uppercase">Birthday</h3>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 md:mb-10" data-vi="Tạo những kỷ niệm kỹ thuật số không bao giờ phai cho bạn bè." data-en="Create everlasting digital memories for your beloved friends." data-zh="为你的挚友制作永不褪色的数字生日贺卡记忆。">Tạo những kỷ niệm kỹ thuật số không bao giờ phai cho bạn bè.</p>
+                    <a href="chucmungsinhnhat.html" class="inline-flex items-center gap-3 text-yellow-400 font-black tracking-widest text-xs uppercase lg:hover:gap-6 transition-all">
+                        <span data-vi="Tạo thiệp ngay" data-en="Create Card" data-zh="制作贺卡">Tạo thiệp ngay</span> <i class="fas fa-wand-magic-sparkles"></i>
+                    </a>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="glass-card group p-8 md:p-10 rounded-[30px] md:rounded-[40px]" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-8 md:mb-10 border border-purple-500/20 lg:group-hover:bg-purple-500 lg:group-hover:text-white transition-all duration-500">
+                        <i class="fas fa-microchip text-2xl md:text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 tracking-tight uppercase" data-vi="Kiểm Tra Thiết Bị" data-en="Device Check" data-zh="设备检测">Kiểm Tra Thiết Bị</h3>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 md:mb-10" data-vi="Phân tích sâu thông số phần hardware và địa chỉ định danh của bạn." data-en="Deep analysis of your hardware configurations and identifier system." data-zh="深入分析您的硬件配置和网络系统标识。">Phân tích sâu thông số phần hardware và địa chỉ định danh của bạn.</p>
+                    <a href="hoso.html" class="inline-flex items-center gap-3 text-purple-400 font-black tracking-widest text-xs uppercase lg:hover:gap-6 transition-all">
+                        <span data-vi="Kiểm tra ngay" data-en="Check Now" data-zh="立即检测">Kiểm tra ngay</span> <i class="fas fa-shield-halved"></i>
+                    </a>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="glass-card group p-8 md:p-10 rounded-[30px] md:rounded-[40px]" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mb-8 md:mb-10 border border-green-500/20 lg:group-hover:bg-green-500 lg:group-hover:text-black transition-all duration-500">
+                        <i class="fas fa-qrcode text-2xl md:text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 tracking-tight uppercase" data-vi="Tạo QR" data-en="QR Generator" data-zh="二维码生成">Tạo QR</h3>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 md:mb-10" data-vi="Tạo mã định danh cá nhân nhanh chóng với nhiều định dạng tùy chỉnh." data-en="Quickly generate personal identifier codes with custom presets." data-zh="支持多种自定义格式，快速生成个人专属二维码。">Tạo mã định danh cá nhân nhanh chóng với nhiều định dạng tùy chỉnh.</p>
+                    <a href="taomaqr.html" class="inline-flex items-center gap-3 text-green-400 font-black tracking-widest text-xs uppercase lg:hover:gap-6 transition-all">
+                        <span data-vi="Tạo mã liền" data-en="Generate Now" data-zh="立即生成">Tạo mã liền</span> <i class="fas fa-bolt"></i>
+                    </a>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="glass-card group p-8 md:p-10 rounded-[30px] md:rounded-[40px]" data-aos="fade-up" data-aos-delay="500">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-8 md:mb-10 border border-blue-500/20 lg:group-hover:bg-blue-500 lg:group-hover:text-white transition-all duration-500">
+                        <i class="fas fa-fish-fins text-2xl md:text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 tracking-tight uppercase" data-vi="Bể Cá" data-en="Aquarium" data-zh="虚拟水族箱">Bể Cá</h3>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 md:mb-10" data-vi="Bể cá 3D ảo giúp bạn tìm lại sự cân bằng sau áp lực công việc." data-en="Virtual 3D aquarium to regain your balance after stressful work hours." data-zh="3D虚拟水族箱，帮您在高压工作后恢复内心的宁静与平衡。">Bể cá 3D ảo giúp bạn tìm lại sự cân bằng sau áp lực công việc.</p>
+                    <a href="beca.html" class="inline-flex items-center gap-3 text-blue-400 font-black tracking-widest text-xs uppercase lg:hover:gap-6 transition-all">
+                        <span data-vi="Thư giãn ngay" data-en="Relax Now" data-zh="立即放松">Thư giãn ngay</span> <i class="fas fa-compass"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <section class="section" id="modules">
-      <div class="container">
-        <div class="section-head reveal">
-          <div>
-            <p class="section-kicker" data-i18n="section_kicker">Danh mục chính</p>
-            <h2 class="section-title" data-i18n="section_title">6 mục có nút chuyển trang riêng</h2>
-          </div>
-          <p class="section-desc" data-i18n="section_desc">
-            Mỗi card là một liên kết độc lập. Bạn có thể đổi tên file trong thuộc tính href nếu trang con của bạn đang dùng tên khác.
-          </p>
+    <!-- FOOTER -->
+    <footer class="py-16 md:py-24 bg-black/80 backdrop-blur-3xl border-t border-white/5 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center gap-8 md:gap-10 mb-12 md:mb-16">
+                <a href="https://www.facebook.com/nguyenthanhsang70" target="_blank" class="text-gray-500 hover:text-blue-500 hover:scale-125 transition-all text-xl md:text-2xl">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="https://www.instagram.com/ngth.sang70/" target="_blank" class="text-gray-500 hover:text-pink-500 hover:scale-125 transition-all text-xl md:text-2xl">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@thanh.sang70" target="_blank" class="text-gray-500 hover:text-white hover:scale-125 transition-all text-xl md:text-2xl">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+            </div>
+            <p class="text-gray-500 text-[10px] md:text-xs tracking-[0.2em] md:tracking-[0.4em] uppercase mb-4 leading-loose">
+                <span data-vi="Thiết kế & Phát triển bởi" data-en="Designed & Developed by" data-zh="设计与开发：">Thiết kế & Phát triển bởi</span>
+                 <a href="profile.html" target="_blank" class="footer-author-link text-white font-black ml-1 block sm:inline">
+                    Nguyễn Thanh Sang
+                </a>
+            </p>
+            <p class="text-[9px] md:text-[10px] text-gray-700 font-mono" data-vi="© 2026 BẢN QUYỀN ĐƯỢC BẢO LƯU" data-en="© 2026 ALL RIGHTS RESERVED" data-zh="© 2026 版权所有">© 2026 BẢN QUYỀN ĐƯỢC BẢO LƯU</p>
         </div>
+    </footer>
 
-        <div class="modules-grid" id="explore">
-          <a class="module-card reveal" data-theme="cyan" href="game.html" aria-label="Open Minigames">
-            <div class="card-top">
-              <span class="card-icon">🎮</span>
-              <span class="card-index">01</span>
-            </div>
-            <div class="card-body">
-              <h3 data-i18n="card_minigames_title">Minigames</h3>
-              <p data-i18n="card_minigames_desc">Khu vực tổng hợp các trò chơi nhỏ, nhẹ, vui và dễ chơi trên điện thoại hoặc máy tính.</p>
-            </div>
-            <span class="card-action"><span data-i18n="card_minigames_btn">Khởi chạy game</span><span>→</span></span>
-          </a>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // --- DEVICE OPTIMIZATION: Android / iOS / Desktop ---
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+        const deviceType = isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop');
+        document.documentElement.classList.add(`device-${deviceType}`);
+        document.documentElement.dataset.device = deviceType;
 
-          <a class="module-card reveal" data-theme="pink" href="totinh.html" aria-label="Open confession page">
-            <div class="card-top">
-              <span class="card-icon">💌</span>
-              <span class="card-index">02</span>
-            </div>
-            <div class="card-body">
-              <h3 data-i18n="card_love_title">Lời Tỏ Tình</h3>
-              <p data-i18n="card_love_desc">Tạo trang tỏ tình lãng mạn với hiệu ứng trái tim, chữ chạy, popup và âm nhạc.</p>
-            </div>
-            <span class="card-action"><span data-i18n="card_love_btn">Gửi yêu thương</span><span>→</span></span>
-          </a>
-
-          <a class="module-card reveal" data-theme="yellow" href="chucmungsinhnhat.html" aria-label="Open Birthday page">
-            <div class="card-top">
-              <span class="card-icon">🎂</span>
-              <span class="card-index">03</span>
-            </div>
-            <div class="card-body">
-              <h3 data-i18n="card_birthday_title">Birthday</h3>
-              <p data-i18n="card_birthday_desc">Tạo thiệp sinh nhật điện tử với nến, bóng bay, pháo giấy và lời chúc đẹp mắt.</p>
-            </div>
-            <span class="card-action"><span data-i18n="card_birthday_btn">Tạo thiệp ngay</span><span>→</span></span>
-          </a>
-
-          <a class="module-card reveal" data-theme="violet" href="hoso.html" aria-label="Open Device Check page">
-            <div class="card-top">
-              <span class="card-icon">📱</span>
-              <span class="card-index">04</span>
-            </div>
-            <div class="card-body">
-              <h3 data-i18n="card_device_title">Kiểm Tra Thiết Bị</h3>
-              <p data-i18n="card_device_desc">Kiểm tra trình duyệt, màn hình, hệ điều hành, pin, mạng và thông tin thiết bị.</p>
-            </div>
-            <span class="card-action"><span data-i18n="card_device_btn">Kiểm tra ngay</span><span>→</span></span>
-          </a>
-
-          <a class="module-card reveal" data-theme="green" href="taomaqr.html" aria-label="Open QR Generator page">
-            <div class="card-top">
-              <span class="card-icon">▦</span>
-              <span class="card-index">05</span>
-            </div>
-            <div class="card-body">
-              <h3 data-i18n="card_qr_title">Tạo QR</h3>
-              <p data-i18n="card_qr_desc">Tạo mã QR cho đường link, văn bản, số điện thoại, email hoặc thông tin liên hệ.</p>
-            </div>
-            <span class="card-action"><span data-i18n="card_qr_btn">Tạo mã liền</span><span>→</span></span>
-          </a>
-
-          <a class="module-card reveal" data-theme="blue" href="beca.html" aria-label="Open Aquarium page">
-            <div class="card-top">
-              <span class="card-icon">🐠</span>
-              <span class="card-index">06</span>
-            </div>
-            <div class="card-body">
-              <h3 data-i18n="card_aquarium_title">Bể Cá</h3>
-              <p data-i18n="card_aquarium_desc">Bể cá ảo thư giãn với cá bơi, bong bóng và hiệu ứng nước chuyển động nhẹ nhàng.</p>
-            </div>
-            <span class="card-action"><span data-i18n="card_aquarium_btn">Thư giãn ngay</span><span>→</span></span>
-          </a>
-        </div>
-
-        <div class="api-panel reveal" id="api-info">
-          <div>
-            <p class="section-kicker" id="apiSourceLabel">API</p>
-            <h3 data-i18n="panel_title">Đã sẵn sàng kết nối API đổi ngôn ngữ</h3>
-            <p data-i18n="panel_desc">Mặc định trang gọi ./api/lang/vi.json, ./api/lang/en.json hoặc ./api/lang/zh.json. Nếu API chưa hoạt động, trang vẫn chạy nhờ dữ liệu fallback trong JavaScript.</p>
-          </div>
-          <a class="btn btn-soft" href="api/lang/vi.json" target="_blank" rel="noopener">
-            <span>⚙️</span>
-            <span data-i18n="panel_btn">Xem cấu trúc API</span>
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <button class="music-control" id="musicControl" type="button" aria-label="Audio control">
-    <span class="music-icon" id="musicIcon">♫</span>
-    <span class="music-text">
-      <small data-i18n="audio_small">Âm thanh</small>
-      <span id="musicLabel" data-i18n="audio_label_off">Nhấn để bật nhạc</span>
-    </span>
-  </button>
-
-  <footer id="contact">
-    <div class="container">
-      <div class="socials" aria-label="Social links">
-        <a href="https://www.facebook.com/nguyenthanhsang70" target="_blank" rel="noopener" aria-label="Facebook">f</a>
-        <a href="https://www.instagram.com/ngth.sang70/" target="_blank" rel="noopener" aria-label="Instagram">◎</a>
-        <a href="https://www.tiktok.com/@thanh.sang70" target="_blank" rel="noopener" aria-label="TikTok">♪</a>
-      </div>
-      <p><span data-i18n="footer_made">Thiết kế & phát triển bởi</span> <a class="footer-author" href="profile.html">Nguyễn Thanh Sang</a></p>
-      <p style="margin-top: 10px; font-size: .76rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted-2);" data-i18n="footer_rights">© 2026 BẢN QUYỀN ĐƯỢC BẢO LƯU</p>
-    </div>
-  </footer>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    // API đổi ngôn ngữ:
-    // - Mặc định gọi ./api/lang/{vi|en|zh}.json
-    // - Khi đưa lên hosting/backend thật, có thể đổi API_LANG_URL thành URL API của bạn.
-    // - Nếu API lỗi hoặc mở trực tiếp bằng file://, trang tự dùng LOCAL_LANG để không bị hỏng giao diện.
-    const API_LANG_URL = "./api/lang";
-
-    const LOCAL_LANG = {
-      "vi": {
-            "meta_title": "Trang Chủ NTS - Fun Portal",
-            "meta_description": "Kho tiện ích NTS gồm Minigames, Lời Tỏ Tình, Birthday, Kiểm Tra Thiết Bị, Tạo QR và Bể Cá.",
-            "brand": "NTS Portal",
-            "nav_home": "Trang chủ",
-            "nav_explore": "Khám phá",
-            "nav_modules": "Tiện ích",
-            "nav_contact": "Liên hệ",
-            "lang_vi": "Tiếng Việt",
-            "lang_en": "English",
-            "lang_zh": "简体中文",
-            "badge": "Website tiện ích giải trí thế hệ mới",
-            "hero_title_top": "Một cổng tiện ích",
-            "hero_title_highlight": "đẹp, vui và chuyên nghiệp",
-            "hero_subtitle": "Giao diện được thiết kế lại với hiệu ứng neon, glassmorphism, chuyển động mượt, API đổi ngôn ngữ và bố cục responsive cho Android, iOS, tablet, laptop và PC.",
-            "typewriter": "MINIGAMES • LOVE • BIRTHDAY • QR • AQUARIUM",
-            "primary_cta": "Khám phá 6 mục",
-            "secondary_cta": "Mở lời tỏ tình",
-            "hero_card_title": "NTS Utility Hub",
-            "hero_card_desc": "Tất cả công cụ được gom trong một giao diện nhanh, đẹp và dễ mở rộng.",
-            "status_online": "Sẵn sàng",
-            "status_api": "API ngôn ngữ",
-            "api_live": "Đang dùng API",
-            "api_local": "Đang dùng fallback",
-            "stat_modules": "06",
-            "stat_modules_label": "mục chính",
-            "stat_devices": "100%",
-            "stat_devices_label": "responsive",
-            "stat_languages": "03",
-            "stat_languages_label": "ngôn ngữ",
-            "section_kicker": "Danh mục chính",
-            "section_title": "6 mục có nút chuyển trang riêng",
-            "section_desc": "Mỗi card là một liên kết độc lập. Bạn có thể đổi tên file trong thuộc tính href nếu trang con của bạn đang dùng tên khác.",
-            "card_minigames_title": "Minigames",
-            "card_minigames_desc": "Khu vực tổng hợp các trò chơi nhỏ, nhẹ, vui và dễ chơi trên điện thoại hoặc máy tính.",
-            "card_minigames_btn": "Khởi chạy game",
-            "card_love_title": "Lời Tỏ Tình",
-            "card_love_desc": "Tạo trang tỏ tình lãng mạn với hiệu ứng trái tim, chữ chạy, popup và âm nhạc.",
-            "card_love_btn": "Gửi yêu thương",
-            "card_birthday_title": "Birthday",
-            "card_birthday_desc": "Tạo thiệp sinh nhật điện tử với nến, bóng bay, pháo giấy và lời chúc đẹp mắt.",
-            "card_birthday_btn": "Tạo thiệp ngay",
-            "card_device_title": "Kiểm Tra Thiết Bị",
-            "card_device_desc": "Kiểm tra trình duyệt, màn hình, hệ điều hành, pin, mạng và thông tin thiết bị.",
-            "card_device_btn": "Kiểm tra ngay",
-            "card_qr_title": "Tạo QR",
-            "card_qr_desc": "Tạo mã QR cho đường link, văn bản, số điện thoại, email hoặc thông tin liên hệ.",
-            "card_qr_btn": "Tạo mã liền",
-            "card_aquarium_title": "Bể Cá",
-            "card_aquarium_desc": "Bể cá ảo thư giãn với cá bơi, bong bóng và hiệu ứng nước chuyển động nhẹ nhàng.",
-            "card_aquarium_btn": "Thư giãn ngay",
-            "panel_title": "Đã sẵn sàng kết nối API đổi ngôn ngữ",
-            "panel_desc": "Mặc định trang gọi ./api/lang/vi.json, ./api/lang/en.json hoặc ./api/lang/zh.json. Nếu API chưa hoạt động, trang vẫn chạy nhờ dữ liệu fallback trong JavaScript.",
-            "panel_btn": "Xem cấu trúc API",
-            "audio_small": "Âm thanh",
-            "audio_label_off": "Nhấn để bật nhạc",
-            "audio_label_on": "Nhạc đang bật",
-            "footer_made": "Thiết kế & phát triển bởi",
-            "footer_rights": "© 2026 BẢN QUYỀN ĐƯỢC BẢO LƯU",
-            "toast_language": "Đã đổi ngôn ngữ",
-            "loading_title": "Đang khởi tạo giao diện",
-            "loading_1": "Đang dựng nền neon...",
-            "loading_2": "Đang tối ưu responsive...",
-            "loading_3": "Đang kết nối API ngôn ngữ...",
-            "loading_4": "Hoàn tất giao diện..."
-      },
-      "en": {
-            "meta_title": "NTS Home - Fun Portal",
-            "meta_description": "NTS utility hub with Minigames, Confession, Birthday, Device Check, QR Generator and Aquarium.",
-            "brand": "NTS Portal",
-            "nav_home": "Home",
-            "nav_explore": "Explore",
-            "nav_modules": "Utilities",
-            "nav_contact": "Contact",
-            "lang_vi": "Tiếng Việt",
-            "lang_en": "English",
-            "lang_zh": "简体中文",
-            "badge": "Next-generation entertainment utility website",
-            "hero_title_top": "A utility portal",
-            "hero_title_highlight": "beautiful, fun and professional",
-            "hero_subtitle": "Redesigned with neon effects, glassmorphism, smooth motion, language API support and a responsive layout for Android, iOS, tablets, laptops and PCs.",
-            "typewriter": "MINIGAMES • LOVE • BIRTHDAY • QR • AQUARIUM",
-            "primary_cta": "Explore 6 sections",
-            "secondary_cta": "Open confession",
-            "hero_card_title": "NTS Utility Hub",
-            "hero_card_desc": "All tools are gathered in one fast, polished and easy-to-expand interface.",
-            "status_online": "Ready",
-            "status_api": "Language API",
-            "api_live": "Using API",
-            "api_local": "Using fallback",
-            "stat_modules": "06",
-            "stat_modules_label": "main sections",
-            "stat_devices": "100%",
-            "stat_devices_label": "responsive",
-            "stat_languages": "03",
-            "stat_languages_label": "languages",
-            "section_kicker": "Main categories",
-            "section_title": "6 sections with separate page buttons",
-            "section_desc": "Each card is an independent link. You can rename the href values if your feature pages use different filenames.",
-            "card_minigames_title": "Minigames",
-            "card_minigames_desc": "A collection of small, lightweight and fun games for phones and computers.",
-            "card_minigames_btn": "Launch game",
-            "card_love_title": "Confession",
-            "card_love_desc": "Create a romantic confession page with hearts, animated text, popups and music.",
-            "card_love_btn": "Send love",
-            "card_birthday_title": "Birthday",
-            "card_birthday_desc": "Create a digital birthday card with candles, balloons, confetti and beautiful wishes.",
-            "card_birthday_btn": "Create card",
-            "card_device_title": "Device Check",
-            "card_device_desc": "Check browser, screen, operating system, battery, network and device information.",
-            "card_device_btn": "Check now",
-            "card_qr_title": "QR Generator",
-            "card_qr_desc": "Generate QR codes for links, text, phone numbers, emails or contact information.",
-            "card_qr_btn": "Generate now",
-            "card_aquarium_title": "Aquarium",
-            "card_aquarium_desc": "A relaxing virtual aquarium with swimming fish, bubbles and gentle water motion.",
-            "card_aquarium_btn": "Relax now",
-            "panel_title": "Ready to connect with a language API",
-            "panel_desc": "By default, the page calls ./api/lang/vi.json, ./api/lang/en.json or ./api/lang/zh.json. If the API is unavailable, it still works with JavaScript fallback data.",
-            "panel_btn": "View API structure",
-            "audio_small": "Audio",
-            "audio_label_off": "Tap to play music",
-            "audio_label_on": "Music is playing",
-            "footer_made": "Designed & developed by",
-            "footer_rights": "© 2026 ALL RIGHTS RESERVED",
-            "toast_language": "Language changed",
-            "loading_title": "Initializing interface",
-            "loading_1": "Building neon background...",
-            "loading_2": "Optimizing responsive layout...",
-            "loading_3": "Connecting language API...",
-            "loading_4": "Interface ready..."
-      },
-      "zh": {
-            "meta_title": "NTS 首页 - 娱乐工具站",
-            "meta_description": "NTS 工具中心：小游戏、表白、生日、设备检测、二维码生成和虚拟水族箱。",
-            "brand": "NTS Portal",
-            "nav_home": "首页",
-            "nav_explore": "探索",
-            "nav_modules": "工具",
-            "nav_contact": "联系",
-            "lang_vi": "Tiếng Việt",
-            "lang_en": "English",
-            "lang_zh": "简体中文",
-            "badge": "新一代娱乐工具网站",
-            "hero_title_top": "一个工具门户",
-            "hero_title_highlight": "美观、有趣且专业",
-            "hero_subtitle": "重新设计的界面包含霓虹效果、玻璃质感、流畅动画、语言 API 支持，并适配 Android、iOS、平板、笔记本和电脑。",
-            "typewriter": "小游戏 • 表白 • 生日 • QR • 水族箱",
-            "primary_cta": "探索 6 个模块",
-            "secondary_cta": "打开表白页",
-            "hero_card_title": "NTS 工具中心",
-            "hero_card_desc": "所有工具集中在一个快速、精致且易扩展的界面中。",
-            "status_online": "已就绪",
-            "status_api": "语言 API",
-            "api_live": "正在使用 API",
-            "api_local": "正在使用备用数据",
-            "stat_modules": "06",
-            "stat_modules_label": "主要模块",
-            "stat_devices": "100%",
-            "stat_devices_label": "响应式",
-            "stat_languages": "03",
-            "stat_languages_label": "语言",
-            "section_kicker": "主要分类",
-            "section_title": "6 个模块均有独立跳转按钮",
-            "section_desc": "每张卡片都是独立链接。如果你的子页面文件名不同，可以修改 href 属性。",
-            "card_minigames_title": "小游戏",
-            "card_minigames_desc": "适合手机和电脑的轻量、有趣小游戏集合。",
-            "card_minigames_btn": "启动游戏",
-            "card_love_title": "表白",
-            "card_love_desc": "创建带有爱心、动态文字、弹窗和音乐的浪漫表白页面。",
-            "card_love_btn": "发送爱意",
-            "card_birthday_title": "生日",
-            "card_birthday_desc": "创建带蜡烛、气球、彩纸和祝福语的电子生日贺卡。",
-            "card_birthday_btn": "制作贺卡",
-            "card_device_title": "设备检测",
-            "card_device_desc": "检测浏览器、屏幕、系统、电池、网络和设备信息。",
-            "card_device_btn": "立即检测",
-            "card_qr_title": "二维码生成",
-            "card_qr_desc": "为链接、文本、电话号码、邮箱或联系方式生成二维码。",
-            "card_qr_btn": "立即生成",
-            "card_aquarium_title": "虚拟水族箱",
-            "card_aquarium_desc": "带有游鱼、气泡和柔和水面动画的放松水族箱页面。",
-            "card_aquarium_btn": "立即放松",
-            "panel_title": "已准备好连接语言 API",
-            "panel_desc": "默认会调用 ./api/lang/vi.json、./api/lang/en.json 或 ./api/lang/zh.json。如果 API 不可用，页面会自动使用 JavaScript 备用数据。",
-            "panel_btn": "查看 API 结构",
-            "audio_small": "音频",
-            "audio_label_off": "点击播放音乐",
-            "audio_label_on": "音乐播放中",
-            "footer_made": "设计与开发：",
-            "footer_rights": "© 2026 版权所有",
-            "toast_language": "语言已切换",
-            "loading_title": "正在初始化界面",
-            "loading_1": "正在构建霓虹背景...",
-            "loading_2": "正在优化响应式布局...",
-            "loading_3": "正在连接语言 API...",
-            "loading_4": "界面已就绪..."
-      }
-};
-
-    const FLAGS = {
-      vi: "🇻🇳",
-      en: "🇬🇧",
-      zh: "🇨🇳"
-    };
-
-    const SUPPORTED_LANGS = ["vi", "en", "zh"];
-
-    const state = {
-      currentLang: localStorage.getItem("siteLang") || "vi",
-      dictionary: LOCAL_LANG.vi,
-      apiSource: "local",
-      typeTimer: null,
-      toastTimer: null,
-      musicPlaying: false
-    };
-
-    const $ = (selector, scope = document) => scope.querySelector(selector);
-    const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
-
-    const elements = {
-      preloader: $("#preloader"),
-      loaderPercent: $("#loaderPercent"),
-      loaderStatus: $("#loaderStatus"),
-      languageBox: $("#languageBox"),
-      langButton: $("#langButton"),
-      langMenu: $("#langMenu"),
-      currentFlag: $("#currentFlag"),
-      currentLangText: $("#currentLangText"),
-      menuToggle: $("#menuToggle"),
-      navLinks: $("#navLinks"),
-      typewriter: $("#typewriter"),
-      toast: $("#toast"),
-      cursorGlow: $("#cursorGlow"),
-      apiSourceLabel: $("#apiSourceLabel"),
-      music: $("#backgroundMusic"),
-      musicControl: $("#musicControl"),
-      musicLabel: $("#musicLabel"),
-      musicIcon: $("#musicIcon")
-    };
-
-    function setVhUnit() {
-      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
-    }
-
-    function normalizeLang(lang) {
-      return SUPPORTED_LANGS.includes(lang) ? lang : "vi";
-    }
-
-    function fetchWithTimeout(url, timeout = 2800) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeout);
-
-      return fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        headers: { "Accept": "application/json" },
-        signal: controller.signal
-      }).finally(() => clearTimeout(timer));
-    }
-
-    async function getLanguageData(lang) {
-      const safeLang = normalizeLang(lang);
-      const fallback = { ...LOCAL_LANG.vi, ...(LOCAL_LANG[safeLang] || {}) };
-
-      try {
-        const response = await fetchWithTimeout(`${API_LANG_URL}/${safeLang}.json?v=${Date.now()}`);
-        if (!response.ok) throw new Error("Language API unavailable");
-
-        const data = await response.json();
-        if (!data || typeof data !== "object") throw new Error("Invalid language payload");
-
-        return {
-          dictionary: { ...fallback, ...data },
-          source: "api"
+        // --- MULTI-LANGUAGE API CONFIGURATION ---
+        const languages = {
+            vi:    { label: 'Tiếng Việt',       flag: '🇻🇳', api: 'vi',    short: 'VI' },
+            zh:    { label: '简体中文',          flag: '🇨🇳', api: 'zh-CN', short: '中' },
+            'zh-TW': { label: '繁體中文',        flag: '🇹🇼', api: 'zh-TW', short: '台' },
+            en:    { label: 'English',           flag: '🇬🇧', api: 'en',    short: 'EN' },
+            fr:    { label: 'Français',          flag: '🇫🇷', api: 'fr',    short: 'FR' },
+            ko:    { label: '한국어',             flag: '🇰🇷', api: 'ko',    short: 'KO' },
+            ja:    { label: '日本語',             flag: '🇯🇵', api: 'ja',    short: 'JA' },
+            hi:    { label: 'हिन्दी',             flag: '🇮🇳', api: 'hi',    short: 'HI' },
+            'en-CA': { label: 'English (Canada)', flag: '🇨🇦', api: 'en',    short: 'CA' },
+            'en-AU': { label: 'English (Australia)', flag: '🇦🇺', api: 'en', short: 'AU' },
+            ru:    { label: 'Русский',           flag: '🇷🇺', api: 'ru',    short: 'RU' },
+            km:    { label: 'ភាសាខ្មែរ',          flag: '🇰🇭', api: 'km',    short: 'KM' },
+            es:    { label: 'Español (Cuba)',    flag: '🇨🇺', api: 'es',    short: 'CU' },
+            lo:    { label: 'ພາສາລາວ',          flag: '🇱🇦', api: 'lo',    short: 'LO' }
         };
-      } catch (error) {
-        return {
-          dictionary: fallback,
-          source: "local"
+
+        let currentLang = localStorage.getItem('siteLang') || 'vi';
+        if (!languages[currentLang]) currentLang = 'vi';
+        const translationCache = JSON.parse(localStorage.getItem('ntsTranslationCache') || '{}');
+        const originalTexts = new Map();
+
+        const loadingTranslations = {
+            vi: ['Đang giải mã tài nguyên...', 'Đang đồng bộ các phân hệ thống...', 'Đang thiết lập cổng bảo mật...', 'Hoàn tất cấu trúc giao diện...'],
+            en: ['Decrypting resources...', 'Synchronizing subsystems...', 'Establishing security gateway...', 'Finalizing interface structure...'],
+            zh: ['正在解密资源...', '正在同步子系统...', '正在建立安全网关...', '正在优化界面结构...']
         };
-      }
-    }
 
-    function applyText(dictionary) {
-      $$('[data-i18n]').forEach((element) => {
-        const key = element.getAttribute('data-i18n');
-        if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
-          element.textContent = dictionary[key];
+        function captureOriginalTexts() {
+            document.querySelectorAll('[data-vi]').forEach(el => {
+                originalTexts.set(el, el.getAttribute('data-vi'));
+            });
         }
-      });
 
-      document.title = dictionary.meta_title || "NTS Portal";
-
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription && dictionary.meta_description) {
-        metaDescription.setAttribute('content', dictionary.meta_description);
-      }
-    }
-
-    function updateLanguageUi(lang, source) {
-      elements.currentFlag.textContent = FLAGS[lang] || FLAGS.vi;
-      elements.currentLangText.textContent = lang.toUpperCase();
-      document.documentElement.lang = lang;
-
-      $$('[data-lang-option]').forEach((button) => {
-        button.classList.toggle('is-active', button.dataset.langOption === lang);
-      });
-
-      const sourceKey = source === "api" ? "api_live" : "api_local";
-      elements.apiSourceLabel.textContent = state.dictionary[sourceKey] || "API";
-    }
-
-    function showToast(message) {
-      clearTimeout(state.toastTimer);
-      elements.toast.textContent = message;
-      elements.toast.classList.add('is-visible');
-
-      state.toastTimer = setTimeout(() => {
-        elements.toast.classList.remove('is-visible');
-      }, 1800);
-    }
-
-    function startTypewriter(text) {
-      clearTimeout(state.typeTimer);
-      const target = elements.typewriter;
-      if (!target) return;
-
-      target.textContent = "";
-      const fullText = text || "NTS PORTAL";
-      let index = 0;
-
-      function type() {
-        target.textContent = fullText.slice(0, index);
-        index += 1;
-
-        if (index <= fullText.length) {
-          state.typeTimer = setTimeout(type, 58);
+        function buildLanguageMenu() {
+            const menu = document.getElementById('langMenu');
+            menu.innerHTML = Object.entries(languages).map(([code, item]) => `
+                <button type="button" class="language-option ${code === currentLang ? 'active' : ''}" data-language="${code}">
+                    <span class="flag" aria-hidden="true">${item.flag}</span>
+                    <span class="label">${item.label}</span>
+                </button>`).join('');
+            menu.querySelectorAll('[data-language]').forEach(btn => {
+                btn.addEventListener('click', () => updateLanguage(btn.dataset.language));
+            });
         }
-      }
 
-      type();
-    }
+        async function apiTranslate(text, targetCode) {
+            const target = languages[targetCode]?.api || 'en';
+            if (!text || targetCode === 'vi') return text;
+            if ((targetCode === 'en-CA' || targetCode === 'en-AU') && text) targetCode = 'en';
 
-    async function changeLanguage(lang, options = {}) {
-      const safeLang = normalizeLang(lang);
-      const { dictionary, source } = await getLanguageData(safeLang);
+            const cacheKey = `${target}|${text}`;
+            if (translationCache[cacheKey]) return translationCache[cacheKey];
 
-      state.currentLang = safeLang;
-      state.dictionary = dictionary;
-      state.apiSource = source;
+            // Preserve built-in translations first for speed and reliability.
+            const matchingElement = [...originalTexts.entries()].find(([, value]) => value === text)?.[0];
+            const builtInCode = targetCode === 'zh-TW' ? null : targetCode;
+            if (matchingElement && builtInCode && matchingElement.hasAttribute(`data-${builtInCode}`)) {
+                const builtIn = matchingElement.getAttribute(`data-${builtInCode}`);
+                translationCache[cacheKey] = builtIn;
+                return builtIn;
+            }
 
-      localStorage.setItem('siteLang', safeLang);
-      applyText(dictionary);
-      updateLanguageUi(safeLang, source);
-      startTypewriter(dictionary.typewriter);
-      closeLanguageMenu();
-
-      if (options.showToast) {
-        showToast(dictionary.toast_language || "Language changed");
-      }
-    }
-
-    function openLanguageMenu() {
-      elements.languageBox.classList.add('is-open');
-      elements.langButton.setAttribute('aria-expanded', 'true');
-    }
-
-    function closeLanguageMenu() {
-      elements.languageBox.classList.remove('is-open');
-      elements.langButton.setAttribute('aria-expanded', 'false');
-    }
-
-    function toggleLanguageMenu() {
-      if (elements.languageBox.classList.contains('is-open')) {
-        closeLanguageMenu();
-      } else {
-        openLanguageMenu();
-      }
-    }
-
-    function closeMobileMenu() {
-      elements.navLinks.classList.remove('is-open');
-      elements.menuToggle.setAttribute('aria-expanded', 'false');
-      elements.menuToggle.textContent = '☰';
-    }
-
-    function toggleMobileMenu() {
-      const isOpen = elements.navLinks.classList.toggle('is-open');
-      elements.menuToggle.setAttribute('aria-expanded', String(isOpen));
-      elements.menuToggle.textContent = isOpen ? '×' : '☰';
-    }
-
-    function runPreloader() {
-      let percent = 0;
-      const statusKeys = ['loading_1', 'loading_2', 'loading_3', 'loading_4'];
-
-      const timer = setInterval(() => {
-        percent += Math.floor(Math.random() * 7) + 4;
-        if (percent >= 100) percent = 100;
-
-        elements.loaderPercent.textContent = `${percent}%`;
-        const statusIndex = Math.min(3, Math.floor(percent / 28));
-        elements.loaderStatus.textContent = state.dictionary[statusKeys[statusIndex]] || state.dictionary.loading_1 || '';
-
-        if (percent === 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            elements.preloader.classList.add('is-hidden');
-          }, 360);
+            try {
+                const endpoint = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=vi|${encodeURIComponent(target)}`;
+                const response = await fetch(endpoint, { headers: { Accept: 'application/json' } });
+                if (!response.ok) throw new Error(`Translation API ${response.status}`);
+                const data = await response.json();
+                const translated = data?.responseData?.translatedText;
+                if (!translated) throw new Error('Empty translation');
+                translationCache[cacheKey] = translated;
+                localStorage.setItem('ntsTranslationCache', JSON.stringify(translationCache));
+                return translated;
+            } catch (error) {
+                console.warn('Translation fallback:', error);
+                if (matchingElement?.hasAttribute('data-en')) return matchingElement.getAttribute('data-en');
+                return text;
+            }
         }
-      }, 55);
-    }
 
-    function initReveal() {
-      const items = $$('.reveal');
-      if (!('IntersectionObserver' in window)) {
-        items.forEach((item) => item.classList.add('is-visible'));
-        return;
-      }
+        async function updateLanguage(lang) {
+            if (!languages[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('siteLang', lang);
+            document.documentElement.lang = languages[lang].api;
 
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
+            const entries = [...originalTexts.entries()];
+            await Promise.all(entries.map(async ([el, original]) => {
+                if (el.id === 'typewriter') return;
+                el.textContent = await apiTranslate(original, lang);
+            }));
+
+            const title = document.getElementById('site-title');
+            if (title) document.title = await apiTranslate(title.getAttribute('data-vi') || 'Trang Chủ NTS', lang);
+
+            const item = languages[lang];
+            document.getElementById('langText').textContent = item.short;
+            document.getElementById('currentFlag').textContent = item.flag;
+            document.querySelectorAll('.language-option').forEach(el => el.classList.toggle('active', el.dataset.language === lang));
+            closeDropdown();
+            initTypewriter();
+        }
+
+        // --- DROPDOWN CONTROL ---
+        const dropdownBtn = document.getElementById('langDropdownBtn');
+        const langMenu = document.getElementById('langMenu');
+        const dropdownArrow = document.getElementById('dropdownArrow');
+
+        function toggleDropdown() {
+            const isOpen = langMenu.classList.contains('opacity-100');
+            if (isOpen) return closeDropdown();
+            langMenu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+            langMenu.classList.add('opacity-100', 'scale-100');
+            dropdownArrow.classList.add('rotate-180');
+            dropdownBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeDropdown() {
+            langMenu.classList.remove('opacity-100', 'scale-100');
+            langMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+            dropdownArrow.classList.remove('rotate-180');
+            dropdownBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        dropdownBtn.addEventListener('click', e => { e.stopPropagation(); toggleDropdown(); });
+        langMenu.addEventListener('click', e => e.stopPropagation());
+        document.addEventListener('click', () => { closeDropdown(); closeMobileMenu(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDropdown(); });
+
+
+
+        // --- TOP NAVIGATION / MOBILE MENU ---
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileNav = document.getElementById('mobileNav');
+        function closeMobileMenu() {
+            if (!mobileNav || !menuToggle) return;
+            mobileNav.classList.remove('open');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuToggle.querySelector('i').className = 'fas fa-bars';
+        }
+        menuToggle?.addEventListener('click', e => {
+            e.stopPropagation();
+            const open = mobileNav.classList.toggle('open');
+            menuToggle.setAttribute('aria-expanded', String(open));
+            menuToggle.querySelector('i').className = open ? 'fas fa-xmark' : 'fas fa-bars';
+            closeDropdown();
         });
-      }, { threshold: 0.12 });
+        mobileNav?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMobileMenu));
+        window.addEventListener('resize', () => { if (innerWidth > 1080) closeMobileMenu(); });
 
-      items.forEach((item, index) => {
-        item.style.transitionDelay = `${Math.min(index * 55, 260)}ms`;
-        observer.observe(item);
-      });
-    }
+        // Highlight section currently visible.
+        const homeArea = document.querySelector('header');
+        const exploreArea = document.getElementById('explore');
+        const updateActiveNav = () => {
+            const inExplore = exploreArea && scrollY >= exploreArea.offsetTop - 180;
+            document.querySelectorAll('[data-nav="home"]').forEach(el => el.classList.toggle('active', !inExplore));
+            document.querySelectorAll('[data-nav="utilities"]').forEach(el => el.classList.toggle('active', !!inExplore));
+        };
+        addEventListener('scroll', updateActiveNav, { passive: true });
+        updateActiveNav();
 
-    function initCardEffects() {
-      const isFinePointer = window.matchMedia('(pointer: fine)').matches;
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const cards = $$('.module-card');
+        // --- LOADING ---
+        window.addEventListener('load', async () => {
+            captureOriginalTexts();
+            buildLanguageMenu();
+            await updateLanguage(currentLang);
 
-      cards.forEach((card) => {
-        card.addEventListener('pointermove', (event) => {
-          const rect = card.getBoundingClientRect();
-          const x = ((event.clientX - rect.left) / rect.width) * 100;
-          const y = ((event.clientY - rect.top) / rect.height) * 100;
-          card.style.setProperty('--mouse-x', `${x}%`);
-          card.style.setProperty('--mouse-y', `${y}%`);
+            let percentage = 0;
+            const percentText = document.getElementById('load-percentage');
+            const statusText = document.getElementById('loader-status');
+            const preloader = document.getElementById('preloader');
+            const sourcePool = loadingTranslations[currentLang] || loadingTranslations[currentLang === 'zh-TW' ? 'zh' : 'en'];
+            const translatedPool = currentLang in loadingTranslations ? sourcePool : await Promise.all(loadingTranslations.vi.map(t => apiTranslate(t, currentLang)));
 
-          if (!isFinePointer || reduceMotion) return;
-          const rotateX = ((event.clientY - rect.top) / rect.height - 0.5) * -10;
-          const rotateY = ((event.clientX - rect.left) / rect.width - 0.5) * 10;
-          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+            const interval = setInterval(() => {
+                percentage += Math.floor(Math.random() * 4) + 1;
+                if (percentage >= 100) {
+                    percentage = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        preloader.classList.add('preloader-finish');
+                        AOS.init({ once: true, duration: 850, easing: 'ease-out-cubic' });
+                    }, 420);
+                }
+                percentText.textContent = `${percentage}%`;
+                statusText.textContent = percentage <= 30 ? translatedPool[0] : percentage <= 60 ? translatedPool[1] : percentage <= 90 ? translatedPool[2] : translatedPool[3];
+            }, 32);
         });
 
-        card.addEventListener('pointerleave', () => {
-          card.style.transform = '';
-        });
-      });
-    }
-
-    function initCursorGlow() {
-      const isFinePointer = window.matchMedia('(pointer: fine)').matches;
-      if (!isFinePointer) {
-        elements.cursorGlow.style.opacity = '0.42';
-        return;
-      }
-
-      window.addEventListener('pointermove', (event) => {
-        document.documentElement.style.setProperty('--cursor-x', `${event.clientX}px`);
-        document.documentElement.style.setProperty('--cursor-y', `${event.clientY}px`);
-      }, { passive: true });
-    }
-
-    function initMusicControl() {
-      elements.musicControl.addEventListener('click', async () => {
-        if (state.musicPlaying) {
-          elements.music.pause();
-          state.musicPlaying = false;
-        } else {
-          try {
-            await elements.music.play();
-            state.musicPlaying = true;
-          } catch (error) {
-            state.musicPlaying = false;
-            showToast('Trình duyệt chưa cho phép phát nhạc hoặc thiếu file nhacnen.mp3');
-          }
+        // --- TYPEWRITER ---
+        let typewriterTimeout;
+        async function initTypewriter() {
+            clearTimeout(typewriterTimeout);
+            const container = document.getElementById('typewriter');
+            if (!container) return;
+            const source = container.getAttribute('data-vi') || '';
+            const fullText = await apiTranslate(source, currentLang);
+            container.textContent = '';
+            let index = 0;
+            const type = () => {
+                if (index < fullText.length) {
+                    container.textContent += fullText.charAt(index++);
+                    typewriterTimeout = setTimeout(type, 72);
+                }
+            };
+            type();
         }
 
-        elements.musicControl.classList.toggle('is-playing', state.musicPlaying);
-        elements.musicIcon.textContent = state.musicPlaying ? '●' : '♫';
-        elements.musicLabel.textContent = state.musicPlaying
-          ? (state.dictionary.audio_label_on || 'Music is playing')
-          : (state.dictionary.audio_label_off || 'Tap to play music');
-      });
-    }
+        // --- ADVANCED 3D TILT / POINTER PARALLAX ---
+        const finePointer = matchMedia('(hover:hover) and (pointer:fine)').matches;
+        if (finePointer) {
+            document.querySelectorAll('.glass-card').forEach(card => {
+                card.addEventListener('pointermove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const px = (e.clientX - rect.left) / rect.width;
+                    const py = (e.clientY - rect.top) / rect.height;
+                    const rotateX = (0.5 - py) * 12;
+                    const rotateY = (px - 0.5) * 12;
+                    card.style.transform = `perspective(1100px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-7px) scale3d(1.018,1.018,1.018)`;
+                });
+                card.addEventListener('pointerleave', () => {
+                    card.style.transform = 'perspective(1100px) rotateX(0) rotateY(0) translateY(0) scale3d(1,1,1)';
+                });
+            });
 
-    function bindEvents() {
-      window.addEventListener('resize', setVhUnit, { passive: true });
-      window.addEventListener('orientationchange', setVhUnit, { passive: true });
-
-      elements.langButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        toggleLanguageMenu();
-      });
-
-      $$('[data-lang-option]').forEach((button) => {
-        button.addEventListener('click', () => {
-          changeLanguage(button.dataset.langOption, { showToast: true });
-        });
-      });
-
-      document.addEventListener('click', (event) => {
-        if (!elements.languageBox.contains(event.target)) closeLanguageMenu();
-      });
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-          closeLanguageMenu();
-          closeMobileMenu();
+            const gamingRig = document.getElementById('gamingRig');
+            const gamingStage = document.querySelector('.gaming-hero-stage');
+            gamingStage?.addEventListener('pointermove', e => {
+                if (!gamingRig) return;
+                const rect = gamingStage.getBoundingClientRect();
+                const px = (e.clientX - rect.left) / rect.width;
+                const py = (e.clientY - rect.top) / rect.height;
+                gamingRig.style.setProperty('--ry', `${(px - .5) * 18}deg`);
+                gamingRig.style.setProperty('--rx', `${(.5 - py) * 12}deg`);
+            });
+            gamingStage?.addEventListener('pointerleave', () => {
+                if (!gamingRig) return;
+                gamingRig.style.setProperty('--ry', '-10deg');
+                gamingRig.style.setProperty('--rx', '-5deg');
+            });
         }
-      });
-
-      elements.menuToggle.addEventListener('click', toggleMobileMenu);
-      $$('#navLinks a').forEach((link) => link.addEventListener('click', closeMobileMenu));
-    }
-
-    async function init() {
-      setVhUnit();
-      bindEvents();
-      initReveal();
-      initCardEffects();
-      initCursorGlow();
-      initMusicControl();
-      await changeLanguage(state.currentLang, { showToast: false });
-      runPreloader();
-    }
-
-    init();
-  </script>
+    </script>
 </body>
 </html>
