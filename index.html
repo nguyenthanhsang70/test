@@ -25,7 +25,7 @@ body:before{
   background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
   background-size:32px 32px;mask-image:linear-gradient(#000,transparent 90%)
 }
-button,input,select{font:inherit}
+button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.room-join-button,.icon-btn,.ghost-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .app{width:min(1180px,100%);margin:auto;padding:20px;position:relative;z-index:1}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
 .brand-wrap{display:flex;align-items:center;gap:10px}.title-back-btn{width:42px;height:42px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;display:grid;place-items:center;text-decoration:none;transition:.2s;flex:0 0 auto}.title-back-btn:hover{transform:translateX(-2px);background:rgba(255,255,255,.12)}.brand{display:flex;align-items:center;gap:12px}
@@ -70,12 +70,14 @@ button,input,select{font:inherit}
 .turn-info{text-align:right;font-size:13px;color:var(--muted)}
 .turn-info strong{display:block;color:#fff}
 .board-shell{padding:13px;border-radius:22px;background:linear-gradient(145deg,#8b6a3b,#4e341e);box-shadow:inset 0 0 0 2px rgba(255,255,255,.1),0 18px 35px rgba(0,0,0,.34)}
-.board{display:grid;grid-template-columns:repeat(10,1fr);aspect-ratio:1/1;background:var(--cell);border:1px solid #a99670;position:relative}
-.cell{min-width:0;aspect-ratio:1;border-right:1px solid var(--cell-line);border-bottom:1px solid var(--cell-line);display:grid;place-items:center;cursor:pointer;position:relative;transition:.16s;font-size:clamp(20px,3vw,32px);font-weight:900;user-select:none}
+.board{display:grid;grid-template-columns:repeat(10,1fr);aspect-ratio:1/1;background:var(--cell);border:1px solid #a99670;position:relative;contain:layout paint style;transform:translateZ(0);backface-visibility:hidden}
+.cell{min-width:0;aspect-ratio:1;border-right:1px solid var(--cell-line);border-bottom:1px solid var(--cell-line);display:grid;place-items:center;cursor:pointer;position:relative;transition:background-color .08s ease;font-size:clamp(20px,3vw,32px);font-weight:900;user-select:none;contain:layout paint;backface-visibility:hidden}
 .cell:nth-child(10n){border-right:0}.cell:nth-last-child(-n+10){border-bottom:0}
 .cell:hover{background:rgba(59,130,246,.13)}
 .cell.X{color:#2563eb;text-shadow:0 2px 8px rgba(37,99,235,.25)}
 .cell.O{color:#e11d48;text-shadow:0 2px 8px rgba(225,29,72,.25)}
+.cell.piece-enter{animation:pieceEnter .13s cubic-bezier(.2,.9,.25,1)}
+@keyframes pieceEnter{0%{transform:scale(.72);opacity:.35}100%{transform:scale(1);opacity:1}}
 .cell.last:after{content:"";position:absolute;inset:9%;border:2px solid rgba(255,255,255,.8);border-radius:10px;pointer-events:none}
 .cell.win{animation:pulseWin .75s infinite alternate;background:rgba(251,191,36,.35)}
 @keyframes pulseWin{to{filter:brightness(1.25)}}
@@ -145,6 +147,22 @@ button,input,select{font:inherit}
 .result-card{text-align:center}.trophy{font-size:62px;color:var(--gold);filter:drop-shadow(0 12px 25px rgba(251,191,36,.25))}.result-card h3{font-size:30px;margin:10px 0 6px}.result-card p{color:var(--muted)}
 @media(max-width:900px){.game-layout{grid-template-columns:1fr 1fr}.center-panel{grid-column:1/-1;grid-row:1}.player-card{grid-row:2}.hero{grid-template-columns:1fr}.status-pill{justify-self:start}.room-setup-layout{grid-template-columns:1fr}.open-room-list{max-height:245px}}
 @media(max-width:600px){.app{padding:12px}.brand p,.hero p{display:none}.hero{padding:16px}.game-layout{gap:10px}.player-card{padding:12px}.avatar{width:52px;height:52px;border-radius:16px}.stats{display:none}.piece-badge{font-size:12px}.center-panel{padding:10px;border-radius:18px}.board-shell{padding:8px}.match-bar{grid-template-columns:1fr auto}.turn-info{display:none}.bottom-controls{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.piece-select{grid-template-columns:1fr}.swap-btn{margin:auto;transform:rotate(90deg)}.modal-card{padding:18px}.top-actions .ghost-btn span{display:none}}
+
+@media (hover:none),(pointer:coarse){
+  .cell:hover,.control-btn:hover,.choice:hover,.icon-btn:hover,.ghost-btn:hover,.room-refresh-btn:hover{transform:none;filter:none}
+}
+@media(max-width:600px){
+  body:before{display:none}
+  .player-card,.center-panel,.modal,.modal-card,.hero{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .player-card,.center-panel,.modal-card,.hero{box-shadow:0 10px 28px rgba(0,0,0,.2)}
+  .board-shell{box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 8px 20px rgba(0,0,0,.24)}
+  .cell{transition:none}
+  .cell.win{animation-duration:1.1s}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 <body>
@@ -388,9 +406,13 @@ let roomSnapshotVersion = 0;
 let lastAppliedSnapshotVersion = 0;
 let latestGameSnapshot = null;
 let roomWriteChain = Promise.resolve();
-const ROOM_STATE_POLL_MS = 600;
-const CLOUD_RELAY_POLL_MS = 700;
-const CLOUD_RELAY_HEARTBEAT_MS = 1800;
+let boardRevision = 0;
+let lastAppliedBoardRevision = 0;
+let lastMoveCell = null;
+let sharedAudioContext = null;
+const ROOM_STATE_POLL_MS = 1800;
+const CLOUD_RELAY_POLL_MS = 320;
+const CLOUD_RELAY_HEARTBEAT_MS = 1000;
 const CLOUD_RELAY_STALE_MS = 12000;
 const PEERJS_CDN_SOURCES = [
   'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
@@ -402,6 +424,12 @@ const PEERJS_CDN_SOURCES = [
 const $ = id => document.getElementById(id);
 const boardEl = $('board');
 const message = $('message');
+boardEl.addEventListener('click', event => {
+  const cell = event.target.closest('.cell');
+  if(!cell || !boardEl.contains(cell)) return;
+  const index = Number(cell.dataset.index);
+  if(Number.isInteger(index)) playCell(index);
+});
 
 function showToast(text, type = 'warn'){
   const toast = $('notifyToast');
@@ -532,6 +560,7 @@ function createCloudDataConnection(){
   return {
     open:false,
     _closed:false,
+    _transport:'cloud',
     on(type, handler){
       if(listeners[type] && typeof handler === 'function') listeners[type].push(handler);
     },
@@ -902,6 +931,7 @@ function buildCurrentStateSignature(){
 function buildRoomSnapshot(){
   return {
     snapshotVersion:roomSnapshotVersion,
+    boardRevision,
     updatedAt:Date.now(),
     currentPiece,
     active:Boolean(active),
@@ -940,22 +970,41 @@ function sameMove(a,b){
   return Boolean(a && b && Number(a.row) === Number(b.row) && Number(a.col) === Number(b.col) && a.piece === b.piece);
 }
 
-function renderSnapshotMove(move, isLast){
+function setLastMoveCell(cell){
+  if(lastMoveCell && lastMoveCell !== cell) lastMoveCell.classList.remove('last');
+  lastMoveCell = cell || null;
+  if(lastMoveCell) lastMoveCell.classList.add('last');
+}
+
+function animatePlacedCell(cell){
+  if(!cell) return;
+  cell.classList.remove('piece-enter');
+  void cell.offsetWidth;
+  cell.classList.add('piece-enter');
+  setTimeout(() => cell.classList.remove('piece-enter'),150);
+}
+
+function renderSnapshotMove(move, isLast, animate = false){
   if(!move) return;
   board[move.row][move.col] = move.piece;
   const cell = boardEl.children[move.row * SIZE + move.col];
   if(!cell) return;
-  cell.className = 'cell ' + move.piece + (isLast ? ' last' : '');
+  cell.className = 'cell ' + move.piece;
   cell.textContent = move.piece;
+  if(isLast) setLastMoveCell(cell);
+  if(animate) animatePlacedCell(cell);
 }
 
 function applyRoomSnapshot(snapshot){
   if(gameMode !== 'online' || onlineRole === 'host' || !snapshot || typeof snapshot !== 'object') return false;
   const snapshotVersion = Number(snapshot.snapshotVersion || 0);
+  const remoteBoardRevision = Number(snapshot.boardRevision || 0);
   if(!snapshotVersion || snapshotVersion <= lastAppliedSnapshotVersion) return false;
+  if(remoteBoardRevision < lastAppliedBoardRevision) return false;
 
   const remoteMoves = normalizeSnapshotMoves(snapshot.moves);
   const localMoves = Array.isArray(moves) ? moves : [];
+  if(remoteBoardRevision === lastAppliedBoardRevision && remoteMoves.length < localMoves.length) return false;
   const sharedLength = Math.min(localMoves.length, remoteMoves.length);
   let prefixMatches = true;
   for(let i = 0; i < sharedLength; i++){
@@ -968,6 +1017,8 @@ function applyRoomSnapshot(snapshot){
   const previousPiece = currentPiece;
   const previousActive = active;
   lastAppliedSnapshotVersion = snapshotVersion;
+  lastAppliedBoardRevision = Math.max(lastAppliedBoardRevision,remoteBoardRevision);
+  boardRevision = Math.max(boardRevision,remoteBoardRevision);
   roomSnapshotVersion = Math.max(roomSnapshotVersion,snapshotVersion);
 
   p1Name = cleanRoomName(snapshot.p1Name) || p1Name || 'Chủ phòng';
@@ -984,14 +1035,14 @@ function applyRoomSnapshot(snapshot){
   active = Boolean(snapshot.active);
 
   if(prefixMatches && remoteMoves.length >= localMoves.length){
-    document.querySelectorAll('.cell.last').forEach(cell => cell.classList.remove('last'));
+    if(lastMoveCell) lastMoveCell.classList.remove('last');
     for(let i = localMoves.length; i < remoteMoves.length; i++){
-      renderSnapshotMove(remoteMoves[i],i === remoteMoves.length - 1);
+      renderSnapshotMove(remoteMoves[i],i === remoteMoves.length - 1,i === remoteMoves.length - 1);
     }
     if(remoteMoves.length && remoteMoves.length === localMoves.length){
       const last = remoteMoves[remoteMoves.length - 1];
       const lastCell = boardEl.children[last.row * SIZE + last.col];
-      if(lastCell) lastCell.classList.add('last');
+      if(lastCell) setLastMoveCell(lastCell);
     }
     moves = remoteMoves;
   }else{
@@ -1022,11 +1073,17 @@ async function pollRoomState(){
   }
 }
 
-function startRoomStateSync(){
+function isCloudTransport(){
+  return Boolean(connection && connection._transport === 'cloud');
+}
+
+function startRoomStateSync(force = false){
   stopRoomStateSync();
   if(gameMode !== 'online' || onlineRole === 'host' || !currentOnlineRoomCode) return;
   void pollRoomState();
-  roomStatePollTimer = setInterval(() => void pollRoomState(), ROOM_STATE_POLL_MS);
+  if(force || isCloudTransport()){
+    roomStatePollTimer = setInterval(() => void pollRoomState(), ROOM_STATE_POLL_MS);
+  }
 }
 
 function stopRoomStateSync(){
@@ -1135,13 +1192,15 @@ function setupSourceProtection(){
 function buildBoard(){
   board = Array.from({length:SIZE}, ()=> Array(SIZE).fill(null));
   moves = [];
-  boardEl.innerHTML = '';
+  lastMoveCell = null;
+  const fragment = document.createDocumentFragment();
   for(let i=0;i<SIZE*SIZE;i++){
     const cell = document.createElement('div');
     cell.className = 'cell';
-    cell.onclick = () => playCell(i);
-    boardEl.appendChild(cell);
+    cell.dataset.index = String(i);
+    fragment.appendChild(cell);
   }
+  boardEl.replaceChildren(fragment);
 }
 
 function openSetup(){
@@ -1403,7 +1462,6 @@ async function startOnlineMatch(){
   message.textContent = onlineRole === 'host' ? 'Đang tạo phòng và chờ người chơi thứ hai...' : 'Đang kết nối tới chủ phòng...';
   closeSetup();
   buildBoard();
-  startRoomStateSync();
 
   const hostPeerId = 'caro-arena-' + code.toLowerCase();
   if(onlineRole === 'host'){
@@ -1610,6 +1668,9 @@ function closeExistingPeer(removeRoom = true){
   roomSnapshotVersion = 0;
   lastAppliedSnapshotVersion = 0;
   latestGameSnapshot = null;
+  boardRevision = 0;
+  lastAppliedBoardRevision = 0;
+  lastMoveCell = null;
   updateOnlineActionButtons();
 }
 
@@ -1623,6 +1684,7 @@ function setupOnlineConnection(conn){
       return;
     }
     connection = conn;
+    if(!connection._transport) connection._transport = 'peer';
     clearJoinAttempt();
     onlineConnected = true;
     if(cloudRelaySession && cloudRelaySession.conn !== conn) stopCloudRelay(true,false);
@@ -1631,7 +1693,8 @@ function setupOnlineConnection(conn){
     message.textContent = 'Đã kết nối. Trận đấu đang được đồng bộ giữa hai trình duyệt.';
     updateOnlineActionButtons();
     if(onlineRole === 'guest'){
-      startRoomStateSync();
+      if(isCloudTransport()) startRoomStateSync(true);
+      else { stopRoomStateSync(); void pollRoomState(); }
       sendOnline({type:'hello',name:$('name1Input').value.trim()});
     }
   });
@@ -1771,6 +1834,7 @@ function handlePeerError(error){
 }
 
 function resetRound(fromNetwork = false){
+  boardRevision += 1;
   if(gameMode === 'online' && !fromNetwork && onlineConnected) sendOnline({type:'reset'});
   if(gameMode === 'online' && onlineRole === 'host' && onlineConnected) setCurrentRoomState('full',2);
   buildBoard();
@@ -1834,9 +1898,11 @@ function completeTurnAfterMove(row, col, piece){
 function placePiece(row, col, piece){
   board[row][col] = piece;
   const cell = boardEl.children[row * SIZE + col];
-  document.querySelectorAll('.cell.last').forEach(x=>x.classList.remove('last'));
-  cell.className = 'cell ' + piece + ' last';
+  if(!cell) return;
+  cell.className = 'cell ' + piece;
   cell.textContent = piece;
+  setLastMoveCell(cell);
+  animatePlacedCell(cell);
   moves.push({row, col, piece});
   playTone(piece === 'X' ? 430 : 350, 0.045);
 }
@@ -1970,6 +2036,7 @@ function renderTimer(){
 function stopTimer(){ clearInterval(timerId); timerId = null; }
 
 function undoMove(fromNetwork = false){
+  boardRevision += 1;
   if(!moves.length) return;
   if(gameMode === 'online' && !fromNetwork){
     if(!onlineConnected) return;
@@ -1988,12 +2055,19 @@ function undoMove(fromNetwork = false){
 
 function rebuildFromMoves(){
   board = Array.from({length:SIZE}, ()=> Array(SIZE).fill(null));
-  [...boardEl.children].forEach(c=>{ c.className = 'cell'; c.textContent = ''; });
+  lastMoveCell = null;
+  const children = boardEl.children;
+  for(let i=0;i<children.length;i++){
+    children[i].className = 'cell';
+    children[i].textContent = '';
+  }
   moves.forEach((m, idx)=>{
     board[m.row][m.col] = m.piece;
-    const cell = boardEl.children[m.row * SIZE + m.col];
-    cell.className = 'cell ' + m.piece + (idx === moves.length - 1 ? ' last' : '');
+    const cell = children[m.row * SIZE + m.col];
+    if(!cell) return;
+    cell.className = 'cell ' + m.piece;
     cell.textContent = m.piece;
+    if(idx === moves.length - 1) setLastMoveCell(cell);
   });
 }
 
@@ -2101,14 +2175,23 @@ function updateScores(){
   $('p2Wins').textContent = wins.p2;
 }
 
+function getSharedAudioContext(){
+  if(sharedAudioContext) return sharedAudioContext;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if(!AudioCtx) return null;
+  sharedAudioContext = new AudioCtx();
+  return sharedAudioContext;
+}
+
 function playTone(freq,duration){
   if(!soundOn) return;
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  const ac = new AudioCtx();
+  const ac = getSharedAudioContext();
+  if(!ac) return;
+  if(ac.state === 'suspended') void ac.resume();
   const osc = ac.createOscillator();
   const gain = ac.createGain();
   osc.frequency.value = freq;
-  gain.gain.setValueAtTime(.08, ac.currentTime);
+  gain.gain.setValueAtTime(.065, ac.currentTime);
   gain.gain.exponentialRampToValueAtTime(.001, ac.currentTime + duration);
   osc.connect(gain); gain.connect(ac.destination);
   osc.start(); osc.stop(ac.currentTime + duration);
@@ -2137,6 +2220,15 @@ $('roomType').addEventListener('change', ()=>{
 
 setupSourceProtection();
 initRoomDirectory();
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && gameMode === 'online' && onlineRole === 'guest' && currentOnlineRoomCode){
+    void pollRoomState();
+  }
+});
+window.addEventListener('pageshow', () => {
+  if(gameMode === 'online' && onlineRole === 'guest' && currentOnlineRoomCode) void pollRoomState();
+});
+
 window.addEventListener('beforeunload', () => {
   stopRoomHeartbeat();
   stopCloudRelay(true,false);
