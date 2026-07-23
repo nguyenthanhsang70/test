@@ -1914,7 +1914,7 @@
             startCloudRelay('host', currentRoomCode);
         }
 
-        function startCloudGuestJoin(code, reason = 'Đang kết nối bằng chế độ tương thích điện thoại...') {
+        function startCloudGuestJoin(code, reason = 'Đang kết nối...') {
             cloudRelayJoinFallbackStarted = true;
             clearTimeout(joinAttemptTimer);
             joinAttemptTimer = null;
@@ -2015,14 +2015,14 @@
                 if (manual) {
                     const count = getActiveRooms().length;
                     setOnlineStatus(count
-                        ? `Đã làm mới: ${count} phòng đang hoạt động trên tất cả trình duyệt.`
+                        ? `Đã làm mới: ${count} phòng đang hoạt động.`
                         : 'Đã làm mới: chưa có phòng nào đang hoạt động.');
                 }
                 return true;
             } catch (error) {
                 if (error?.name !== 'AbortError') roomCloudAvailable = false;
                 if (manual) {
-                    setOnlineStatus('Không thể tải danh sách phòng chung. Kiểm tra Internet rồi nhấn Làm mới.', true);
+                    setOnlineStatus('Không thể tải danh sách phòng. Kiểm tra Internet rồi nhấn Làm mới.', true);
                 }
                 return false;
             } finally {
@@ -2102,7 +2102,7 @@
                 await publishCurrentRoom();
             }
 
-            setOnlineStatus('Đang làm mới danh sách phòng chung...');
+            setOnlineStatus('Đang làm mới danh sách phòng...');
             const refreshed = await requestGlobalRooms(true);
             if (refreshed) setOnlineStatus(`Đã làm mới: ${getActiveRooms().length} phòng đang hoạt động.`);
 
@@ -2265,7 +2265,7 @@
         }
 
         async function createOnlineRoom(retry = 0) {
-            const name = validateName('onlinePlayerName', 'Vui lòng nhập tên người chơi 1 trước khi tạo phòng.');
+            const name = validateName('onlinePlayerName', 'Vui lòng nhập tên người chơi trước khi tạo phòng.');
             if (!name) return;
 
             const requestedCode = retry > 0
@@ -2288,7 +2288,7 @@
             updateOnlineActionButtons();
             setOnlineStatus(published
                 ? `Đã tạo phòng ${currentRoomCode}. Điện thoại và máy tính đều có thể tham gia.`
-                : `Đã tạo phòng ${currentRoomCode}, nhưng chưa thể đăng lên danh sách chung. Hãy kiểm tra Internet và nhấn Làm mới.`,
+                : `Đã tạo phòng ${currentRoomCode}, nhưng chưa thể đăng lên danh sách phòng. Hãy kiểm tra Internet và nhấn Làm mới.`,
                 !published);
             updateConnectionText(`🌐 Phòng ${currentRoomCode} — ${localPlayerName} đang chờ đối thủ`);
 
@@ -2424,7 +2424,7 @@
                 const result = document.getElementById('result');
                 result.textContent = isRoomHost
                     ? 'ĐÃ KẾT NỐI — HÃY RA CHIÊU!'
-                    : 'ĐÃ KẾT NỐI — ĐANG ĐỒNG BỘ ĐIỂM THẮNG...';
+                    : 'ĐÃ KẾT NỐI — HÃY RA CHIÊU!';
                 result.className = 'result-text win';
             });
 
