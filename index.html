@@ -487,12 +487,16 @@
             border: none;
             border-radius: 0.75rem;
             padding: 0.65rem 0.9rem;
+            min-height: 48px;
             background: linear-gradient(100deg, #06b6d4, #4f46e5);
             color: white;
             font-size: 0.8rem;
             font-weight: 850;
             cursor: pointer;
             white-space: nowrap;
+            touch-action: manipulation;
+            -webkit-appearance: none;
+            appearance: none;
         }
         .room-join-btn:disabled {
             cursor: not-allowed;
@@ -1185,6 +1189,11 @@
         let joinInProgress = false;
         let joinAttemptTimer = null;
         let pendingJoinCode = '';
+        let cloudRelaySession = null;
+        let cloudRelayJoinFallbackStarted = false;
+        const CLOUD_RELAY_POLL_MS = 700;
+        const CLOUD_RELAY_HEARTBEAT_MS = 1800;
+        const CLOUD_RELAY_STALE_MS = 12000;
         const PEERJS_CDN_SOURCES = [
             'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
             'https://cdn.bootcdn.net/ajax/libs/peerjs/1.5.5/peerjs.min.js',
@@ -1212,6 +1221,15 @@
             updateDeviceSupportLabel();
             enableSourceProtection();
             renderOpenRooms();
+            const openRoomList = document.getElementById('openRoomList');
+            if (openRoomList) {
+                openRoomList.addEventListener('click', event => {
+                    const button = event.target.closest('[data-action="join-room"]');
+                    if (!button || button.disabled) return;
+                    event.preventDefault();
+                    void joinListedRoom(button.dataset.roomCode || '');
+                });
+            }
             initGlobalRoomDirectory();
             const nameInput = document.getElementById('onlinePlayerName');
             if (nameInput) {
@@ -1228,6 +1246,7 @@
                 // Không xóa phòng ngay khi chủ phòng đóng trang hoặc mất mạng.
                 // Heartbeat dừng lại và phòng chỉ bị loại sau 45 giây không còn tín hiệu.
                 stopRoomHeartbeat(false);
+                stopCloudRelay(true, false);
                 shutdownGlobalRoomDirectory();
             });
             window.addEventListener('resize', resizeFireworksCanvas, { passive: true });
@@ -1242,7 +1261,7 @@
             const leaveButton = document.getElementById('leaveMatchButton');
             const dissolveButton = document.getElementById('dissolveRoomButton');
             const hasOpenConnection = Boolean(connection && connection.open);
-            const hasHostedRoom = Boolean(gameMode === 'online' && isRoomHost && currentRoomCode && peer && !peer.destroyed);
+            const hasHostedRoom = Boolean(gameMode === 'online' && isRoomHost && currentRoomCode);
             const isJoinedPlayer = Boolean(gameMode === 'online' && !isRoomHost && currentRoomCode && hasOpenConnection);
             if (leaveButton) leaveButton.classList.toggle('hidden', !isJoinedPlayer);
             if (dissolveButton) dissolveButton.classList.toggle('hidden', !hasHostedRoom);
@@ -1737,6 +1756,186 @@
             try { return JSON.parse(text); } catch (_) { return null; }
         }
 
+
+        function isMobileBrowser() {
+            const ua = navigator.userAgent || '';
+            return /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
+                || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+
+        function getCloudRelayUrl(code, role) {
+            const safeCode = String(code || '').trim().toUpperCase();
+            const safeRole = role === 'host' ? 'host' : 'guest';
+            return `${GLOBAL_ROOM_API_BASE}/${GLOBAL_ROOM_NAMESPACE}/relay-${safeCode}-${safeRole}`;
+        }
+
+        function createCloudDataConnection() {
+            const listeners = { open: [], data: [], close: [], error: [] };
+            return {
+                open: false,
+                _closed: false,
+                on(type, handler) {
+                    if (listeners[type] && typeof handler === 'function') listeners[type].push(handler);
+                },
+                _emit(type, payload) {
+                    (listeners[type] || []).slice().forEach(handler => {
+                        try { handler(payload); } catch (error) { console.error(error); }
+                    });
+                },
+                send(data) {
+                    if (this._closed || !cloudRelaySession || cloudRelaySession.conn !== this) {
+                        throw new Error('Cloud relay is not active');
+                    }
+                    queueCloudRelayMessage(data);
+                },
+                close() {
+                    if (this._closed) return;
+                    this._closed = true;
+                    this.open = false;
+                    stopCloudRelay(true, false);
+                    this._emit('close');
+                }
+            };
+        }
+
+        async function writeCloudRelayState(session = cloudRelaySession) {
+            if (!session || session.stopped) return false;
+            const payload = {
+                code: session.code,
+                role: session.role,
+                name: localPlayerName,
+                updatedAt: Date.now(),
+                closed: Boolean(session.closed),
+                messages: session.messages.slice(-40)
+            };
+            session.writeChain = session.writeChain
+                .catch(() => {})
+                .then(() => fetchJsonResponse(getCloudRelayUrl(session.code, session.role), {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                }))
+                .catch(() => null);
+            await session.writeChain;
+            return true;
+        }
+
+        function queueCloudRelayMessage(data) {
+            const session = cloudRelaySession;
+            if (!session || session.stopped) return;
+            session.localSeq += 1;
+            session.messages.push({ seq: session.localSeq, at: Date.now(), data });
+            if (session.messages.length > 40) session.messages.splice(0, session.messages.length - 40);
+            void writeCloudRelayState(session);
+        }
+
+        async function pollCloudRelay(session = cloudRelaySession) {
+            if (!session || session.stopped || session.polling) return;
+            session.polling = true;
+            try {
+                const remote = await fetchJsonResponse(`${getCloudRelayUrl(session.code, session.remoteRole)}?t=${Date.now()}`);
+                if (!remote || typeof remote !== 'object') return;
+
+                const messages = Array.isArray(remote.messages) ? remote.messages : [];
+                messages
+                    .filter(message => Number(message?.seq) > session.remoteSeq)
+                    .sort((a, b) => Number(a.seq) - Number(b.seq))
+                    .forEach(message => {
+                        session.remoteSeq = Math.max(session.remoteSeq, Number(message.seq) || 0);
+                        session.conn._emit('data', message.data);
+                    });
+
+                const remoteFresh = Date.now() - Number(remote.updatedAt || 0) < CLOUD_RELAY_STALE_MS;
+                if (remoteFresh && !remote.closed && !session.conn.open && !session.conn._closed) {
+                    if (connection && connection !== session.conn && connection.open) {
+                        stopCloudRelay(true, false);
+                        return;
+                    }
+                    session.conn.open = true;
+                    session.conn._emit('open');
+                } else if ((!remoteFresh || remote.closed) && session.conn.open && !session.conn._closed) {
+                    session.conn.open = false;
+                    session.conn._emit('close');
+                }
+            } catch (_) {
+                // Giữ phiên để lần thăm dò kế tiếp tự thử lại khi mạng điện thoại ổn định.
+            } finally {
+                session.polling = false;
+            }
+        }
+
+        function startCloudRelay(role, code) {
+            stopCloudRelay(false, false);
+            const conn = createCloudDataConnection();
+            const session = {
+                code: String(code || '').trim().toUpperCase(),
+                role: role === 'host' ? 'host' : 'guest',
+                remoteRole: role === 'host' ? 'guest' : 'host',
+                conn,
+                localSeq: 0,
+                remoteSeq: 0,
+                messages: [],
+                writeChain: Promise.resolve(),
+                polling: false,
+                closed: false,
+                stopped: false,
+                pollTimer: null,
+                heartbeatTimer: null
+            };
+            cloudRelaySession = session;
+            setupConnection(conn);
+            void writeCloudRelayState(session);
+            void pollCloudRelay(session);
+            session.pollTimer = setInterval(() => void pollCloudRelay(session), CLOUD_RELAY_POLL_MS);
+            session.heartbeatTimer = setInterval(() => void writeCloudRelayState(session), CLOUD_RELAY_HEARTBEAT_MS);
+            return conn;
+        }
+
+        function stopCloudRelay(markClosed = true, emitClose = false) {
+            const session = cloudRelaySession;
+            if (!session) return;
+            cloudRelaySession = null;
+            session.stopped = true;
+            clearInterval(session.pollTimer);
+            clearInterval(session.heartbeatTimer);
+            if (markClosed) {
+                session.stopped = false;
+                session.closed = true;
+                void writeCloudRelayState(session).finally(() => { session.stopped = true; });
+            }
+            if (emitClose && session.conn.open && !session.conn._closed) {
+                session.conn.open = false;
+                session.conn._emit('close');
+            }
+        }
+
+        function ensureCloudHostRelay() {
+            if (!isRoomHost || !currentRoomCode) return;
+            if (cloudRelaySession && cloudRelaySession.code === currentRoomCode && cloudRelaySession.role === 'host') return;
+            startCloudRelay('host', currentRoomCode);
+        }
+
+        function startCloudGuestJoin(code, reason = 'Đang kết nối bằng chế độ tương thích điện thoại...') {
+            cloudRelayJoinFallbackStarted = true;
+            clearTimeout(joinAttemptTimer);
+            joinAttemptTimer = null;
+            try { peer?.destroy(); } catch (_) {}
+            peer = null;
+            try {
+                if (connection && connection.open) connection.close();
+            } catch (_) {}
+            connection = null;
+            setJoinBusy(true, reason);
+            startCloudRelay('guest', code);
+            joinAttemptTimer = setTimeout(() => {
+                if (!joinInProgress) return;
+                stopCloudRelay(true, false);
+                connection = null;
+                clearJoinAttempt();
+                setOnlineStatus(`Không thể vào phòng ${code}. Hãy kiểm tra Internet, nhấn Làm mới và thử lại.`, true);
+                updateConnectionText('🔴 Kết nối phòng thất bại');
+            }, 22000);
+        }
+
         function extractRoomPaths(listPayload) {
             const entries = Array.isArray(listPayload)
                 ? listPayload
@@ -1866,7 +2065,7 @@
                 const isOwnRoom = Boolean(isRoomHost && currentRoomCode === room.code);
                 const roomAction = isOwnRoom
                     ? `<button class="room-join-btn room-dissolve-btn" type="button" onclick="dissolveOnlineRoom()">Giải tán</button>`
-                    : `<button class="room-join-btn" type="button" ${(canJoin && !joinInProgress) ? '' : 'disabled'} data-room-code="${escapeRoomText(room.code)}" onclick="joinListedRoom('${escapeRoomText(room.code)}')">${joinInProgress && canJoin ? 'Đang kết nối...' : statusInfo.button}</button>`;
+                    : `<button class="room-join-btn" type="button" ${(canJoin && !joinInProgress) ? '' : 'disabled'} data-action="join-room" data-room-code="${escapeRoomText(room.code)}">${joinInProgress && canJoin ? 'Đang kết nối...' : statusInfo.button}</button>`;
                 return `
                 <div class="room-list-item" data-room-status="${status}">
                     <div class="room-list-host">👑 Chủ phòng: ${escapeRoomText(room.hostName || 'Người chơi')}</div>
@@ -2069,12 +2268,6 @@
             const name = validateName('onlinePlayerName', 'Vui lòng nhập tên người chơi 1 trước khi tạo phòng.');
             if (!name) return;
 
-            setOnlineStatus('Đang tải hệ thống kết nối online...');
-            if (!await ensurePeerJsLoaded()) {
-                setOnlineStatus('Không tải được PeerJS trên trình duyệt này. Hãy tắt trình chặn nội dung hoặc kiểm tra Internet rồi thử lại.', true);
-                return;
-            }
-
             const requestedCode = retry > 0
                 ? generateRoomCode()
                 : (document.getElementById('onlineRoomCode').value.trim().toUpperCase() || generateRoomCode());
@@ -2087,33 +2280,49 @@
             updateScoreLabels();
             currentRoomCode = requestedCode;
             document.getElementById('onlineRoomCode').value = currentRoomCode;
-            setOnlineStatus('Đang tạo phòng...');
+            setOnlineStatus('Đang tạo phòng online...');
             updateConnectionText(`🌐 ${localPlayerName} đang tạo phòng...`);
 
-            peer = createConfiguredPeer(`bkb-${currentRoomCode.toLowerCase()}`);
-            peer.on('open', async () => {
-                const published = await startRoomHeartbeat();
-                updateOnlineActionButtons();
-                setOnlineStatus(published
-                    ? `Đã tạo phòng ${currentRoomCode}. Mọi trình duyệt có thể nhấn Làm mới để thấy phòng.`
-                    : `Đã tạo phòng ${currentRoomCode}, nhưng chưa thể đăng lên danh sách chung. Hãy kiểm tra Internet và nhấn Làm mới.`,
-                    !published);
-                updateConnectionText(`🌐 Phòng ${currentRoomCode} — ${localPlayerName} đang chờ đối thủ`);
-            });
-            peer.on('connection', conn => {
-                if (connection && connection.open) {
-                    conn.close();
-                    return;
-                }
-                setupConnection(conn);
-            });
-            peer.on('error', err => {
-                if (err.type === 'unavailable-id' && retry < 3) {
-                    createOnlineRoom(retry + 1);
-                    return;
-                }
-                handlePeerError(err);
-            });
+            const published = await startRoomHeartbeat();
+            ensureCloudHostRelay();
+            updateOnlineActionButtons();
+            setOnlineStatus(published
+                ? `Đã tạo phòng ${currentRoomCode}. Điện thoại và máy tính đều có thể tham gia.`
+                : `Đã tạo phòng ${currentRoomCode}, nhưng chưa thể đăng lên danh sách chung. Hãy kiểm tra Internet và nhấn Làm mới.`,
+                !published);
+            updateConnectionText(`🌐 Phòng ${currentRoomCode} — ${localPlayerName} đang chờ đối thủ`);
+
+            const peerLoaded = await ensurePeerJsLoaded();
+            if (!peerLoaded || !isRoomHost || currentRoomCode !== requestedCode) {
+                if (!peerLoaded) setOnlineStatus(`Phòng ${currentRoomCode} đang dùng chế độ tương thích điện thoại.`);
+                return;
+            }
+
+            try {
+                peer = createConfiguredPeer(`bkb-${currentRoomCode.toLowerCase()}`);
+                peer.on('open', () => {
+                    setOnlineStatus(`Đã tạo phòng ${currentRoomCode}. Điện thoại và máy tính đều có thể tham gia.`);
+                });
+                peer.on('connection', conn => {
+                    if (connection && connection.open) {
+                        conn.close();
+                        return;
+                    }
+                    setupConnection(conn);
+                });
+                peer.on('error', err => {
+                    if (err.type === 'unavailable-id') {
+                        setOnlineStatus(`Phòng ${currentRoomCode} đang dùng chế độ tương thích điện thoại.`);
+                        return;
+                    }
+                    if (!connection || !connection.open) {
+                        setOnlineStatus('Kết nối trực tiếp không khả dụng; phòng vẫn hoạt động bằng chế độ tương thích.', false);
+                    }
+                });
+            } catch (_) {
+                peer = null;
+                setOnlineStatus(`Phòng ${currentRoomCode} đang dùng chế độ tương thích điện thoại.`);
+            }
         }
 
         async function joinOnlineRoom(preselectedCode = '') {
@@ -2131,14 +2340,8 @@
                 return;
             }
 
-            setJoinBusy(true, `Đang chuẩn bị kết nối vào phòng ${code}...`);
-            if (!await ensurePeerJsLoaded()) {
-                clearJoinAttempt();
-                setOnlineStatus('Không tải được PeerJS trên trình duyệt này. Hãy tắt trình chặn nội dung hoặc kiểm tra Internet rồi thử lại.', true);
-                return;
-            }
-
             disconnectPeer(false);
+            cloudRelayJoinFallbackStarted = false;
             isRoomHost = false;
             localPlayerName = name;
             remotePlayerName = 'Đối thủ';
@@ -2147,48 +2350,66 @@
             codeInput.value = code;
             updateConnectionText(`🌐 ${localPlayerName} đang kết nối tới phòng ${code}`);
 
-            peer = createConfiguredPeer();
-            joinAttemptTimer = setTimeout(() => {
-                if (!joinInProgress) return;
-                try { connection?.close(); } catch (_) {}
-                try { peer?.destroy(); } catch (_) {}
-                connection = null;
-                peer = null;
-                clearJoinAttempt();
-                setOnlineStatus(`Không thể vào phòng ${code}. Chủ phòng có thể đã mất kết nối; hãy nhấn Làm mới rồi thử lại.`, true);
-                updateConnectionText('🔴 Kết nối phòng thất bại');
-            }, 16000);
+            if (isMobileBrowser()) {
+                setJoinBusy(true);
+                startCloudGuestJoin(code, `Đang vào phòng ${code} bằng chế độ dành cho điện thoại...`);
+                return;
+            }
 
-            peer.on('open', () => {
-                if (!joinInProgress) return;
-                setOnlineStatus(`Đã kết nối máy chủ. Đang mở phòng ${code}...`);
-                const conn = peer.connect(`bkb-${code.toLowerCase()}`, {
-                    reliable: true,
-                    serialization: 'json'
+            setJoinBusy(true, `Đang chuẩn bị kết nối vào phòng ${code}...`);
+            if (!await ensurePeerJsLoaded()) {
+                startCloudGuestJoin(code, `Đang vào phòng ${code} bằng kết nối dự phòng...`);
+                return;
+            }
+
+            try {
+                peer = createConfiguredPeer();
+                joinAttemptTimer = setTimeout(() => {
+                    if (!joinInProgress || cloudRelayJoinFallbackStarted) return;
+                    startCloudGuestJoin(code, 'Kết nối trực tiếp chậm; đang chuyển sang chế độ tương thích...');
+                }, 7000);
+
+                peer.on('open', () => {
+                    if (!joinInProgress || cloudRelayJoinFallbackStarted) return;
+                    setOnlineStatus(`Đã kết nối máy chủ. Đang mở phòng ${code}...`);
+                    const conn = peer.connect(`bkb-${code.toLowerCase()}`, {
+                        reliable: true,
+                        serialization: 'json'
+                    });
+                    setupConnection(conn);
                 });
-                setupConnection(conn);
-            });
-            peer.on('error', handlePeerError);
-            peer.on('disconnected', () => {
-                if (joinInProgress) {
-                    clearJoinAttempt();
-                    setOnlineStatus('Mất kết nối tới máy chủ PeerJS. Hãy kiểm tra Internet và thử lại.', true);
-                }
-            });
+                peer.on('error', () => {
+                    if (joinInProgress && !cloudRelayJoinFallbackStarted) {
+                        startCloudGuestJoin(code, 'Kết nối trực tiếp bị chặn; đang chuyển sang chế độ tương thích...');
+                    }
+                });
+                peer.on('disconnected', () => {
+                    if (joinInProgress && !cloudRelayJoinFallbackStarted) {
+                        startCloudGuestJoin(code, 'Mạng không ổn định; đang chuyển sang chế độ tương thích...');
+                    }
+                });
+            } catch (_) {
+                startCloudGuestJoin(code, 'Đang chuyển sang chế độ tương thích điện thoại...');
+            }
         }
 
         function setupConnection(conn) {
-            connection = conn;
+            if (!connection || !connection.open) connection = conn;
             conn.on('open', () => {
+                if (connection && connection !== conn && connection.open) {
+                    try { conn.close(); } catch (_) {}
+                    return;
+                }
+                connection = conn;
                 clearJoinAttempt();
                 pendingJoinCode = '';
                 if (isRoomHost) {
                     setCurrentRoomState('full', 2);
                     startRoomHeartbeat();
                 }
-                connection.send({ type: 'profile', name: localPlayerName, targetScore, isHost: isRoomHost });
+                conn.send({ type: 'profile', name: localPlayerName, targetScore, isHost: isRoomHost });
                 if (isRoomHost) {
-                    connection.send({ type: 'match_config', targetScore });
+                    conn.send({ type: 'match_config', targetScore });
                 }
                 setOnlineStatus('Kết nối thành công! Đang đồng bộ tên và điểm thắng.');
                 closeModal('onlineModal');
@@ -2297,11 +2518,12 @@
                 return;
             }
 
-            if (isRoomHost && peer && !peer.destroyed) {
+            if (isRoomHost && currentRoomCode) {
                 remotePlayerName = 'Đang chờ...';
                 resetLocalGame(false, false);
                 setCurrentRoomState('waiting', 1);
                 startRoomHeartbeat();
+                ensureCloudHostRelay();
                 setChoiceButtonsEnabled(false);
                 updateScoreLabels();
                 updateConnectionText(`🌐 Phòng ${currentRoomCode} — đang chờ người chơi mới`);
@@ -2365,6 +2587,8 @@
             // Chỉ nút “Giải tán phòng” mới xóa phòng ngay. Các trường hợp
             // ngắt kết nối thông thường phải chờ đủ 45 giây mới hết hạn.
             stopRoomHeartbeat(false);
+            stopCloudRelay(true, false);
+            cloudRelayJoinFallbackStarted = false;
             if (connection) {
                 intentionalDisconnectAction = action;
                 try { connection.close(); } catch (_) {}
