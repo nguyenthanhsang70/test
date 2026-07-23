@@ -386,7 +386,9 @@ let roomStatePollTimer = null;
 let roomStateSyncBusy = false;
 let roomSnapshotVersion = 0;
 let lastAppliedSnapshotVersion = 0;
-const ROOM_STATE_POLL_MS = 1200;
+let latestGameSnapshot = null;
+let roomWriteChain = Promise.resolve();
+const ROOM_STATE_POLL_MS = 600;
 const CLOUD_RELAY_POLL_MS = 700;
 const CLOUD_RELAY_HEARTBEAT_MS = 1800;
 const CLOUD_RELAY_STALE_MS = 12000;
@@ -796,14 +798,19 @@ async function upsertCloudRoom(room){
   const cleanRoom = sanitizeDirectoryRoom(room);
   if(!cleanRoom) return false;
   const payload = Object.assign({}, room || {}, cleanRoom);
-  try{
-    await fetchJsonResponse(getRoomCloudUrl(cleanRoom.code), {method:'POST',body:JSON.stringify(payload)});
-    roomCloudAvailable = true;
-    return true;
-  }catch(_){
-    roomCloudAvailable = false;
-    return false;
-  }
+  roomWriteChain = roomWriteChain
+    .catch(() => false)
+    .then(async () => {
+      try{
+        await fetchJsonResponse(getRoomCloudUrl(cleanRoom.code), {method:'POST',body:JSON.stringify(payload)});
+        roomCloudAvailable = true;
+        return true;
+      }catch(_){
+        roomCloudAvailable = false;
+        return false;
+      }
+    });
+  return roomWriteChain;
 }
 
 async function requestGlobalRooms(manual = false){
@@ -871,8 +878,10 @@ async function publishCurrentRoom(extraData = null){
     playerCount:currentRoomPlayerCount,
     status:currentRoomStatus,
     createdAt:Number(previous?.createdAt || Date.now()),
-    lastSeen:Date.now()
+    lastSeen:Date.now(),
+    gameSnapshot:latestGameSnapshot
   }, extraData || {});
+  if(room.gameSnapshot) latestGameSnapshot = room.gameSnapshot;
   globalOpenRooms = [room,...globalOpenRooms.filter(item => item.code !== room.code)];
   renderOpenRooms();
   return upsertCloudRoom(room);
@@ -915,22 +924,10 @@ function buildRoomSnapshot(){
 }
 
 async function publishOnlineSnapshot(){
-  if(gameMode !== 'online' || !currentOnlineRoomCode) return false;
+  if(gameMode !== 'online' || onlineRole !== 'host' || !currentOnlineRoomCode) return false;
   roomSnapshotVersion = Math.max(Date.now(), roomSnapshotVersion + 1);
-  const snapshot = buildRoomSnapshot();
-  if(onlineRole === 'host') return publishCurrentRoom({gameSnapshot:snapshot});
-  const previous = globalOpenRooms.find(room => room.code === currentOnlineRoomCode);
-  return upsertCloudRoom({
-    code:currentOnlineRoomCode,
-    hostName:p1Name || $('name1Input').value.trim() || 'Người chơi',
-    winLength,
-    turnTime,
-    playerCount:onlineConnected ? 2 : currentRoomPlayerCount,
-    status:onlineConnected ? (moves.length ? 'playing' : 'full') : currentRoomStatus,
-    createdAt:Number(previous?.createdAt || Date.now()),
-    lastSeen:Date.now(),
-    gameSnapshot:snapshot
-  });
+  latestGameSnapshot = buildRoomSnapshot();
+  return publishCurrentRoom({gameSnapshot:latestGameSnapshot});
 }
 
 function normalizeSnapshotMoves(list){
@@ -939,31 +936,40 @@ function normalizeSnapshotMoves(list){
     .filter(item => Number.isInteger(item.row) && Number.isInteger(item.col) && item.row >= 0 && item.row < SIZE && item.col >= 0 && item.col < SIZE);
 }
 
-function applyRoomSnapshot(snapshot){
-  if(gameMode !== 'online' || !snapshot || typeof snapshot !== 'object') return false;
-  const snapshotVersion = Number(snapshot.snapshotVersion || 0);
-  const remoteMoves = normalizeSnapshotMoves(snapshot.moves);
-  const remoteState = {
-    currentPiece:snapshot.currentPiece === 'O' ? 'O' : 'X',
-    active:Boolean(snapshot.active),
-    p1Name:snapshot.p1Name || '',
-    p2Name:snapshot.p2Name || '',
-    p1Piece:snapshot.p1Piece === 'O' ? 'O' : 'X',
-    p2Piece:snapshot.p2Piece === 'X' ? 'X' : 'O',
-    scores:{p1:Number(((snapshot || {}).scores || {}).p1) || 0, p2:Number(((snapshot || {}).scores || {}).p2) || 0},
-    wins:{p1:Number(((snapshot || {}).wins || {}).p1) || 0, p2:Number(((snapshot || {}).wins || {}).p2) || 0},
-    moves:remoteMoves,
-    winLength:[3,4,5,6].includes(Number(snapshot.winLength)) ? Number(snapshot.winLength) : 5,
-    turnTime:[20,60].includes(Number(snapshot.turnTime)) ? Number(snapshot.turnTime) : 20
-  };
-  const remoteSignature = JSON.stringify(remoteState);
-  const localSignature = buildCurrentStateSignature();
-  const isNewer = snapshotVersion > Math.max(roomSnapshotVersion, lastAppliedSnapshotVersion);
-  const materiallyDifferent = remoteSignature !== localSignature;
-  if(!materiallyDifferent && !isNewer) return false;
+function sameMove(a,b){
+  return Boolean(a && b && Number(a.row) === Number(b.row) && Number(a.col) === Number(b.col) && a.piece === b.piece);
+}
 
-  roomSnapshotVersion = Math.max(roomSnapshotVersion, snapshotVersion || 0);
-  lastAppliedSnapshotVersion = Math.max(lastAppliedSnapshotVersion, snapshotVersion || 0);
+function renderSnapshotMove(move, isLast){
+  if(!move) return;
+  board[move.row][move.col] = move.piece;
+  const cell = boardEl.children[move.row * SIZE + move.col];
+  if(!cell) return;
+  cell.className = 'cell ' + move.piece + (isLast ? ' last' : '');
+  cell.textContent = move.piece;
+}
+
+function applyRoomSnapshot(snapshot){
+  if(gameMode !== 'online' || onlineRole === 'host' || !snapshot || typeof snapshot !== 'object') return false;
+  const snapshotVersion = Number(snapshot.snapshotVersion || 0);
+  if(!snapshotVersion || snapshotVersion <= lastAppliedSnapshotVersion) return false;
+
+  const remoteMoves = normalizeSnapshotMoves(snapshot.moves);
+  const localMoves = Array.isArray(moves) ? moves : [];
+  const sharedLength = Math.min(localMoves.length, remoteMoves.length);
+  let prefixMatches = true;
+  for(let i = 0; i < sharedLength; i++){
+    if(!sameMove(localMoves[i],remoteMoves[i])){
+      prefixMatches = false;
+      break;
+    }
+  }
+
+  const previousPiece = currentPiece;
+  const previousActive = active;
+  lastAppliedSnapshotVersion = snapshotVersion;
+  roomSnapshotVersion = Math.max(roomSnapshotVersion,snapshotVersion);
+
   p1Name = cleanRoomName(snapshot.p1Name) || p1Name || 'Chủ phòng';
   p2Name = cleanRoomName(snapshot.p2Name) || p2Name || 'Người tham gia';
   p1Piece = snapshot.p1Piece === 'O' ? 'O' : 'X';
@@ -975,19 +981,37 @@ function applyRoomSnapshot(snapshot){
   currentRoomPlayerCount = Math.min(Math.max(Number(snapshot.roomPlayerCount) || currentRoomPlayerCount || 1,1),2);
   scores = {p1:Number(((snapshot || {}).scores || {}).p1) || 0, p2:Number(((snapshot || {}).scores || {}).p2) || 0};
   wins = {p1:Number(((snapshot || {}).wins || {}).p1) || 0, p2:Number(((snapshot || {}).wins || {}).p2) || 0};
-  moves = remoteMoves;
   active = Boolean(snapshot.active);
+
+  if(prefixMatches && remoteMoves.length >= localMoves.length){
+    document.querySelectorAll('.cell.last').forEach(cell => cell.classList.remove('last'));
+    for(let i = localMoves.length; i < remoteMoves.length; i++){
+      renderSnapshotMove(remoteMoves[i],i === remoteMoves.length - 1);
+    }
+    if(remoteMoves.length && remoteMoves.length === localMoves.length){
+      const last = remoteMoves[remoteMoves.length - 1];
+      const lastCell = boardEl.children[last.row * SIZE + last.col];
+      if(lastCell) lastCell.classList.add('last');
+    }
+    moves = remoteMoves;
+  }else{
+    moves = remoteMoves;
+    rebuildFromMoves();
+  }
+
   applyPlayerUI();
   updateScores();
-  rebuildFromMoves();
-  closeResult();
   updateTurn();
-  if(active) startTimer(); else stopTimer();
+  if(active){
+    if(previousPiece !== currentPiece || previousActive !== active) startTimer();
+  }else{
+    stopTimer();
+  }
   return true;
 }
 
 async function pollRoomState(){
-  if(gameMode !== 'online' || !currentOnlineRoomCode || roomStateSyncBusy) return;
+  if(gameMode !== 'online' || onlineRole === 'host' || !currentOnlineRoomCode || roomStateSyncBusy) return;
   roomStateSyncBusy = true;
   try{
     const rawRoom = await fetchJsonResponse(getRoomCloudUrl(currentOnlineRoomCode) + '?t=' + Date.now());
@@ -1000,7 +1024,7 @@ async function pollRoomState(){
 
 function startRoomStateSync(){
   stopRoomStateSync();
-  if(gameMode !== 'online' || !currentOnlineRoomCode) return;
+  if(gameMode !== 'online' || onlineRole === 'host' || !currentOnlineRoomCode) return;
   void pollRoomState();
   roomStatePollTimer = setInterval(() => void pollRoomState(), ROOM_STATE_POLL_MS);
 }
@@ -1339,6 +1363,9 @@ async function startOnlineMatch(){
   onlineRole = requestedRole;
   gameMode = 'online';
   currentOnlineRoomCode = code;
+  roomSnapshotVersion = 0;
+  lastAppliedSnapshotVersion = 0;
+  latestGameSnapshot = null;
   currentRoomStatus = 'waiting';
   currentRoomPlayerCount = 1;
   cloudRelayJoinFallbackStarted = false;
@@ -1580,6 +1607,9 @@ function closeExistingPeer(removeRoom = true){
   onlineConnected = false;
   if(removeRoom && wasHost && oldCode) void removePublishedRoom(oldCode);
   currentOnlineRoomCode = '';
+  roomSnapshotVersion = 0;
+  lastAppliedSnapshotVersion = 0;
+  latestGameSnapshot = null;
   updateOnlineActionButtons();
 }
 
@@ -1601,6 +1631,7 @@ function setupOnlineConnection(conn){
     message.textContent = 'Đã kết nối. Trận đấu đang được đồng bộ giữa hai trình duyệt.';
     updateOnlineActionButtons();
     if(onlineRole === 'guest'){
+      startRoomStateSync();
       sendOnline({type:'hello',name:$('name1Input').value.trim()});
     }
   });
@@ -1673,6 +1704,7 @@ function handleOnlineData(data){
     stopTimer();
     currentPiece = currentPiece === 'X' ? 'O' : 'X';
     startTurnFlow();
+    if(onlineRole === 'host') void publishOnlineSnapshot();
   }else if(data.type === 'participant_left' && onlineRole === 'host'){
     onlineConnected = false;
     active = false;
