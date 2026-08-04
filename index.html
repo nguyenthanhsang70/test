@@ -1660,10 +1660,10 @@
           <div class="room-config">
             <div class="room-config-grid">
               <div><label class="setup-label" for="roomActionSelect">Loại phòng</label><select id="roomActionSelect" class="setup-select" onchange="toggleRoomAction()"><option value="create">Tạo phòng mới</option><option value="join">Tham gia bằng mã phòng</option></select></div>
-              <div><label class="setup-label" for="roomCodeInput">Mã phòng</label><div class="code-row"><input id="roomCodeInput" class="setup-input" maxlength="6" placeholder="Mã phòng"><button class="icon-action" type="button" onclick="refreshRoomCode()">⟳</button></div></div>
+              <div><label class="setup-label" for="roomCodeInput">Mã phòng</label><div class="code-row"><input id="roomCodeInput" class="setup-input" maxlength="6" placeholder="Mã phòng" readonly inputmode="none" autocomplete="off" aria-label="Mã phòng do hệ thống tự tạo"><button id="refreshRoomCodeButton" class="icon-action" type="button" onclick="refreshRoomCode()" title="Tạo mã phòng ngẫu nhiên mới">⟳</button></div></div>
             </div>
             <div class="room-list-panel">
-              <div class="room-list-title"><span>☷ DANH SÁCH PHÒNG</span><button class="icon-action" style="width:48px;height:48px" type="button" onclick="renderRoomList()">⟳</button></div>
+              <div class="room-list-title"><span>☷ DANH SÁCH PHÒNG</span><button class="icon-action" style="width:48px;height:48px" type="button" onclick="refreshRoomList(true)">⟳</button></div>
               <div id="roomList" class="room-list-empty">Chưa có phòng nào đang chờ.<br>Hãy tạo phòng mới hoặc nhập mã phòng.</div>
             </div>
           </div>
@@ -1794,6 +1794,17 @@
     let machineMatchType = "battle";
     let machineAnswerTimeout = null;
 
+    // Danh bạ phòng online dùng chung giữa nhiều thiết bị (cùng cơ chế với Caro).
+    const ROOM_DIRECTORY_API_BASE = "https://mantledb.sh/v2";
+    const ROOM_DIRECTORY_NAMESPACE = "duoi-hinh-bat-chu-zhaowen-rooms-2026-v1";
+    const ROOM_DIRECTORY_PREFIX = "rooms";
+    const ROOM_TTL_MS = 45000;
+    const ROOM_LIST_POLL_MS = 8000;
+    let openRooms = [];
+    let roomListPollTimer = null;
+    let roomHeartbeatTimer = null;
+    let roomListController = null;
+
     const modeScreen = document.getElementById("modeScreen");
     const onlineSetupScreen = document.getElementById("onlineSetupScreen");
     const gameScreen = document.getElementById("gameScreen");
@@ -1869,22 +1880,204 @@
       refreshRoomCode();
       showRoomStep();
       switchScreen(document.getElementById("onlineSetupScreen"));
+      startRoomDirectory();
+      refreshRoomList(false);
       window.setTimeout(function(){ document.getElementById("onlinePlayerName").focus(); },150);
     }
 
     function refreshRoomCode(){
-      if(document.getElementById("roomActionSelect").value === "create") document.getElementById("roomCodeInput").value=randomRoomCode();
+      const input = document.getElementById("roomCodeInput");
+      if(document.getElementById("roomActionSelect").value !== "create") return;
+      input.value = randomRoomCode();
     }
     function toggleRoomAction(){
-      const create=document.getElementById("roomActionSelect").value === "create";
-      document.getElementById("roomCodeInput").readOnly=create;
-      if(create) refreshRoomCode(); else document.getElementById("roomCodeInput").value="";
+      const create = document.getElementById("roomActionSelect").value === "create";
+      const input = document.getElementById("roomCodeInput");
+      const refreshButton = document.getElementById("refreshRoomCodeButton");
+
+      input.readOnly = create;
+      input.inputMode = create ? "none" : "text";
+      input.placeholder = create ? "Hệ thống tự tạo mã" : "Nhập mã phòng 6 ký tự";
+      input.setAttribute("aria-label", create ? "Mã phòng do hệ thống tự tạo" : "Nhập mã phòng để tham gia");
+      if(refreshButton) refreshButton.style.display = create ? "inline-flex" : "none";
+
+      if(create) refreshRoomCode();
+      else input.value = "";
     }
+    function normalizeRoomCode(value){
+      return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    }
+
+    function roomCloudUrl(code){
+      const suffix = code ? "/" + ROOM_DIRECTORY_PREFIX + "/" + encodeURIComponent(normalizeRoomCode(code)) : "";
+      return ROOM_DIRECTORY_API_BASE + "/" + ROOM_DIRECTORY_NAMESPACE + suffix;
+    }
+
+    function roomCloudListUrl(){
+      return ROOM_DIRECTORY_API_BASE + "/list/" + ROOM_DIRECTORY_NAMESPACE;
+    }
+
+    async function fetchRoomJson(url, options){
+      const response = await fetch(url, Object.assign({
+        cache: "no-store",
+        headers: {"Accept":"application/json"}
+      }, options || {}, options && options.body ? {headers:{"Accept":"application/json","Content-Type":"application/json"}} : {}));
+      if(response.status === 404) return null;
+      if(!response.ok) throw new Error("HTTP " + response.status);
+      const text = await response.text();
+      if(!text) return null;
+      try { return JSON.parse(text); } catch (_) { return null; }
+    }
+
+    function sanitizeRoom(room){
+      if(!room || typeof room !== "object") return null;
+      const code = normalizeRoomCode(room.code);
+      if(code.length !== 6) return null;
+      const playerCount = Math.min(Math.max(Number(room.playerCount) || 1, 1), 2);
+      return {
+        code: code,
+        hostName: String(room.hostName || "Người chơi").trim().slice(0,24),
+        matchType: room.matchType === "race" ? "race" : "battle",
+        playerCount: playerCount,
+        status: room.status === "playing" ? "playing" : (playerCount >= 2 ? "full" : "waiting"),
+        createdAt: Number(room.createdAt || Date.now()),
+        lastSeen: Number(room.lastSeen || Date.now())
+      };
+    }
+
+    function extractRoomCodes(payload){
+      const entries = Array.isArray(payload) ? payload : (Array.isArray(payload && payload.entries) ? payload.entries : []);
+      const prefix = ROOM_DIRECTORY_PREFIX + "/";
+      return Array.from(new Set(entries.map(function(entry){
+        return typeof entry === "string" ? entry : entry && entry.path;
+      }).filter(function(path){
+        return typeof path === "string" && path.indexOf(prefix) === 0;
+      }).map(function(path){
+        return normalizeRoomCode(path.slice(prefix.length));
+      }).filter(function(code){ return code.length === 6; })));
+    }
+
+    function activeRooms(){
+      const now = Date.now();
+      return openRooms.map(sanitizeRoom).filter(Boolean).filter(function(room){
+        return now - room.lastSeen < ROOM_TTL_MS;
+      }).sort(function(a,b){ return b.createdAt - a.createdAt; });
+    }
+
     function renderRoomList(){
-      const list=document.getElementById("roomList");
-      if(currentRoomCode){ list.className=""; list.innerHTML='<div class="room-item"><div><strong>Phòng '+escapeHtml(currentRoomCode)+'</strong><small>Đang chờ người chơi tham gia</small></div><button class="primary-btn" onclick="document.getElementById(\'roomActionSelect\').value=\'join\';toggleRoomAction();document.getElementById(\'roomCodeInput\').value=\''+currentRoomCode+'\'">Chọn</button></div>'; }
-      else { list.className="room-list-empty"; list.innerHTML="Chưa có phòng nào đang chờ.<br>Hãy tạo phòng mới hoặc nhập mã phòng."; }
+      const list = document.getElementById("roomList");
+      const rooms = activeRooms();
+      if(!rooms.length){
+        list.className = "room-list-empty";
+        list.innerHTML = "Chưa có phòng nào đang chờ.<br>Hãy tạo phòng mới hoặc nhấn nút làm mới.";
+        return;
+      }
+      list.className = "";
+      list.style.display = "grid";
+      list.style.gap = "10px";
+      list.innerHTML = rooms.map(function(room){
+        const ownRoom = isHost && currentRoomCode === room.code;
+        const canJoin = room.status === "waiting" && room.playerCount < 2 && !ownRoom;
+        const statusText = room.status === "playing" ? "Đang chơi" : (room.status === "full" ? "Phòng đầy" : "Đang chờ");
+        const typeText = room.matchType === "race" ? "Đua tốc độ" : "Đối kháng";
+        return '<div class="room-item">' +
+          '<div><strong>' + escapeHtml(room.hostName) + ' · ' + escapeHtml(room.code) + '</strong>' +
+          '<small>' + statusText + ' · ' + room.playerCount + '/2 · ' + typeText + '</small></div>' +
+          '<button class="primary-btn" type="button" ' + (canJoin ? '' : 'disabled') +
+          ' onclick="selectListedRoom(\'' + room.code + '\')">' + (ownRoom ? 'Phòng của bạn' : (canJoin ? 'Tham gia' : statusText)) + '</button></div>';
+      }).join("");
     }
+
+    async function deletePublishedRoom(code){
+      const normalized = normalizeRoomCode(code);
+      if(!normalized) return;
+      openRooms = openRooms.filter(function(room){ return room.code !== normalized; });
+      renderRoomList();
+      try {
+        await fetch(roomCloudUrl(normalized), {method:"DELETE", cache:"no-store", keepalive:true, headers:{"Accept":"application/json"}});
+      } catch (_) {}
+    }
+
+    async function publishCurrentRoom(status, playerCount){
+      if(!isHost || !currentRoomCode) return;
+      const previous = openRooms.find(function(room){ return room.code === currentRoomCode; });
+      const room = {
+        code: currentRoomCode,
+        hostName: localName || "Người chơi",
+        matchType: onlineMatchType || "battle",
+        playerCount: Math.min(Math.max(Number(playerCount) || 1,1),2),
+        status: status || "waiting",
+        createdAt: previous ? previous.createdAt : Date.now(),
+        lastSeen: Date.now()
+      };
+      openRooms = [room].concat(openRooms.filter(function(item){ return item.code !== room.code; }));
+      renderRoomList();
+      try {
+        await fetchRoomJson(roomCloudUrl(room.code), {method:"POST", body:JSON.stringify(room)});
+      } catch (_) {}
+    }
+
+    async function requestRoomList(manual){
+      if(roomListController) roomListController.abort();
+      roomListController = new AbortController();
+      const controller = roomListController;
+      const timeout = window.setTimeout(function(){ controller.abort(); }, 7000);
+      try {
+        const payload = await fetchRoomJson(roomCloudListUrl() + "?t=" + Date.now(), {signal:controller.signal});
+        const codes = extractRoomCodes(payload);
+        const results = await Promise.allSettled(codes.map(function(code){
+          return fetchRoomJson(roomCloudUrl(code) + "?t=" + Date.now(), {signal:controller.signal});
+        }));
+        const now = Date.now();
+        openRooms = results.map(function(result){ return result.status === "fulfilled" ? sanitizeRoom(result.value) : null; })
+          .filter(Boolean).filter(function(room){ return now - room.lastSeen < ROOM_TTL_MS; });
+        renderRoomList();
+        if(manual) setConnectionStatus(openRooms.length ? "Đã cập nhật " + openRooms.length + " phòng." : "Chưa có phòng nào đang hoạt động.", "");
+      } catch (error) {
+        if(error && error.name !== "AbortError" && manual) setConnectionStatus("Không tải được danh sách phòng. Hãy kiểm tra Internet.", "error");
+      } finally {
+        window.clearTimeout(timeout);
+        if(roomListController === controller) roomListController = null;
+      }
+    }
+
+    async function refreshRoomList(manual){
+      if(isHost && currentRoomCode) await publishCurrentRoom(connection && connection.open ? "full" : "waiting", connection && connection.open ? 2 : 1);
+      await requestRoomList(Boolean(manual));
+    }
+
+    function startRoomDirectory(){
+      stopRoomDirectory();
+      roomListPollTimer = window.setInterval(function(){ requestRoomList(false); }, ROOM_LIST_POLL_MS);
+    }
+
+    function stopRoomDirectory(){
+      window.clearInterval(roomListPollTimer);
+      roomListPollTimer = null;
+      if(roomListController){ roomListController.abort(); roomListController = null; }
+    }
+
+    function startRoomHeartbeat(){
+      window.clearInterval(roomHeartbeatTimer);
+      publishCurrentRoom(connection && connection.open ? "full" : "waiting", connection && connection.open ? 2 : 1);
+      roomHeartbeatTimer = window.setInterval(function(){
+        publishCurrentRoom(connection && connection.open ? "full" : "waiting", connection && connection.open ? 2 : 1);
+      }, 10000);
+    }
+
+    function stopRoomHeartbeat(){
+      window.clearInterval(roomHeartbeatTimer);
+      roomHeartbeatTimer = null;
+    }
+
+    function selectListedRoom(code){
+      document.getElementById("roomActionSelect").value = "join";
+      toggleRoomAction();
+      document.getElementById("roomCodeInput").value = normalizeRoomCode(code);
+      setConnectionStatus("Đã chọn phòng " + normalizeRoomCode(code) + '. Nhấn “Tiếp tục” để tham gia.', "success");
+      document.getElementById("onlinePlayerName").focus();
+    }
+
     function showMachineSetupStep(){
       document.getElementById("machineSetupStep").style.display="block";
       document.getElementById("roomSetupStep").style.display="none";
@@ -1902,10 +2095,26 @@
     }
     function showMatchTypeStep(){
       document.getElementById("machineSetupStep").style.display="none";
-      document.getElementById("roomSetupStep").style.display="none";document.getElementById("matchTypeStep").style.display="block";
-      document.getElementById("stepBar1").className="done";document.getElementById("stepBar2").className="active";
-      document.getElementById("setupSubtitle").textContent=isHost?"Chọn luật chơi cho trận đấu.":"Đã kết nối. Chờ chủ phòng chọn luật chơi.";
-      document.getElementById("startOnlineMatchButton").disabled=!isHost;
+      document.getElementById("roomSetupStep").style.display="none";
+      document.getElementById("matchTypeStep").style.display="block";
+      document.getElementById("stepBar1").className="done";
+      document.getElementById("stepBar2").className="active";
+
+      const startButton = document.getElementById("startOnlineMatchButton");
+      if(isHost){
+        document.getElementById("setupSubtitle").textContent = peer
+          ? "Phòng đã được tạo. Chờ người chơi khác tham gia."
+          : "Chọn luật chơi, sau đó nhấn Tạo phòng.";
+        startButton.disabled = false;
+        startButton.textContent = peer
+          ? ((connection && connection.open) ? "Bắt đầu trận →" : "Đang chờ người chơi...")
+          : "Tạo phòng →";
+        if(peer && (!connection || !connection.open)) startButton.disabled = true;
+      }else{
+        document.getElementById("setupSubtitle").textContent="Đã kết nối. Chờ chủ phòng bắt đầu trận đấu.";
+        startButton.textContent="Chờ chủ phòng...";
+        startButton.disabled=true;
+      }
     }
     function selectMatchType(type){ onlineMatchType=type;document.getElementById("battleTypeCard").classList.toggle("selected",type==="battle");document.getElementById("raceTypeCard").classList.toggle("selected",type==="race"); }
     function selectMachineMatchType(type){
@@ -1914,15 +2123,42 @@
       document.getElementById("machineRaceTypeCard").classList.toggle("selected",type==="race");
     }
     function continueRoomSetup(){
-      const name=getRequiredName("onlinePlayerName"); if(!name) return;
-      localName=name; gameMode="online";
-      if(document.getElementById("roomActionSelect").value==="create") createOnlineRoom(); else joinOnlineRoom();
+      const name=getRequiredName("onlinePlayerName");
+      if(!name) return;
+      localName=name;
+      gameMode="online";
+
+      if(document.getElementById("roomActionSelect").value==="create"){
+        // Chỉ chuyển sang bước chọn luật; chưa tạo và chưa đăng phòng.
+        closePeerConnection();
+        isHost=true;
+        currentRoomCode="";
+        refreshRoomCode();
+        setConnectionStatus("","");
+        showMatchTypeStep();
+      }else{
+        joinOnlineRoom();
+      }
     }
     function startSelectedOnlineMatch(){
-      if(!isHost || !connection || !connection.open){ setConnectionStatus("Hãy chờ người chơi còn lại kết nối.","error"); return; }
-      const order=shuffleIndexes(originalQuestions.length).slice(0,20); questions=order.map(i=>originalQuestions[i]);
+      if(!isHost) return;
+
+      // Lần nhấn đầu tiên sau khi chọn luật mới thực sự tạo và đăng phòng.
+      if(!peer){
+        createOnlineRoom();
+        return;
+      }
+
+      if(!connection || !connection.open){
+        setConnectionStatus("Phòng đã tạo. Hãy chờ người chơi còn lại kết nối.","error");
+        return;
+      }
+
+      const order=shuffleIndexes(originalQuestions.length).slice(0,20);
+      questions=order.map(i=>originalQuestions[i]);
       connection.send({type:"start",hostName:localName,guestName:opponentName,order:order,matchType:onlineMatchType});
-      document.getElementById("stepBar3").className="active"; startMatch();
+      document.getElementById("stepBar3").className="active";
+      startMatch();
     }
 
     function startMachineConfiguredMode() {
@@ -1982,7 +2218,8 @@
       localName = name;
       gameMode = "online";
       isHost = true;
-      currentRoomCode = document.getElementById("roomCodeInput").value.trim().toUpperCase() || randomRoomCode();
+      currentRoomCode = randomRoomCode();
+      document.getElementById("roomCodeInput").value = currentRoomCode;
 
       renderRoomList();
       setConnectionStatus("Đang tạo phòng...", "");
@@ -1990,7 +2227,10 @@
       peer = new Peer("dhbc-" + currentRoomCode.toLowerCase());
 
       peer.on("open", function () {
-        setConnectionStatus("Đã tạo phòng. Đang chờ người chơi vào...", "success");
+        setConnectionStatus("Đã tạo phòng " + currentRoomCode + ". Đang chờ người chơi vào...", "success");
+        startRoomHeartbeat();
+        refreshRoomList(false);
+        showMatchTypeStep();
       });
 
       peer.on("connection", function (incomingConnection) {
@@ -2065,7 +2305,11 @@
       if (!connection) return;
 
       connection.on("open", function () {
-        setConnectionStatus("Đã kết nối. Đang chuẩn bị trận đấu...", "success");
+        setConnectionStatus("Đã kết nối. Chủ phòng có thể bắt đầu trận đấu.", "success");
+        if(isHost) {
+          publishCurrentRoom("full", 2);
+          showMatchTypeStep();
+        }
         connection.send({
           type: "hello",
           name: localName
@@ -2077,6 +2321,7 @@
       });
 
       connection.on("close", function () {
+        if(isHost && currentRoomCode) publishCurrentRoom("waiting", 1);
         if (!localFinished) {
           setConnectionStatus("Người chơi còn lại đã ngắt kết nối.", "error");
         }
@@ -2152,6 +2397,8 @@
     }
 
     function closePeerConnection() {
+      const roomToDelete = isHost ? currentRoomCode : "";
+      stopRoomHeartbeat();
       try {
         if (connection) connection.close();
       } catch (_) {}
@@ -2162,6 +2409,8 @@
 
       connection = null;
       peer = null;
+      if(roomToDelete) deletePublishedRoom(roomToDelete);
+      isHost = false;
     }
 
     function startMatch() {
@@ -2601,6 +2850,7 @@
     }
 
     function backToModeScreen() {
+      stopRoomDirectory();
       clearGameTimers();
       closePeerConnection();
       gameMode = "";
@@ -2633,11 +2883,24 @@
       }
     });
 
+    document.getElementById("roomCodeInput").addEventListener("beforeinput", function (event) {
+      if(document.getElementById("roomActionSelect").value === "create") event.preventDefault();
+    });
+
+    document.getElementById("roomCodeInput").addEventListener("paste", function (event) {
+      if(document.getElementById("roomActionSelect").value === "create") event.preventDefault();
+    });
+
     document.getElementById("roomCodeInput").addEventListener("input", function () {
-      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if(document.getElementById("roomActionSelect").value === "create") return;
+      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
     });
 
     window.addEventListener("beforeunload", function () {
+      stopRoomDirectory();
+      if(isHost && currentRoomCode){
+        try { fetch(roomCloudUrl(currentRoomCode), {method:"DELETE", keepalive:true}); } catch (_) {}
+      }
       closePeerConnection();
     });
 
