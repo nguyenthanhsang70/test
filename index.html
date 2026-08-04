@@ -525,6 +525,26 @@
       -webkit-user-drag: none;
     }
 
+
+    /* Cắt phần đáp án in sẵn ở mép dưới của ảnh câu đố */
+    .puzzle-image-crop {
+      width: min(100%, 320px);
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 16px 32px rgba(0,0,0,.25);
+      background: rgba(255,255,255,.03);
+    }
+
+    .puzzle-image-crop .puzzle-image {
+      display: block;
+      width: 100%;
+      max-width: none;
+      max-height: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
     .question-text {
       margin-bottom: 14px;
       color: #444;
@@ -2578,11 +2598,21 @@
       pictureBox.innerHTML = "";
 
       if (currentQuestion.image) {
+        const cropBox = document.createElement("div");
+        cropBox.className = "puzzle-image-crop";
+
         const imageElement = document.createElement("img");
         imageElement.className = "puzzle-image";
         imageElement.src = currentQuestion.image;
         imageElement.alt = "Hình minh họa câu đố";
-        pictureBox.appendChild(imageElement);
+        imageElement.onload = function () {
+          // Chỉ hiển thị khoảng 82% phía trên, bỏ phần đáp án in sẵn bên dưới.
+          const visibleHeight = Math.max(1, imageElement.naturalHeight * 0.82);
+          cropBox.style.aspectRatio = imageElement.naturalWidth + " / " + visibleHeight;
+        };
+
+        cropBox.appendChild(imageElement);
+        pictureBox.appendChild(cropBox);
       } else {
         currentQuestion.pictures.forEach(function (picture, index) {
           const pictureElement = document.createElement("span");
