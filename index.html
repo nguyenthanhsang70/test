@@ -2488,6 +2488,213 @@
     }
   </style>
 
+
+
+  <style id="desktop-layout-v4">
+    /* Desktop: cân lại cột điểm, phóng lớn hình và dùng hết chiều ngang phần điều khiển. */
+    @media (min-width: 1025px) {
+      body {
+        padding: 18px;
+      }
+
+      .app-shell {
+        width: min(calc(100% - 12px), 1380px);
+        min-height: calc(100dvh - 36px);
+        margin: 0 auto;
+        padding: 24px 28px 28px;
+        border-radius: 30px;
+      }
+
+      .topbar {
+        min-height: 76px;
+      }
+
+      .topbar h1 {
+        font-size: clamp(36px, 3.8vw, 50px);
+      }
+
+      .subtitle {
+        margin: 18px 0 26px;
+      }
+
+      #gameScreen.active {
+        display: grid;
+        grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+        grid-template-areas:
+          "score puzzle"
+          "meta puzzle"
+          "question question"
+          "input input"
+          "message message"
+          "actions actions"
+          "progress progress";
+        grid-template-rows: auto auto auto auto auto auto auto;
+        column-gap: 20px;
+        row-gap: 14px;
+        align-items: stretch;
+      }
+
+      #gameScreen .match-board {
+        grid-area: score;
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(112px, 1fr) 44px minmax(112px, 1fr);
+        gap: 8px;
+        height: 100%;
+        min-height: 330px;
+        padding: 14px;
+        border-radius: 24px;
+      }
+
+      #gameScreen .player-panel {
+        min-height: 112px;
+        padding: 15px 14px;
+        border-radius: 19px;
+      }
+
+      #gameScreen .player-name {
+        font-size: 17px;
+      }
+
+      #gameScreen .player-score {
+        margin: 5px 0 3px;
+        font-size: clamp(42px, 4vw, 50px);
+      }
+
+      #gameScreen .player-progress {
+        margin-top: 3px;
+        font-size: 12px;
+      }
+
+      #gameScreen .versus {
+        width: 44px;
+        height: 44px;
+        margin: 0 auto;
+        border-width: 4px;
+        font-size: 13px;
+      }
+
+      #gameScreen .game-info {
+        grid-area: meta;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        height: 100%;
+        min-height: 164px;
+        padding: 10px;
+        border-radius: 20px;
+      }
+
+      #gameScreen .info-box,
+      #gameScreen .timer-pill {
+        min-height: 46px;
+        padding: 9px 12px;
+        border-radius: 13px;
+        font-size: 14px;
+      }
+
+      #gameScreen .picture-box {
+        grid-area: puzzle;
+        width: 100%;
+        min-height: 508px;
+        height: 100%;
+        padding: 58px 28px 30px;
+        border-radius: 26px;
+      }
+
+      #gameScreen .puzzle-image-crop {
+        width: min(76%, 590px);
+        max-width: 590px;
+        max-height: 410px;
+        border-radius: 22px;
+      }
+
+      #gameScreen .puzzle-image-crop .puzzle-image,
+      #gameScreen .picture-box img {
+        width: 100%;
+        max-width: none;
+        max-height: none;
+      }
+
+      #gameScreen .picture,
+      #gameScreen .emoji-picture {
+        font-size: clamp(82px, 8vw, 116px);
+      }
+
+      #gameScreen .plus-sign {
+        font-size: 56px;
+      }
+
+      #gameScreen .question-text,
+      #gameScreen .answer-input,
+      #gameScreen .message,
+      #gameScreen .button-group,
+      #gameScreen .progress-bar {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 0;
+      }
+
+      #gameScreen .question-text {
+        grid-area: question;
+        padding: 3px 4px 0;
+        text-align: center;
+        font-size: 15px;
+      }
+
+      #gameScreen .answer-input {
+        grid-area: input;
+        min-height: 62px;
+        padding: 0 20px;
+        border-radius: 18px;
+        font-size: 18px;
+        text-align: center;
+      }
+
+      #gameScreen .message {
+        grid-area: message;
+        min-height: 62px;
+        padding: 13px 18px;
+        border-radius: 18px;
+      }
+
+      #gameScreen .button-group {
+        grid-area: actions;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      #gameScreen .game-btn {
+        min-height: 56px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        font-size: 14px;
+      }
+
+      #gameScreen .progress-bar {
+        grid-area: progress;
+        margin-top: 0;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      #gameScreen.active {
+        grid-template-columns: 300px minmax(0, 1fr);
+        column-gap: 24px;
+      }
+
+      #gameScreen .picture-box {
+        min-height: 530px;
+      }
+
+      #gameScreen .puzzle-image-crop {
+        width: min(72%, 640px);
+        max-width: 640px;
+      }
+    }
+  </style>
+
 </head>
 
 <body>
@@ -3827,7 +4034,11 @@
 
       answerInput.value = "";
       answerInput.disabled = false;
-      answerInput.focus();
+      try {
+        answerInput.focus({ preventScroll: true });
+      } catch (_) {
+        answerInput.focus();
+      }
 
       messageElement.textContent = "";
       messageElement.className = "message";
