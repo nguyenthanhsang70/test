@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#6d28d9">
+  <meta name="theme-color" content="#070b17">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1602,8 +1602,889 @@
       .setup-action-btn, .primary-btn, .ghost-btn { width: 100%; }
       .back-home { width: 48px; height: 48px; border-radius: 16px; }
       .player-panel, .room-config, .room-list-panel, .setup-shell, .result-screen, .picture-box { border-radius: 22px; }
-      .room-item { flex-direction: column; align-items: stretch; }
-      .room-item .primary-btn { width: 100%; }
+    }
+  </style>
+
+
+  <style id="ui-redesign-v2">
+    :root {
+      --v2-bg: #050713;
+      --v2-panel: rgba(12, 16, 35, 0.86);
+      --v2-panel-strong: #10162c;
+      --v2-card: rgba(19, 27, 52, 0.88);
+      --v2-line: rgba(255, 255, 255, 0.09);
+      --v2-text: #f8fafc;
+      --v2-muted: #9aa9c5;
+      --v2-cyan: #22d3ee;
+      --v2-blue: #3b82f6;
+      --v2-violet: #8b5cf6;
+      --v2-pink: #ec4899;
+      --v2-yellow: #fbbf24;
+      --v2-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    html { color-scheme: dark; }
+
+    body {
+      align-items: flex-start;
+      padding: clamp(12px, 2vw, 24px);
+      background:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
+        radial-gradient(circle at 10% 10%, rgba(34,211,238,.17), transparent 28%),
+        radial-gradient(circle at 90% 12%, rgba(139,92,246,.22), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(236,72,153,.12), transparent 38%),
+        var(--v2-bg);
+      background-size: 34px 34px, 34px 34px, auto, auto, auto, auto;
+    }
+
+    body::before {
+      width: 520px;
+      height: 520px;
+      top: -220px;
+      left: -180px;
+      background: rgba(34,211,238,.22);
+      filter: blur(120px);
+    }
+
+    body::after {
+      width: 560px;
+      height: 560px;
+      right: -220px;
+      bottom: -260px;
+      background: rgba(139,92,246,.25);
+      filter: blur(130px);
+    }
+
+    .app-shell {
+      width: min(100%, 1240px);
+      max-height: none;
+      min-height: calc(100dvh - clamp(24px, 4vw, 48px));
+      margin: 0 auto;
+      padding: clamp(18px, 3vw, 36px);
+      border: 1px solid var(--v2-line);
+      border-radius: 32px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012)),
+        rgba(5, 8, 22, .82);
+      box-shadow: var(--v2-shadow), inset 0 1px 0 rgba(255,255,255,.06);
+      overflow: visible;
+    }
+
+    .app-shell::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(255,255,255,.035);
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
+    .topbar {
+      min-height: 88px;
+      justify-content: flex-start;
+      padding-left: 76px;
+      border-bottom: 1px solid var(--v2-line);
+    }
+
+    .topbar::before {
+      content: "TRÒ CHƠI TƯ DUY";
+      position: absolute;
+      left: 76px;
+      top: 10px;
+      color: var(--v2-cyan);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .22em;
+    }
+
+    .topbar h1 {
+      padding: 18px 0 0;
+      font-size: clamp(30px, 4.5vw, 50px);
+      line-height: 1;
+      text-align: left;
+      background: linear-gradient(90deg, #fff 0%, #dbeafe 42%, #a5f3fc 72%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: none;
+    }
+
+    .back-home {
+      left: 0;
+      width: 58px;
+      height: 58px;
+      border-radius: 19px;
+      background: linear-gradient(145deg, rgba(35,48,83,.95), rgba(12,18,38,.98));
+    }
+
+    .subtitle {
+      max-width: 720px;
+      margin: 22px 0 34px;
+      color: var(--v2-muted);
+      font-size: 16px;
+      line-height: 1.7;
+      text-align: left;
+    }
+
+    .mode-heading {
+      margin: 0 0 20px;
+      color: var(--v2-text);
+      font-size: clamp(22px, 3vw, 30px);
+      text-align: left;
+    }
+
+    .mode-grid { gap: 20px; }
+
+    .mode-card {
+      min-height: 310px;
+      padding: 30px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(34,211,238,.14), transparent 34%),
+        linear-gradient(145deg, rgba(22,31,59,.98), rgba(10,14,31,.98));
+      isolation: isolate;
+    }
+
+    .mode-card:nth-child(2) {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(236,72,153,.15), transparent 34%),
+        linear-gradient(145deg, rgba(28,25,59,.98), rgba(12,13,32,.98));
+    }
+
+    .mode-card::after {
+      content: "CHỌN CHẾ ĐỘ";
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      padding: 8px 11px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 999px;
+      color: var(--v2-muted);
+      background: rgba(255,255,255,.035);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+    }
+
+    .mode-card:nth-child(2)::after { content: "MULTIPLAYER"; }
+
+    .mode-icon {
+      width: 82px;
+      height: 82px;
+      margin-bottom: 26px;
+      border-radius: 26px;
+      background: linear-gradient(145deg, rgba(34,211,238,.18), rgba(59,130,246,.13));
+      font-size: 45px;
+      box-shadow: 0 18px 35px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .mode-card:nth-child(2) .mode-icon {
+      background: linear-gradient(145deg, rgba(236,72,153,.17), rgba(139,92,246,.15));
+    }
+
+    .mode-card h3 {
+      max-width: 430px;
+      font-size: clamp(28px, 3.5vw, 38px);
+      letter-spacing: -.04em;
+    }
+
+    .mode-card > p {
+      max-width: 420px;
+      color: var(--v2-muted);
+      font-size: 16px;
+    }
+
+    .mode-card:hover,
+    .mode-card:focus-within,
+    .mode-card.selected {
+      border-color: rgba(34,211,238,.45);
+      transform: translateY(-6px);
+      box-shadow: 0 24px 56px rgba(0,0,0,.38), 0 0 0 1px rgba(34,211,238,.10) inset;
+    }
+
+    .mode-card:nth-child(2):hover,
+    .mode-card:nth-child(2):focus-within {
+      border-color: rgba(236,72,153,.42);
+    }
+
+    .mode-setup {
+      border-top-color: rgba(255,255,255,.08);
+    }
+
+    .setup-shell,
+    .result-screen {
+      max-width: 1040px;
+      margin: 0 auto;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(139,92,246,.11), transparent 28%),
+        linear-gradient(180deg, rgba(17,24,48,.98), rgba(8,12,27,.98));
+    }
+
+    .setup-head {
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--v2-line);
+    }
+
+    .step-bars span { height: 7px; }
+
+    .setup-input,
+    .setup-select,
+    .text-input,
+    .answer-input {
+      border: 1px solid rgba(148,163,184,.18);
+      background: rgba(5,9,23,.88);
+    }
+
+    .match-type-card {
+      min-height: 220px;
+      padding: 28px;
+    }
+
+    .match-type-card.selected {
+      border-color: rgba(34,211,238,.72);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(34,211,238,.13), transparent 35%),
+        linear-gradient(180deg, rgba(17,38,62,.98), rgba(9,18,35,.98));
+    }
+
+    #gameScreen.active {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      grid-template-areas:
+        "score puzzle"
+        "meta puzzle"
+        "score question"
+        "score input"
+        "score message"
+        "score actions"
+        "score progress";
+      gap: 16px 22px;
+      align-items: start;
+    }
+
+    #gameScreen .match-board {
+      grid-area: score;
+      position: sticky;
+      top: 16px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 18px;
+      margin: 0;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(59,130,246,.12), transparent 35%),
+        linear-gradient(180deg, rgba(17,24,48,.98), rgba(8,12,27,.98));
+    }
+
+    #gameScreen .versus {
+      width: 52px;
+      height: 52px;
+      margin: -4px auto;
+      font-size: 15px;
+      background: linear-gradient(135deg, var(--v2-cyan), var(--v2-violet));
+      border: 5px solid #10162c;
+      box-shadow: 0 12px 28px rgba(0,0,0,.35);
+    }
+
+    #gameScreen .player-panel {
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 22px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(34,211,238,.12), transparent 32%),
+        rgba(11,18,37,.92);
+    }
+
+    #gameScreen .player-panel.opponent {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(236,72,153,.14), transparent 32%),
+        rgba(18,15,37,.92);
+    }
+
+    #gameScreen .player-score {
+      margin: 8px 0 4px;
+      font-size: 58px;
+      background: linear-gradient(180deg, #fff, #93c5fd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    #gameScreen .opponent .player-score {
+      background: linear-gradient(180deg, #fff, #f9a8d4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    #gameScreen .game-info {
+      grid-area: meta;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 0;
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(12,17,35,.84);
+    }
+
+    #gameScreen .info-box,
+    #gameScreen .timer-pill {
+      min-height: 52px;
+      padding: 10px 14px;
+      justify-content: space-between;
+      border-radius: 15px;
+      color: var(--v2-muted);
+      background: rgba(255,255,255,.035);
+    }
+
+    #gameScreen .timer-pill {
+      color: #fecdd3;
+      justify-content: center;
+    }
+
+    #gameScreen .picture-box {
+      grid-area: puzzle;
+      min-height: clamp(360px, 52vh, 560px);
+      margin: 0;
+      border-radius: 30px;
+      background:
+        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px),
+        radial-gradient(circle at 50% 42%, rgba(34,211,238,.10), transparent 42%),
+        linear-gradient(180deg, rgba(14,21,43,.98), rgba(7,11,26,.98));
+      background-size: 26px 26px, 26px 26px, auto, auto;
+      box-shadow: 0 28px 60px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    #gameScreen .picture-box::before {
+      content: "GIẢI MÃ HÌNH ẢNH";
+      position: absolute;
+      align-self: flex-start;
+      justify-self: flex-start;
+      top: 22px; left: 24px;
+      color: var(--v2-cyan);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .18em;
+    }
+
+    #gameScreen .picture-box { position: relative; }
+
+    #gameScreen .picture,
+    #gameScreen .emoji-picture {
+      filter: drop-shadow(0 16px 18px rgba(0,0,0,.35));
+    }
+
+    #gameScreen .question-text {
+      grid-area: question;
+      margin: 0;
+      padding: 2px 4px;
+      text-align: left;
+    }
+
+    #gameScreen .answer-input {
+      grid-area: input;
+      min-height: 66px;
+      margin: 0;
+      border-radius: 19px;
+      font-size: 19px;
+      text-align: left;
+      padding: 0 20px;
+      text-transform: none;
+    }
+
+    #gameScreen .message {
+      grid-area: message;
+      min-height: 68px;
+      margin: 0;
+      border-radius: 19px;
+      box-shadow: none;
+    }
+
+    #gameScreen .button-group {
+      grid-area: actions;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0;
+    }
+
+    #gameScreen .game-btn {
+      min-height: 58px;
+      min-width: 0;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+    }
+
+    #gameScreen .check-button {
+      background: linear-gradient(135deg, var(--v2-cyan), var(--v2-blue));
+      color: #04111f;
+    }
+
+    #gameScreen .hint-button {
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      color: #271300;
+    }
+
+    #gameScreen .next-button {
+      background: linear-gradient(135deg, var(--v2-violet), var(--v2-pink));
+    }
+
+    #gameScreen .progress-bar {
+      grid-area: progress;
+      margin: 2px 0 0;
+      height: 12px;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    [role="button"]:focus-visible {
+      outline: 3px solid rgba(34,211,238,.72);
+      outline-offset: 4px;
+    }
+
+    @media (max-width: 980px) {
+      .topbar { justify-content: center; padding-left: 0; }
+      .topbar::before { left: 50%; transform: translateX(-50%); white-space: nowrap; }
+      .topbar h1 { text-align: center; }
+      .subtitle, .mode-heading { text-align: center; margin-left: auto; margin-right: auto; }
+
+      #gameScreen.active {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "score"
+          "meta"
+          "puzzle"
+          "question"
+          "input"
+          "message"
+          "actions"
+          "progress";
+      }
+
+      #gameScreen .match-board {
+        position: static;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+      }
+
+      #gameScreen .game-info {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      #gameScreen .info-box,
+      #gameScreen .timer-pill { justify-content: center; }
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 0; }
+      .app-shell {
+        min-height: 100dvh;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        padding: 16px;
+      }
+      .app-shell::after { display: none; }
+      .topbar { min-height: 78px; }
+      .topbar::before { top: 7px; font-size: 9px; }
+      .topbar h1 { padding-top: 16px; font-size: clamp(25px, 8vw, 34px); }
+      .back-home { width: 48px; height: 48px; border-radius: 16px; }
+      .subtitle { margin: 16px auto 26px; font-size: 14px; }
+      .mode-card { min-height: 250px; padding: 24px; }
+      .mode-card::after { right: 18px; top: 18px; }
+      .mode-icon { width: 68px; height: 68px; border-radius: 21px; font-size: 38px; }
+
+      #gameScreen .match-board {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      #gameScreen .player-panel { min-height: 120px; }
+      #gameScreen .versus { margin: -1px auto; }
+      #gameScreen .game-info { grid-template-columns: 1fr; }
+      #gameScreen .picture-box { min-height: 310px; border-radius: 24px; }
+      #gameScreen .button-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #gameScreen .game-btn.exit-button { grid-column: span 2; }
+    }
+
+    @media (max-width: 420px) {
+      .topbar { justify-content: flex-end; }
+      .topbar::before { left: 62px; transform: none; }
+      .topbar h1 { max-width: calc(100% - 60px); text-align: right; font-size: 26px; }
+      .mode-card::after { display: none; }
+      #gameScreen .button-group { grid-template-columns: 1fr; }
+      #gameScreen .game-btn.exit-button { grid-column: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+
+  <style id="layout-balance-v3">
+    /* Bố cục cân bằng cho desktop, tablet và điện thoại */
+    .app-shell {
+      width: min(calc(100% - 24px), 1280px);
+      min-height: auto;
+      margin: 12px auto;
+      padding: clamp(18px, 2.6vw, 34px);
+    }
+
+    .mode-grid,
+    .match-type-grid,
+    .room-config-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .mode-grid { grid-auto-rows: 1fr; }
+
+    .mode-card,
+    .match-type-card {
+      width: 100%;
+      height: 100%;
+    }
+
+    .mode-card {
+      min-height: clamp(280px, 31vw, 350px);
+    }
+
+    .match-type-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 240px;
+    }
+
+    .match-type-card p { flex: 1; }
+
+    .setup-actions > .setup-action-btn,
+    .result-actions > button {
+      flex: 1 1 220px;
+    }
+
+    /* Desktop: cột điểm 1/3, khu câu đố 2/3; mọi grid-area đều hợp lệ */
+    #gameScreen.active {
+      display: grid;
+      grid-template-columns: minmax(300px, .78fr) minmax(0, 1.72fr);
+      grid-template-areas:
+        "score puzzle"
+        "meta puzzle"
+        ". question"
+        ". input"
+        ". message"
+        ". actions"
+        ". progress";
+      grid-template-rows: auto auto auto auto auto auto auto;
+      gap: 16px 22px;
+      align-items: stretch;
+    }
+
+    #gameScreen .match-board {
+      grid-area: score;
+      position: static;
+      height: 100%;
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(132px, 1fr) auto minmax(132px, 1fr);
+      align-items: stretch;
+    }
+
+    #gameScreen .player-panel {
+      min-height: 0;
+      height: 100%;
+    }
+
+    #gameScreen .game-info {
+      grid-area: meta;
+      height: 100%;
+      grid-template-columns: 1fr;
+      align-content: stretch;
+    }
+
+    #gameScreen .info-box,
+    #gameScreen .timer-pill {
+      min-height: 54px;
+      width: 100%;
+    }
+
+    #gameScreen .picture-box {
+      grid-area: puzzle;
+      width: 100%;
+      min-height: clamp(430px, 56vh, 590px);
+    }
+
+    #gameScreen .question-text,
+    #gameScreen .answer-input,
+    #gameScreen .message,
+    #gameScreen .button-group,
+    #gameScreen .progress-bar {
+      width: 100%;
+      min-width: 0;
+    }
+
+    #gameScreen .button-group {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    #gameScreen .game-btn {
+      width: 100%;
+      min-width: 0;
+      padding-inline: 10px;
+    }
+
+    /* Tablet: xếp bảng điểm ngang, nội dung thành một luồng rõ ràng */
+    @media (max-width: 1024px) {
+      .app-shell {
+        width: min(calc(100% - 20px), 960px);
+        margin: 10px auto;
+      }
+
+      #gameScreen.active {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "score"
+          "meta"
+          "puzzle"
+          "question"
+          "input"
+          "message"
+          "actions"
+          "progress";
+        gap: 14px;
+      }
+
+      #gameScreen .match-board {
+        grid-template-columns: minmax(0, 1fr) 58px minmax(0, 1fr);
+        grid-template-rows: 1fr;
+        align-items: stretch;
+      }
+
+      #gameScreen .player-panel {
+        min-height: 140px;
+      }
+
+      #gameScreen .versus {
+        align-self: center;
+      }
+
+      #gameScreen .game-info {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      #gameScreen .picture-box {
+        min-height: clamp(340px, 48vh, 500px);
+      }
+    }
+
+    /* Điện thoại: hai người chơi vẫn song song, các khối chia đều 2 cột */
+    @media (max-width: 720px) {
+      body { padding: 0; }
+
+      .app-shell {
+        width: 100%;
+        min-height: 100dvh;
+        margin: 0;
+        padding: 14px;
+        border-radius: 0;
+      }
+
+      .topbar {
+        min-height: 68px;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .topbar::before { display: none; }
+
+      .topbar h1 {
+        max-width: none;
+        padding: 0 54px;
+        font-size: clamp(23px, 7.5vw, 32px);
+        text-align: center;
+      }
+
+      .back-home {
+        left: 0;
+        width: 46px;
+        height: 46px;
+      }
+
+      .subtitle {
+        margin: 12px auto 22px;
+        text-align: center;
+      }
+
+      .mode-grid,
+      .match-type-grid,
+      .room-config-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mode-card {
+        min-height: 230px;
+        padding: 22px;
+      }
+
+      .match-type-card { min-height: 210px; }
+
+      .setup-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      #gameScreen .match-board {
+        grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr);
+        gap: 6px;
+        padding: 10px;
+        border-radius: 20px;
+      }
+
+      #gameScreen .player-panel {
+        min-height: 112px;
+        padding: 14px 8px;
+        border-radius: 17px;
+      }
+
+      #gameScreen .player-name {
+        font-size: 13px;
+      }
+
+      #gameScreen .player-score {
+        margin: 6px 0 2px;
+        font-size: clamp(34px, 11vw, 46px);
+      }
+
+      #gameScreen .player-progress {
+        font-size: 11px;
+      }
+
+      #gameScreen .versus {
+        width: 42px;
+        height: 42px;
+        margin: 0;
+        border-width: 3px;
+        font-size: 12px;
+      }
+
+      #gameScreen .game-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding: 10px;
+      }
+
+      #gameScreen .game-info .timer-pill {
+        grid-column: 1 / -1;
+      }
+
+      #gameScreen .info-box,
+      #gameScreen .timer-pill {
+        min-height: 48px;
+        padding: 9px 8px;
+        gap: 4px;
+        font-size: 13px;
+        justify-content: center;
+        text-align: center;
+      }
+
+      #gameScreen .info-box span {
+        display: inline-block;
+        margin-inline: 2px;
+      }
+
+      #gameScreen .picture-box {
+        min-height: clamp(245px, 39vh, 360px);
+        padding: 16px 10px;
+        border-radius: 21px;
+      }
+
+      #gameScreen .picture-box::before {
+        top: 14px;
+        left: 16px;
+        font-size: 9px;
+      }
+
+      #gameScreen .question-text {
+        padding-inline: 2px;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      #gameScreen .answer-input {
+        min-height: 58px;
+        padding: 0 14px;
+        font-size: 16px;
+        text-align: center;
+      }
+
+      #gameScreen .message {
+        min-height: 58px;
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      #gameScreen .button-group {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px;
+      }
+
+      #gameScreen .game-btn,
+      #gameScreen .game-btn.exit-button {
+        grid-column: auto;
+        min-height: 52px;
+        padding: 10px 6px;
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .app-shell { padding: 11px; }
+
+      .topbar h1 {
+        padding: 0 48px;
+        font-size: 22px;
+      }
+
+      .back-home {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+      }
+
+      #gameScreen .match-board {
+        grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);
+        padding: 8px;
+      }
+
+      #gameScreen .versus {
+        width: 34px;
+        height: 34px;
+        font-size: 10px;
+      }
+
+      #gameScreen .player-panel {
+        min-height: 104px;
+        padding-inline: 5px;
+      }
+
+      #gameScreen .game-info {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      #gameScreen .picture-box {
+        min-height: 225px;
+      }
     }
   </style>
 
@@ -1620,7 +2501,7 @@
       </a>
       <h1>Đuổi Hình Bắt Chữ</h1>
     </header>
-    <p class="subtitle">Giao diện mới hiện đại hơn, trực quan hơn và tối ưu cho cả chơi với máy lẫn thi đấu online</p>
+    <p class="subtitle">Giải mã hình ảnh, chinh phục thử thách và so tài cùng bạn bè trong một trải nghiệm hoàn toàn mới.</p>
 
     <section id="modeScreen" class="screen active">
       <h2 class="mode-heading">Chọn chế độ chơi</h2>
@@ -1646,7 +2527,7 @@
                  onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();openOnlineSetup();}">
           <div class="mode-icon">🌐</div>
           <h3>Chơi với người<br>online</h3>
-          <p>Nhập tên, tạo mã phòng hoặc tham gia cùng bạn bè.</p>
+          <p>Điện thoại và máy tính chơi chung qua mã phòng, cùng hoặc khác Wi-Fi.</p>
         </article>
       </div>
     </section>
@@ -1690,8 +2571,8 @@
             </div>
           </div>
           <div id="connectionStatus" class="connection-status"></div>
-          <p class="setup-note">Người tạo phòng gửi mã cho bạn bè. Người tham gia nhập tên và mã phòng, sau đó nhấn “Tiếp tục”.</p>
-          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="backToModeScreen()">← Quay lại</button><button class="setup-action-btn setup-next" onclick="continueRoomSetup()">Tiếp tục →</button></div>
+          <p class="setup-note">Điện thoại và máy tính có thể chơi chung qua Internet, kể cả khi khác Wi-Fi. Hai thiết bị mở cùng phiên bản trò chơi; người tạo phòng gửi mã 6 ký tự, người còn lại nhập mã rồi nhấn “Tiếp tục”.</p>
+          <div class="setup-actions"><button class="setup-action-btn setup-back" type="button" onclick="backToModeScreen()">← Quay lại</button><button id="continueRoomButton" class="setup-action-btn setup-next" type="button" onclick="continueRoomSetup()">Tiếp tục →</button></div>
         </div>
 
         <div id="matchTypeStep" style="display:none">
@@ -1811,29 +2692,32 @@
     let peer = null;
     let connection = null;
     let isHost = false;
+
+    // Kênh đồng bộ dự phòng giúp điện thoại và máy tính chơi chung ngay cả khi
+    // WebRTC trực tiếp bị chặn bởi NAT, mạng di động hoặc hai thiết bị khác Wi-Fi.
+    const RELAY_PREFIX = "relay";
+    const RELAY_POLL_MS = 900;
+    const RELAY_HEARTBEAT_MS = 2500;
+    const RELAY_TTL_MS = 12000;
+    const RELAY_MESSAGE_LIMIT = 120;
+    let relayActive = false;
+    let relayConnected = false;
+    let relayRole = "";
+    let relayMessages = [];
+    let relaySequence = 0;
+    let relayPollTimer = null;
+    let relayHeartbeatTimer = null;
+    let relayPollController = null;
+    const processedOnlineMessages = new Set();
     let currentRoomCode = "";
     let currentSetupMode = "";
     let machineMatchType = "battle";
     let machineAnswerTimeout = null;
-    let peerConnectTimer = null;
-
-    // Cấu hình WebRTC ưu tiên khả năng kết nối giữa điện thoại và máy tính.
-    // PeerJS vẫn dùng máy chủ cloud mặc định để trao đổi tín hiệu.
-    const PEER_CLIENT_OPTIONS = {
-      debug: 1,
-      config: {
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "stun:stun.cloudflare.com:3478" }
-        ],
-        iceCandidatePoolSize: 10
-      }
-    };
 
     // Danh bạ phòng online dùng chung giữa nhiều thiết bị (cùng cơ chế với Caro).
     const ROOM_DIRECTORY_API_BASE = "https://mantledb.sh/v2";
     const ROOM_DIRECTORY_NAMESPACE = "duoi-hinh-bat-chu-zhaowen-rooms-2026-v1";
+    const ROOM_RELAY_NAMESPACE = "duoi-hinh-bat-chu-zhaowen-relay-2026-v1";
     const ROOM_DIRECTORY_PREFIX = "rooms";
     const ROOM_TTL_MS = 45000;
     const ROOM_LIST_POLL_MS = 8000;
@@ -1841,6 +2725,8 @@
     let roomListPollTimer = null;
     let roomHeartbeatTimer = null;
     let roomListController = null;
+    let joinInProgress = false;
+    let activeJoinButton = null;
 
     const modeScreen = document.getElementById("modeScreen");
     const onlineSetupScreen = document.getElementById("onlineSetupScreen");
@@ -1914,6 +2800,7 @@
       resetOnlineLobby();
       currentSetupMode = "online";
       document.getElementById("roomActionSelect").value = "create";
+      toggleRoomAction();
       refreshRoomCode();
       showRoomStep();
       switchScreen(document.getElementById("onlineSetupScreen"));
@@ -1938,6 +2825,12 @@
       input.setAttribute("aria-label", create ? "Mã phòng do hệ thống tự tạo" : "Nhập mã phòng để tham gia");
       if(refreshButton) refreshButton.style.display = create ? "inline-flex" : "none";
 
+      const continueButton = document.getElementById("continueRoomButton");
+      if(continueButton){
+        continueButton.textContent = create ? "Tiếp tục →" : "Tham gia phòng →";
+        continueButton.disabled = false;
+      }
+
       if(create) refreshRoomCode();
       else input.value = "";
     }
@@ -1952,6 +2845,192 @@
 
     function roomCloudListUrl(){
       return ROOM_DIRECTORY_API_BASE + "/list/" + ROOM_DIRECTORY_NAMESPACE;
+    }
+
+    function relayCloudUrl(code, role){
+      return ROOM_DIRECTORY_API_BASE + "/" + ROOM_RELAY_NAMESPACE + "/" +
+        RELAY_PREFIX + "/" + encodeURIComponent(normalizeRoomCode(code)) + "/" +
+        encodeURIComponent(role === "guest" ? "guest" : "host");
+    }
+
+    function isPeerConnected(){
+      return Boolean(connection && connection.open);
+    }
+
+    function isOnlineConnected(){
+      return isPeerConnected() || relayConnected;
+    }
+
+    function createOnlineMessageId(){
+      if(window.crypto && typeof window.crypto.randomUUID === "function"){
+        return window.crypto.randomUUID();
+      }
+      return [currentRoomCode || "room", relayRole || "peer", Date.now().toString(36), Math.random().toString(36).slice(2)].join("-");
+    }
+
+    function receiveOnlineData(data, hostSide){
+      if(!data || typeof data !== "object") return;
+      const messageId = String(data._messageId || "");
+      if(messageId){
+        if(processedOnlineMessages.has(messageId)) return;
+        processedOnlineMessages.add(messageId);
+        if(processedOnlineMessages.size > 500){
+          const oldest = processedOnlineMessages.values().next().value;
+          processedOnlineMessages.delete(oldest);
+        }
+      }
+      handleOnlineData(data, hostSide);
+    }
+
+    async function publishRelayState(){
+      if(!relayActive || !currentRoomCode || !relayRole) return;
+      const payload = {
+        code: currentRoomCode,
+        role: relayRole,
+        name: localName || "Người chơi",
+        matchType: onlineMatchType || "battle",
+        sequence: relaySequence,
+        lastSeen: Date.now(),
+        messages: relayMessages.slice(-RELAY_MESSAGE_LIMIT)
+      };
+      try {
+        await fetchRoomJson(relayCloudUrl(currentRoomCode, relayRole), {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+      } catch (_) {}
+    }
+
+    function queueRelayMessage(data){
+      if(!relayActive) return;
+      relaySequence += 1;
+      relayMessages.push({
+        id: data._messageId,
+        sentAt: Date.now(),
+        sequence: relaySequence,
+        data: data
+      });
+      if(relayMessages.length > RELAY_MESSAGE_LIMIT){
+        relayMessages = relayMessages.slice(-RELAY_MESSAGE_LIMIT);
+      }
+      publishRelayState();
+    }
+
+    function onlineSend(payload){
+      if(gameMode !== "online" && currentSetupMode !== "online") return false;
+      const data = Object.assign({}, payload || {});
+      if(!data._messageId) data._messageId = createOnlineMessageId();
+
+      let sent = false;
+      if(isPeerConnected()){
+        try {
+          connection.send(data);
+          sent = true;
+        } catch (_) {}
+      }
+      if(relayActive){
+        queueRelayMessage(data);
+        sent = true;
+      }
+      return sent;
+    }
+
+    async function pollRelayState(){
+      if(!relayActive || !currentRoomCode || !relayRole) return;
+      const remoteRole = relayRole === "host" ? "guest" : "host";
+      if(relayPollController) relayPollController.abort();
+      relayPollController = new AbortController();
+      const controller = relayPollController;
+      const timeout = window.setTimeout(function(){ controller.abort(); }, 5000);
+
+      try {
+        const remote = await fetchRoomJson(
+          relayCloudUrl(currentRoomCode, remoteRole) + "?t=" + Date.now(),
+          {signal: controller.signal}
+        );
+        const fresh = remote && Number(remote.lastSeen) && Date.now() - Number(remote.lastSeen) < RELAY_TTL_MS;
+
+        if(fresh){
+          const firstConnection = !relayConnected;
+          relayConnected = true;
+          const remoteName = String(remote.name || "Người chơi").trim().slice(0,24);
+          if(remoteName) opponentName = remoteName;
+
+          if(firstConnection){
+            setConnectionStatus("Đã kết nối đa thiết bị với " + opponentName + ".", "success");
+            if(isHost){
+              publishCurrentRoom("full", 2);
+              showMatchTypeStep();
+            }else{
+              finishJoinAttempt();
+            }
+          }
+
+          const messages = Array.isArray(remote.messages) ? remote.messages.slice() : [];
+          messages.sort(function(a,b){
+            return Number(a && a.sequence || 0) - Number(b && b.sequence || 0);
+          });
+          messages.forEach(function(item){
+            if(item && item.data) receiveOnlineData(item.data, relayRole === "host");
+          });
+        }else if(relayConnected && !isPeerConnected()){
+          relayConnected = false;
+          setConnectionStatus(
+            isHost ? "Đang chờ điện thoại hoặc máy tính còn lại kết nối lại..." : "Mất kết nối với chủ phòng. Đang thử kết nối lại...",
+            "error"
+          );
+          if(isHost) publishCurrentRoom("waiting", 1);
+          showMatchTypeStep();
+        }
+      } catch (error) {
+        if(error && error.name !== "AbortError" && !isPeerConnected()){
+          setConnectionStatus("Đang thử lại kênh kết nối đa thiết bị...", "");
+        }
+      } finally {
+        window.clearTimeout(timeout);
+        if(relayPollController === controller) relayPollController = null;
+      }
+    }
+
+    function startCloudRelay(role){
+      stopCloudRelay(false);
+      relayActive = true;
+      relayConnected = false;
+      relayRole = role === "guest" ? "guest" : "host";
+      relayMessages = [];
+      relaySequence = 0;
+      processedOnlineMessages.clear();
+      publishRelayState();
+      onlineSend({type:"hello", name:localName});
+      pollRelayState();
+      relayPollTimer = window.setInterval(pollRelayState, RELAY_POLL_MS);
+      relayHeartbeatTimer = window.setInterval(publishRelayState, RELAY_HEARTBEAT_MS);
+    }
+
+    function stopCloudRelay(removeState){
+      const oldCode = currentRoomCode;
+      const oldRole = relayRole;
+      window.clearInterval(relayPollTimer);
+      window.clearInterval(relayHeartbeatTimer);
+      relayPollTimer = null;
+      relayHeartbeatTimer = null;
+      if(relayPollController){
+        relayPollController.abort();
+        relayPollController = null;
+      }
+      relayActive = false;
+      relayConnected = false;
+      relayRole = "";
+      relayMessages = [];
+      relaySequence = 0;
+      if(removeState !== false && oldCode && oldRole){
+        fetch(relayCloudUrl(oldCode, oldRole), {
+          method:"DELETE",
+          cache:"no-store",
+          keepalive:true,
+          headers:{"Accept":"application/json"}
+        }).catch(function(){});
+      }
     }
 
     async function fetchRoomJson(url, options){
@@ -2020,8 +3099,8 @@
         return '<div class="room-item">' +
           '<div><strong>' + escapeHtml(room.hostName) + ' · ' + escapeHtml(room.code) + '</strong>' +
           '<small>' + statusText + ' · ' + room.playerCount + '/2 · ' + typeText + '</small></div>' +
-          '<button class="primary-btn" type="button" ' + (canJoin ? '' : 'disabled') +
-          ' onclick="joinListedRoom(\'' + room.code + '\')">' + (ownRoom ? 'Phòng của bạn' : (canJoin ? 'Tham gia ngay' : statusText)) + '</button></div>';
+          '<button class="primary-btn room-join-button" type="button" data-room-code="' + room.code + '" ' + (canJoin ? '' : 'disabled') +
+          ' onclick="joinListedRoom(\'' + room.code + '\', this)">' + (ownRoom ? 'Phòng của bạn' : (canJoin ? 'Tham gia ngay' : statusText)) + '</button></div>';
       }).join("");
     }
 
@@ -2079,7 +3158,7 @@
     }
 
     async function refreshRoomList(manual){
-      if(isHost && currentRoomCode) await publishCurrentRoom(connection && connection.open ? "full" : "waiting", connection && connection.open ? 2 : 1);
+      if(isHost && currentRoomCode) await publishCurrentRoom(isOnlineConnected() ? "full" : "waiting", isOnlineConnected() ? 2 : 1);
       await requestRoomList(Boolean(manual));
     }
 
@@ -2096,9 +3175,9 @@
 
     function startRoomHeartbeat(){
       window.clearInterval(roomHeartbeatTimer);
-      publishCurrentRoom(connection && connection.open ? "full" : "waiting", connection && connection.open ? 2 : 1);
+      publishCurrentRoom(isOnlineConnected() ? "full" : "waiting", isOnlineConnected() ? 2 : 1);
       roomHeartbeatTimer = window.setInterval(function(){
-        publishCurrentRoom(connection && connection.open ? "full" : "waiting", connection && connection.open ? 2 : 1);
+        publishCurrentRoom(isOnlineConnected() ? "full" : "waiting", isOnlineConnected() ? 2 : 1);
       }, 10000);
     }
 
@@ -2107,30 +3186,65 @@
       roomHeartbeatTimer = null;
     }
 
-    function selectListedRoom(code){
-      const normalizedCode = normalizeRoomCode(code);
-      document.getElementById("roomActionSelect").value = "join";
-      toggleRoomAction();
-      document.getElementById("roomCodeInput").value = normalizedCode;
-      setConnectionStatus("Đã chọn phòng " + normalizedCode + '. Nhập tên rồi nhấn “Tiếp tục”.', "success");
-      document.getElementById("onlinePlayerName").focus();
+    function createGuestName(){
+      return "Người chơi " + Math.random().toString(36).slice(2, 6).toUpperCase();
     }
 
-    // Trên điện thoại: chạm “Tham gia ngay” sẽ kết nối thẳng nếu đã nhập tên.
-    function joinListedRoom(code){
-      const normalizedCode = normalizeRoomCode(code);
+    function getOrCreateOnlinePlayerName(){
+      const input = document.getElementById("onlinePlayerName");
+      let value = input.value.trim();
+      if(!value){
+        value = createGuestName();
+        input.value = value;
+      }
+      return value.slice(0, 24);
+    }
+
+    function setJoinButtonsBusy(busy, selectedButton){
+      joinInProgress = Boolean(busy);
+      activeJoinButton = busy ? (selectedButton || activeJoinButton) : null;
+      document.querySelectorAll(".room-join-button").forEach(function(button){
+        if(button.dataset.originalLabel === undefined){
+          button.dataset.originalLabel = button.textContent;
+        }
+        if(busy){
+          button.disabled = true;
+          if(button === activeJoinButton) button.textContent = "Đang vào...";
+        }else{
+          const roomCode = normalizeRoomCode(button.getAttribute("data-room-code"));
+          const room = activeRooms().find(function(item){ return item.code === roomCode; });
+          const canJoin = room && room.status === "waiting" && room.playerCount < 2 && !(isHost && currentRoomCode === room.code);
+          button.disabled = !canJoin;
+          button.textContent = button.dataset.originalLabel || "Tham gia ngay";
+        }
+      });
+      const continueButton = document.getElementById("continueRoomButton");
+      if(continueButton && document.getElementById("roomActionSelect").value === "join"){
+        continueButton.disabled = Boolean(busy);
+        continueButton.textContent = busy ? "Đang vào phòng..." : "Tham gia phòng →";
+      }
+    }
+
+    function finishJoinAttempt(){
+      setJoinButtonsBusy(false, null);
+      showMatchTypeStep();
+    }
+
+    function joinListedRoom(code, button){
+      const normalized = normalizeRoomCode(code);
+      if(normalized.length !== 6 || joinInProgress) return;
+
       document.getElementById("roomActionSelect").value = "join";
       toggleRoomAction();
-      document.getElementById("roomCodeInput").value = normalizedCode;
+      document.getElementById("roomCodeInput").value = normalized;
+      document.getElementById("onlinePlayerName").value = getOrCreateOnlinePlayerName();
+      setConnectionStatus("Đang vào phòng " + normalized + "...", "");
+      joinOnlineRoom(normalized, button || null);
+    }
 
-      const nameInput = document.getElementById("onlinePlayerName");
-      if(!nameInput.value.trim()){
-        setConnectionStatus("Đã chọn phòng " + normalizedCode + ". Hãy nhập tên người chơi để tham gia.", "error");
-        nameInput.focus();
-        return;
-      }
-
-      joinOnlineRoom();
+    // Giữ tương thích với các nút hoặc liên kết cũ từng gọi hàm này.
+    function selectListedRoom(code){
+      joinListedRoom(code, null);
     }
 
     function showMachineSetupStep(){
@@ -2157,17 +3271,21 @@
 
       const startButton = document.getElementById("startOnlineMatchButton");
       if(isHost){
-        document.getElementById("setupSubtitle").textContent = peer
-          ? "Phòng đã được tạo. Chờ người chơi khác tham gia."
+        const roomCreated = Boolean(currentRoomCode && (peer || relayActive));
+        document.getElementById("setupSubtitle").textContent = roomCreated
+          ? "Phòng đã được tạo. Điện thoại và máy tính đều có thể tham gia bằng mã phòng."
           : "Chọn luật chơi, sau đó nhấn Tạo phòng.";
         startButton.disabled = false;
-        startButton.textContent = peer
-          ? ((connection && connection.open) ? "Bắt đầu trận →" : "Đang chờ người chơi...")
+        startButton.textContent = roomCreated
+          ? (isOnlineConnected() ? "Bắt đầu trận →" : "Đang chờ người chơi...")
           : "Tạo phòng →";
-        if(peer && (!connection || !connection.open)) startButton.disabled = true;
+        if(roomCreated && !isOnlineConnected()) startButton.disabled = true;
       }else{
-        document.getElementById("setupSubtitle").textContent="Đã kết nối. Chờ chủ phòng bắt đầu trận đấu.";
-        startButton.textContent="Chờ chủ phòng...";
+        const connected = isOnlineConnected();
+        document.getElementById("setupSubtitle").textContent = connected
+          ? "Đã vào phòng " + currentRoomCode + ". Chờ chủ phòng bắt đầu trận đấu."
+          : "Đang kết nối vào phòng " + currentRoomCode + " trên thiết bị này...";
+        startButton.textContent = connected ? "Chờ chủ phòng..." : "Đang kết nối...";
         startButton.disabled=true;
       }
     }
@@ -2178,12 +3296,13 @@
       document.getElementById("machineRaceTypeCard").classList.toggle("selected",type==="race");
     }
     function continueRoomSetup(){
-      const name=getRequiredName("onlinePlayerName");
+      const joining = document.getElementById("roomActionSelect").value === "join";
+      const name = joining ? getOrCreateOnlinePlayerName() : getRequiredName("onlinePlayerName");
       if(!name) return;
       localName=name;
       gameMode="online";
 
-      if(document.getElementById("roomActionSelect").value==="create"){
+      if(!joining){
         // Chỉ chuyển sang bước chọn luật; chưa tạo và chưa đăng phòng.
         closePeerConnection();
         isHost=true;
@@ -2199,19 +3318,19 @@
       if(!isHost) return;
 
       // Lần nhấn đầu tiên sau khi chọn luật mới thực sự tạo và đăng phòng.
-      if(!peer){
+      if(!currentRoomCode || (!peer && !relayActive)){
         createOnlineRoom();
         return;
       }
 
-      if(!connection || !connection.open){
+      if(!isOnlineConnected()){
         setConnectionStatus("Phòng đã tạo. Hãy chờ người chơi còn lại kết nối.","error");
         return;
       }
 
       const order=shuffleIndexes(originalQuestions.length).slice(0,20);
       questions=order.map(i=>originalQuestions[i]);
-      connection.send({type:"start",hostName:localName,guestName:opponentName,order:order,matchType:onlineMatchType});
+      onlineSend({type:"start",hostName:localName,guestName:opponentName,order:order,matchType:onlineMatchType});
       document.getElementById("stepBar3").className="active";
       startMatch();
     }
@@ -2257,56 +3376,50 @@
     function ensurePeerAvailable() {
       if (typeof Peer === "undefined") {
         setConnectionStatus(
-          "Không tải được dịch vụ online. Hãy kiểm tra Internet rồi thử lại.",
-          "error"
+          "Kết nối trực tiếp chưa sẵn sàng. Trò chơi sẽ dùng chế độ tương thích đa thiết bị.",
+          ""
         );
         return false;
       }
       return true;
     }
 
-    function createPeerClient(id){
-      return new Peer(id || undefined, PEER_CLIENT_OPTIONS);
-    }
-
-    function clearPeerConnectTimer(){
-      window.clearTimeout(peerConnectTimer);
-      peerConnectTimer = null;
-    }
-
-    function startPeerConnectTimer(message){
-      clearPeerConnectTimer();
-      peerConnectTimer = window.setTimeout(function(){
-        if(connection && connection.open) return;
-        setConnectionStatus(message || "Kết nối quá lâu. Hãy kiểm tra mạng trên cả hai thiết bị rồi thử lại.", "error");
-      }, 15000);
-    }
-
     function createOnlineRoom() {
       const name = getRequiredName("onlinePlayerName");
-      if (!name || !ensurePeerAvailable()) return;
+      if (!name) return;
+      const peerAvailable = ensurePeerAvailable();
 
       closePeerConnection();
       localName = name;
       gameMode = "online";
+      currentSetupMode = "online";
       isHost = true;
       currentRoomCode = randomRoomCode();
       document.getElementById("roomCodeInput").value = currentRoomCode;
 
       renderRoomList();
-      setConnectionStatus("Đang tạo phòng...", "");
+      setConnectionStatus("Đang tạo phòng đa thiết bị...", "");
+      startCloudRelay("host");
+      startRoomHeartbeat();
+      showMatchTypeStep();
 
-      peer = createPeerClient("dhbc-" + currentRoomCode.toLowerCase());
+      if(!peerAvailable){
+        setConnectionStatus("Đã tạo phòng " + currentRoomCode + ". Chờ thiết bị còn lại tham gia...", "success");
+        return;
+      }
+
+      peer = new Peer("dhbc-" + currentRoomCode.toLowerCase());
 
       peer.on("open", function () {
-        clearPeerConnectTimer();
-        setConnectionStatus("Đã tạo phòng " + currentRoomCode + ". Đang chờ người chơi vào...", "success");
-        startRoomHeartbeat();
+        setConnectionStatus(
+          isOnlineConnected()
+            ? "Đã kết nối đa thiết bị với " + (opponentName || "người chơi còn lại") + "."
+            : "Đã tạo phòng " + currentRoomCode + ". Chờ điện thoại hoặc máy tính còn lại tham gia...",
+          "success"
+        );
         refreshRoomList(false);
         showMatchTypeStep();
       });
-
-      startPeerConnectTimer("Tạo phòng quá lâu. Hãy kiểm tra Internet rồi thử lại.");
 
       peer.on("connection", function (incomingConnection) {
         if (connection && connection.open) {
@@ -2319,24 +3432,27 @@
       });
 
       peer.on("error", function (error) {
-        clearPeerConnectTimer();
         if (error && error.type === "unavailable-id") {
           currentRoomCode = randomRoomCode();
+          document.getElementById("roomCodeInput").value = currentRoomCode;
+          startCloudRelay("host");
           createOnlineRoom();
           return;
         }
-        setConnectionStatus("Không thể tạo phòng: " + friendlyPeerError(error), "error");
+        setConnectionStatus(
+          relayConnected
+            ? "Đã kết nối bằng chế độ tương thích đa thiết bị."
+            : "Kết nối trực tiếp không khả dụng; phòng vẫn đang chờ qua chế độ đa thiết bị.",
+          relayActive ? "success" : "error"
+        );
       });
     }
 
-    function joinOnlineRoom() {
-      const name = getRequiredName("onlinePlayerName");
-      const code = document.getElementById("roomCodeInput").value
-        .trim()
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "");
+    function joinOnlineRoom(selectedCode, sourceButton) {
+      if(joinInProgress && currentRoomCode === normalizeRoomCode(selectedCode || document.getElementById("roomCodeInput").value)) return;
 
-      if (!name) return;
+      const name = getOrCreateOnlinePlayerName();
+      const code = normalizeRoomCode(selectedCode || document.getElementById("roomCodeInput").value);
 
       if (code.length !== 6) {
         setConnectionStatus("Mã phòng phải gồm 6 ký tự.", "error");
@@ -2344,31 +3460,37 @@
         return;
       }
 
-      if (!ensurePeerAvailable()) return;
-
+      setJoinButtonsBusy(true, sourceButton || null);
+      const peerAvailable = ensurePeerAvailable();
       closePeerConnection();
+      setJoinButtonsBusy(true, sourceButton || null);
       localName = name;
       gameMode = "online";
+      currentSetupMode = "online";
       isHost = false;
       currentRoomCode = code;
-      setConnectionStatus("Đang kết nối vào phòng " + code + "...", "");
+      setConnectionStatus("Đang kết nối điện thoại và máy tính vào phòng " + code + "...", "");
+      startCloudRelay("guest");
+      showMatchTypeStep();
 
-      peer = createPeerClient();
+      if(!peerAvailable) return;
+
+      peer = new Peer();
 
       peer.on("open", function () {
-        setConnectionStatus("Đã liên hệ máy chủ. Đang mở kết nối tới phòng " + code + "...", "");
         connection = peer.connect("dhbc-" + code.toLowerCase(), {
-          reliable: true,
-          serialization: "json",
-          metadata: { name: localName, device: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop" }
+          reliable: true
         });
         bindConnectionEvents(false);
-        startPeerConnectTimer("Không kết nối được phòng " + code + ". Hãy chắc chắn máy tính vẫn đang mở phòng và thử lại.");
       });
 
       peer.on("error", function (error) {
-        clearPeerConnectTimer();
-        setConnectionStatus("Không thể vào phòng: " + friendlyPeerError(error), "error");
+        setConnectionStatus(
+          relayConnected
+            ? "Đã kết nối bằng chế độ tương thích đa thiết bị."
+            : "Không kết nối trực tiếp được; đang tiếp tục tìm phòng qua chế độ đa thiết bị.",
+          relayConnected ? "success" : (relayActive ? "" : "error")
+        );
       });
     }
 
@@ -2386,33 +3508,41 @@
       if (!connection) return;
 
       connection.on("open", function () {
-        clearPeerConnectTimer();
         setConnectionStatus("Đã kết nối. Chủ phòng có thể bắt đầu trận đấu.", "success");
         if(isHost) {
           publishCurrentRoom("full", 2);
           showMatchTypeStep();
+        }else{
+          finishJoinAttempt();
         }
-        connection.send({
+        onlineSend({
           type: "hello",
           name: localName
         });
       });
 
       connection.on("data", function (data) {
-        handleOnlineData(data, hostSide);
+        receiveOnlineData(data, hostSide);
       });
 
       connection.on("close", function () {
-        clearPeerConnectTimer();
-        if(isHost && currentRoomCode) publishCurrentRoom("waiting", 1);
+        if(isHost && currentRoomCode) publishCurrentRoom(relayConnected ? "full" : "waiting", relayConnected ? 2 : 1);
         if (!localFinished) {
-          setConnectionStatus("Người chơi còn lại đã ngắt kết nối.", "error");
+          setConnectionStatus(
+            relayConnected
+              ? "Kết nối trực tiếp đã ngắt; trận đấu vẫn tiếp tục qua chế độ đa thiết bị."
+              : "Người chơi còn lại đã ngắt kết nối.",
+            relayConnected ? "success" : "error"
+          );
         }
+        showMatchTypeStep();
       });
 
-      connection.on("error", function (error) {
-        clearPeerConnectTimer();
-        setConnectionStatus("Kết nối online gặp lỗi: " + friendlyPeerError(error), "error");
+      connection.on("error", function () {
+        setConnectionStatus(
+          relayConnected ? "Đang dùng kênh tương thích đa thiết bị." : "Kết nối online gặp lỗi.",
+          relayConnected ? "success" : "error"
+        );
       });
     }
 
@@ -2483,7 +3613,7 @@
     function closePeerConnection() {
       const roomToDelete = isHost ? currentRoomCode : "";
       stopRoomHeartbeat();
-      clearPeerConnectTimer();
+      stopCloudRelay(true);
       try {
         if (connection) connection.close();
       } catch (_) {}
@@ -2494,6 +3624,7 @@
 
       connection = null;
       peer = null;
+      setJoinButtonsBusy(false, null);
       if(roomToDelete) deletePublishedRoom(roomToDelete);
       isHost = false;
     }
@@ -2550,8 +3681,8 @@
         document.getElementById("gameTimer").textContent=formatTime(timeRemaining);
         if(timeRemaining<=0){
           resolveBattleRound("Không có người trả lời đúng",questions[currentQuestionIndex].answer,true,0);
-          if(connection&&connection.open){
-            connection.send({
+          if(gameMode === "online" && isOnlineConnected()){
+            onlineSend({
               type:"roundWin",
               winner:"Không có người trả lời đúng",
               answer:questions[currentQuestionIndex].answer,
@@ -2725,8 +3856,8 @@
       if (normalizeText(userAnswer) === normalizeText(correctAnswer)) {
         if(onlineMatchType === "battle"){
           const nextScore=localScoreValue+10;
-          if(gameMode === "online" && connection && connection.open){
-            connection.send({
+          if(gameMode === "online" && isOnlineConnected()){
+            onlineSend({
               type:"roundWin",
               winner:localName,
               answer:correctAnswer,
@@ -2832,12 +3963,8 @@
     }
 
     function sendOnlineScore() {
-      if (
-        gameMode === "online" &&
-        connection &&
-        connection.open
-      ) {
-        connection.send({
+      if (gameMode === "online" && isOnlineConnected()) {
+        onlineSend({
           type: "score",
           score: localScoreValue,
           progress: Math.min(currentQuestionIndex + 1, questions.length)
@@ -2850,9 +3977,9 @@
       localFinished = true;
       document.getElementById("progress").style.width = "100%";
 
-      if (gameMode === "online" && connection && connection.open) {
-        if(onlineMatchType === "race") connection.send({type:"raceWin",winner:localName});
-        else connection.send({type:"finish",score:localScoreValue});
+      if (gameMode === "online" && isOnlineConnected()) {
+        if(onlineMatchType === "race") onlineSend({type:"raceWin",winner:localName});
+        else onlineSend({type:"finish",score:localScoreValue});
       }
 
       switchScreen(resultScreen);
@@ -2991,21 +4118,41 @@
       this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
     });
 
-    document.getElementById("onlinePlayerName").addEventListener("keydown", function(event){
-      if(event.key !== "Enter") return;
-      event.preventDefault();
-      continueRoomSetup();
+    document.getElementById("roomCodeInput").addEventListener("keydown", function (event) {
+      if(event.key === "Enter" && document.getElementById("roomActionSelect").value === "join"){
+        event.preventDefault();
+        continueRoomSetup();
+      }
     });
 
-    document.getElementById("roomCodeInput").addEventListener("keydown", function(event){
-      if(event.key !== "Enter" || document.getElementById("roomActionSelect").value !== "join") return;
-      event.preventDefault();
-      joinOnlineRoom();
+    document.getElementById("onlinePlayerName").addEventListener("keydown", function (event) {
+      if(event.key === "Enter" && document.getElementById("roomActionSelect").value === "join"){
+        event.preventDefault();
+        continueRoomSetup();
+      }
     });
 
-    window.addEventListener("pageshow", function(){
-      if(document.getElementById("onlineSetupScreen").classList.contains("active")){
-        refreshRoomList(false);
+    document.addEventListener("visibilitychange", function () {
+      if(!document.hidden && relayActive){
+        publishRelayState();
+        pollRelayState();
+        if(isHost && currentRoomCode){
+          publishCurrentRoom(isOnlineConnected() ? "full" : "waiting", isOnlineConnected() ? 2 : 1);
+        }
+      }
+    });
+
+    window.addEventListener("online", function () {
+      if(relayActive){
+        setConnectionStatus("Đã có mạng. Đang khôi phục kết nối đa thiết bị...", "");
+        publishRelayState();
+        pollRelayState();
+      }
+    });
+
+    window.addEventListener("offline", function () {
+      if(gameMode === "online" || currentSetupMode === "online"){
+        setConnectionStatus("Thiết bị đang mất Internet. Trò chơi sẽ tự kết nối lại khi có mạng.", "error");
       }
     });
 
