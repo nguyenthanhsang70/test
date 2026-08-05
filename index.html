@@ -847,7 +847,10 @@
     .room-item { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border:1px solid #28415f;border-radius:14px;background:#0d2035; }
     .room-item small { display:block;color:#91a3ba;margin-top:3px; }
     .setup-actions { display:flex;justify-content:space-between;gap:12px;margin-top:26px; }
-    .setup-action-btn { min-height:58px;padding:14px 26px;border-radius:17px;font-weight:900;font-size:18px;cursor:pointer; }
+    .setup-action-btn { min-height:58px;padding:14px 26px;border-radius:17px;font-weight:900;font-size:18px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:12px; }
+    .setup-action-btn .btn-icon { width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px; }
+    .setup-action-btn .btn-icon svg { width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round; }
+    .setup-action-btn .btn-label { line-height:1; }
     .setup-back { color:#fff;background:#17283d;border:1px solid #31465f; }
     .setup-next { color:#fff;background:linear-gradient(135deg,#0891b2,#4f46e5); }
     .match-type-grid { display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px; }
@@ -1688,7 +1691,7 @@
     }
 
     .topbar::before {
-      content: "TRÒ CHƠI TƯ DUY";
+      content: none;
       position: absolute;
       left: 76px;
       top: 10px;
@@ -2490,8 +2493,34 @@
 
 
 
+  <style id="desktop-copy-selection">
+    /* Desktop vẫn cho phép bôi đen và sao chép bằng Ctrl/Cmd+C. */
+    @media (hover: hover) and (pointer: fine) {
+      body,
+      .app-shell,
+      .app-shell p,
+      .app-shell h1,
+      .app-shell h2,
+      .app-shell h3,
+      .app-shell span,
+      .app-shell div,
+      .app-shell label {
+        -webkit-user-select: text;
+        user-select: text;
+      }
+
+      img,
+      button,
+      .mode-card,
+      .match-type-card {
+        -webkit-user-select: none;
+        user-select: none;
+      }
+    }
+  </style>
+
   <style id="desktop-layout-v4">
-    /* Desktop: cân lại cột điểm, phóng lớn hình và dùng hết chiều ngang phần điều khiển. */
+    /* Desktop: đưa điểm số lên trên, canh giữa vùng hình và giữ phần điều khiển cân đối. */
     @media (min-width: 1025px) {
       body {
         padding: 18px;
@@ -2519,94 +2548,114 @@
 
       #gameScreen.active {
         display: grid;
-        grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
-          "score puzzle"
-          "meta puzzle"
-          "question question"
-          "input input"
-          "message message"
-          "actions actions"
-          "progress progress";
-        grid-template-rows: auto auto auto auto auto auto auto;
-        column-gap: 20px;
-        row-gap: 14px;
-        align-items: stretch;
+          "score"
+          "meta"
+          "puzzle"
+          "question"
+          "input"
+          "message"
+          "actions"
+          "progress";
+        grid-template-rows: auto auto auto auto auto auto auto auto;
+        row-gap: 2px;
+        align-items: start;
+      }
+
+      #gameScreen .match-board,
+      #gameScreen .game-info,
+      #gameScreen .picture-box,
+      #gameScreen .question-text,
+      #gameScreen .answer-input,
+      #gameScreen .message,
+      #gameScreen .button-group,
+      #gameScreen .progress-bar {
+        width: 100%;
+        max-width: 1120px;
+        margin-left: auto;
+        margin-right: auto;
       }
 
       #gameScreen .match-board {
         grid-area: score;
         position: static;
         display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: minmax(112px, 1fr) 44px minmax(112px, 1fr);
-        gap: 8px;
-        height: 100%;
-        min-height: 330px;
-        padding: 14px;
-        border-radius: 24px;
+        grid-template-columns: minmax(0, 1fr) 62px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        min-height: 0;
+        padding: 12px 14px 10px;
+        border-radius: 22px;
       }
 
       #gameScreen .player-panel {
-        min-height: 112px;
-        padding: 15px 14px;
-        border-radius: 19px;
+        min-height: 138px;
+        padding: 14px 18px 12px;
+        border-radius: 18px;
       }
 
       #gameScreen .player-name {
-        font-size: 17px;
+        font-size: 19px;
       }
 
       #gameScreen .player-score {
-        margin: 5px 0 3px;
-        font-size: clamp(42px, 4vw, 50px);
+        margin: 8px 0 4px;
+        font-size: clamp(44px, 4.5vw, 54px);
       }
 
       #gameScreen .player-progress {
-        margin-top: 3px;
-        font-size: 12px;
+        margin-top: 4px;
+        font-size: 13px;
       }
 
       #gameScreen .versus {
-        width: 44px;
-        height: 44px;
-        margin: 0 auto;
-        border-width: 4px;
-        font-size: 13px;
+        align-self: center;
+        width: 62px;
+        height: 62px;
+        margin: 0;
+        border-width: 5px;
+        font-size: 16px;
       }
 
       #gameScreen .game-info {
         grid-area: meta;
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 8px;
-        height: 100%;
-        min-height: 164px;
-        padding: 10px;
-        border-radius: 20px;
+        margin-top: -38px;
+        padding: 8px 10px;
+        border-radius: 18px;
       }
 
       #gameScreen .info-box,
       #gameScreen .timer-pill {
-        min-height: 46px;
-        padding: 9px 12px;
+        min-height: 50px;
+        padding: 8px 14px;
         border-radius: 13px;
         font-size: 14px;
+        justify-content: center;
+        text-align: center;
       }
 
       #gameScreen .picture-box {
         grid-area: puzzle;
         width: 100%;
-        min-height: 508px;
-        height: 100%;
-        padding: 58px 28px 30px;
-        border-radius: 26px;
+        min-height: 540px;
+        padding: 62px 28px 34px;
+        border-radius: 28px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #gameScreen .picture-box::before {
+        display: none;
       }
 
       #gameScreen .puzzle-image-crop {
-        width: min(76%, 590px);
-        max-width: 590px;
-        max-height: 410px;
+        width: min(68%, 640px);
+        max-width: 640px;
+        max-height: 420px;
         border-radius: 22px;
       }
 
@@ -2619,26 +2668,16 @@
 
       #gameScreen .picture,
       #gameScreen .emoji-picture {
-        font-size: clamp(82px, 8vw, 116px);
+        font-size: clamp(82px, 8vw, 118px);
       }
 
       #gameScreen .plus-sign {
         font-size: 56px;
       }
 
-      #gameScreen .question-text,
-      #gameScreen .answer-input,
-      #gameScreen .message,
-      #gameScreen .button-group,
-      #gameScreen .progress-bar {
-        grid-column: 1 / -1;
-        width: 100%;
-        min-width: 0;
-      }
-
       #gameScreen .question-text {
         grid-area: question;
-        padding: 3px 4px 0;
+        padding: 2px 4px 0;
         text-align: center;
         font-size: 15px;
       }
@@ -2679,22 +2718,90 @@
     }
 
     @media (min-width: 1280px) {
-      #gameScreen.active {
-        grid-template-columns: 300px minmax(0, 1fr);
-        column-gap: 24px;
-      }
-
       #gameScreen .picture-box {
-        min-height: 530px;
+        min-height: 560px;
       }
 
       #gameScreen .puzzle-image-crop {
-        width: min(72%, 640px);
-        max-width: 640px;
+        width: min(62%, 680px);
+        max-width: 680px;
       }
     }
-  </style>
+  
 
+    /* Ẩn nhãn trên vùng hình ở mọi kích thước màn hình. */
+    #gameScreen .picture-box::before {
+      display: none !important;
+    }
+</style>
+
+
+  <style id="icon-beautify-v2">
+    .back-home {
+      border-color: rgba(255,255,255,.28) !important;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.22), transparent 38%),
+        linear-gradient(145deg, #1d4ed8, #6d28d9) !important;
+      box-shadow:
+        0 14px 30px rgba(29, 78, 216, .24),
+        0 10px 24px rgba(109, 40, 217, .24),
+        inset 0 1px 0 rgba(255,255,255,.26) !important;
+    }
+
+    .back-home::after {
+      inset: 3px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.04));
+    }
+
+    .back-home svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2.8;
+    }
+
+    .back-home:hover {
+      box-shadow: 0 16px 34px rgba(29, 78, 216, .28), 0 12px 28px rgba(109, 40, 217, .28) !important;
+    }
+
+    .setup-action-btn {
+      letter-spacing: .01em;
+    }
+
+    .setup-action-btn .btn-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      border-radius: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .setup-action-btn .btn-icon svg {
+      width: 19px;
+      height: 19px;
+      stroke-width: 2.35;
+    }
+
+    .setup-back .btn-icon {
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .setup-next .btn-icon {
+      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08));
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .setup-next .btn-icon svg {
+      stroke-width: 2.15;
+    }
+
+    .setup-action-btn:hover .btn-icon {
+      transform: scale(1.06);
+      box-shadow: 0 8px 18px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.18);
+    }
+  </style>
 </head>
 
 <body>
@@ -2702,8 +2809,8 @@
     <header class="topbar">
       <a class="back-home" href="game.html" aria-label="Quay lại game.html" title="Quay lại">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M14.5 5 7.5 12l7 7"></path>
-          <path d="M8 12h10"></path>
+          <path d="M15.25 6.75 10 12l5.25 5.25"></path>
+          <path d="M10.75 12H19"></path>
         </svg>
       </a>
       <h1>Đuổi Hình Bắt Chữ</h1>
@@ -2760,7 +2867,7 @@
             <button id="machineBattleTypeCard" class="match-type-card selected" onclick="selectMachineMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Mỗi câu có 40 giây suy nghĩ. Bạn hoặc máy trả lời đúng trước sẽ nhận 10 điểm.</p></button>
             <button id="machineRaceTypeCard" class="match-type-card" onclick="selectMachineMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút. Bạn giải câu hỏi liên tục, máy sẽ tự tích lũy điểm theo tiến độ.</p></button>
           </div>
-          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="backToModeScreen()">← Quay lại</button><button class="setup-action-btn setup-next" onclick="startMachineConfiguredMode()">Vào trận →</button></div>
+          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="backToModeScreen()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button class="setup-action-btn setup-next" onclick="startMachineConfiguredMode()"><span class="btn-label">Vào trận</span><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span></button></div>
         </div>
 
         <div id="roomSetupStep">
@@ -2779,7 +2886,7 @@
           </div>
           <div id="connectionStatus" class="connection-status"></div>
           <p class="setup-note">Điện thoại và máy tính có thể chơi chung qua Internet, kể cả khi khác Wi-Fi. Hai thiết bị mở cùng phiên bản trò chơi; người tạo phòng gửi mã 6 ký tự, người còn lại nhập mã rồi nhấn “Tiếp tục”.</p>
-          <div class="setup-actions"><button class="setup-action-btn setup-back" type="button" onclick="backToModeScreen()">← Quay lại</button><button id="continueRoomButton" class="setup-action-btn setup-next" type="button" onclick="continueRoomSetup()">Tiếp tục →</button></div>
+          <div class="setup-actions"><button class="setup-action-btn setup-back" type="button" onclick="backToModeScreen()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button id="continueRoomButton" class="setup-action-btn setup-next" type="button" onclick="continueRoomSetup()"><span class="btn-label">Tiếp tục</span><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h12"></path><path d="m12 5 7 7-7 7"></path></svg></span></button></div>
         </div>
 
         <div id="matchTypeStep" style="display:none">
@@ -2788,7 +2895,7 @@
             <button id="battleTypeCard" class="match-type-card selected" onclick="selectMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Mỗi câu có 40 giây suy nghĩ. Người trả lời đúng đầu tiên được 10 điểm.</p></button>
             <button id="raceTypeCard" class="match-type-card" onclick="selectMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút; người hoàn thành 20 câu trước sẽ chiến thắng.</p></button>
           </div>
-          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="showRoomStep()">← Quay lại</button><button id="startOnlineMatchButton" class="setup-action-btn setup-next" onclick="startSelectedOnlineMatch()">Vào trận →</button></div>
+          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="showRoomStep()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button id="startOnlineMatchButton" class="setup-action-btn setup-next" onclick="startSelectedOnlineMatch()"><span class="btn-label">Vào trận</span><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span></button></div>
         </div>
       </div>
     </section>
@@ -4377,6 +4484,7 @@
 
     (function protectPage() {
       const notice = document.getElementById("sourceBlockNotice");
+      const desktopCopyEnabled = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       let noticeTimer = null;
 
       function showBlockedNotice(message) {
@@ -4395,34 +4503,57 @@
         return tagName === "INPUT" || tagName === "TEXTAREA" || element.isContentEditable;
       }
 
-      document.addEventListener("contextmenu", function (event) {
+      function blockSourceAction(event, message) {
         event.preventDefault();
-        showBlockedNotice("Đã khóa menu chuột phải.");
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === "function") {
+          event.stopImmediatePropagation();
+        }
+        showBlockedNotice(message || "Thao tác xem mã nguồn đã bị khóa.");
+        return false;
+      }
+
+      document.addEventListener("contextmenu", function (event) {
+        blockSourceAction(event, "Đã khóa menu chuột phải để hạn chế xem mã nguồn.");
+      }, { capture: true });
+
+      document.addEventListener("auxclick", function (event) {
+        if (event.button === 2) {
+          blockSourceAction(event, "Đã khóa menu chuột phải để hạn chế xem mã nguồn.");
+        }
+      }, { capture: true });
+
+      document.addEventListener("mousedown", function (event) {
+        if (event.button === 2) {
+          blockSourceAction(event, "Đã khóa menu chuột phải để hạn chế xem mã nguồn.");
+        }
       }, { capture: true });
 
       document.addEventListener("dragstart", function (event) {
+        if (desktopCopyEnabled) return;
         event.preventDefault();
       }, { capture: true });
 
       document.addEventListener("keydown", function (event) {
         const key = String(event.key || "").toLowerCase();
+        const code = String(event.code || "").toLowerCase();
         const ctrlOrMeta = event.ctrlKey || event.metaKey;
+        const shift = event.shiftKey;
+        const alt = event.altKey;
 
-        const blocked =
-          event.key === "F12" ||
-          (ctrlOrMeta && key === "u") ||
-          (ctrlOrMeta && key === "s") ||
-          (ctrlOrMeta && event.shiftKey && ["i", "j", "c", "k"].includes(key));
+        const isF12 = event.key === "F12" || event.keyCode === 123 || code === "f12";
+        const isViewSource = ctrlOrMeta && key === "u";
+        const isSavePage = ctrlOrMeta && key === "s";
+        const isDevToolsWindows = ctrlOrMeta && shift && ["i", "j", "c", "k", "p"].includes(key);
+        const isDevToolsMac = event.metaKey && alt && ["i", "j", "c", "u"].includes(key);
+        const isContextKeyboard = event.key === "ContextMenu" || (shift && key === "f10");
 
-        if (blocked) {
-          event.preventDefault();
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-          showBlockedNotice("Phím tắt xem mã nguồn đã bị khóa.");
-          return false;
+        if (isF12 || isViewSource || isSavePage || isDevToolsWindows || isDevToolsMac || isContextKeyboard) {
+          return blockSourceAction(event, "Phím tắt xem mã nguồn đã bị khóa.");
         }
 
         if (
+          !desktopCopyEnabled &&
           ctrlOrMeta &&
           ["c", "x", "a"].includes(key) &&
           !isEditableElement(document.activeElement)
@@ -4433,6 +4564,7 @@
       }, { capture: true });
 
       document.addEventListener("copy", function (event) {
+        if (desktopCopyEnabled) return;
         if (!isEditableElement(document.activeElement)) {
           event.preventDefault();
           showBlockedNotice("Đã khóa sao chép nội dung.");
@@ -4440,6 +4572,7 @@
       }, { capture: true });
 
       document.addEventListener("selectstart", function (event) {
+        if (desktopCopyEnabled) return;
         if (!isEditableElement(event.target)) {
           event.preventDefault();
         }
