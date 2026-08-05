@@ -2802,6 +2802,131 @@
       box-shadow: 0 8px 18px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.18);
     }
   </style>
+
+
+  <style id="header-action-final-fix">
+    /* Giữ tiêu đề ở chính giữa thật sự trên desktop, tablet và điện thoại. */
+    .topbar {
+      position: relative !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-height: 76px !important;
+      padding: 0 !important;
+    }
+
+    .topbar h1 {
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 68px !important;
+      text-align: center !important;
+      line-height: 1.12 !important;
+    }
+
+    /* Nút quay lại nằm bên trái tiêu đề, dạng tròn hiện đại và dễ bấm. */
+    .back-home {
+      position: absolute !important;
+      left: 0 !important;
+      top: 50% !important;
+      width: 52px !important;
+      height: 52px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transform: translateY(-50%) !important;
+      border: 1px solid rgba(255,255,255,.34) !important;
+      border-radius: 50% !important;
+      background:
+        radial-gradient(circle at 32% 22%, rgba(255,255,255,.34), transparent 34%),
+        linear-gradient(145deg, #2563eb 0%, #6d28d9 58%, #9333ea 100%) !important;
+      box-shadow:
+        0 12px 28px rgba(37,99,235,.30),
+        0 8px 22px rgba(109,40,217,.26),
+        inset 0 1px 0 rgba(255,255,255,.32) !important;
+    }
+
+    .back-home::after {
+      inset: 4px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,0) 58%) !important;
+    }
+
+    .back-home svg {
+      width: 25px !important;
+      height: 25px !important;
+      stroke-width: 2.55 !important;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.22));
+    }
+
+    .back-home:hover {
+      transform: translateY(-50%) translateX(-2px) scale(1.05) !important;
+      box-shadow:
+        0 15px 34px rgba(37,99,235,.36),
+        0 10px 26px rgba(109,40,217,.30),
+        inset 0 1px 0 rgba(255,255,255,.34) !important;
+    }
+
+    .back-home:active {
+      transform: translateY(-50%) scale(.94) !important;
+    }
+
+    /* Căn giữa câu mô tả dưới tiêu đề ở mọi kích thước màn hình. */
+    .subtitle {
+      width: 100% !important;
+      max-width: 760px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      text-align: center !important;
+    }
+
+    /* Icon của nút Vào trận luôn nằm trước phần chữ. */
+    .setup-next {
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 11px !important;
+    }
+
+    .setup-next .btn-icon {
+      order: -1 !important;
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        min-height: 66px !important;
+      }
+
+      .topbar h1 {
+        padding: 0 54px !important;
+        font-size: clamp(23px, 7.5vw, 32px) !important;
+      }
+
+      .back-home {
+        width: 46px !important;
+        height: 46px !important;
+      }
+
+      .back-home svg {
+        width: 22px !important;
+        height: 22px !important;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .topbar h1 {
+        padding: 0 47px !important;
+        font-size: 21px !important;
+      }
+
+      .back-home {
+        width: 40px !important;
+        height: 40px !important;
+      }
+    }
+  </style>
+
 </head>
 
 <body>
@@ -2809,13 +2934,13 @@
     <header class="topbar">
       <a class="back-home" href="game.html" aria-label="Quay lại game.html" title="Quay lại">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M15.25 6.75 10 12l5.25 5.25"></path>
-          <path d="M10.75 12H19"></path>
+          <path d="M19 12H5"></path>
+          <path d="m11 18-6-6 6-6"></path>
         </svg>
       </a>
       <h1>Đuổi Hình Bắt Chữ</h1>
     </header>
-    <p class="subtitle">Giải mã hình ảnh, chinh phục thử thách và so tài cùng bạn bè trong một trải nghiệm hoàn toàn mới.</p>
+    <p class="subtitle">Giải mã hình ảnh và tranh tài cùng bạn bè trong một trải nghiệm mới mẻ, hấp dẫn.</p>
 
     <section id="modeScreen" class="screen active">
       <h2 class="mode-heading">Chọn chế độ chơi</h2>
@@ -2867,7 +2992,7 @@
             <button id="machineBattleTypeCard" class="match-type-card selected" onclick="selectMachineMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Mỗi câu có 40 giây suy nghĩ. Bạn hoặc máy trả lời đúng trước sẽ nhận 10 điểm.</p></button>
             <button id="machineRaceTypeCard" class="match-type-card" onclick="selectMachineMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút. Bạn giải câu hỏi liên tục, máy sẽ tự tích lũy điểm theo tiến độ.</p></button>
           </div>
-          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="backToModeScreen()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button class="setup-action-btn setup-next" onclick="startMachineConfiguredMode()"><span class="btn-label">Vào trận</span><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span></button></div>
+          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="backToModeScreen()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button class="setup-action-btn setup-next" onclick="startMachineConfiguredMode()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span><span class="btn-label">Vào trận</span></button></div>
         </div>
 
         <div id="roomSetupStep">
@@ -2895,7 +3020,7 @@
             <button id="battleTypeCard" class="match-type-card selected" onclick="selectMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Mỗi câu có 40 giây suy nghĩ. Người trả lời đúng đầu tiên được 10 điểm.</p></button>
             <button id="raceTypeCard" class="match-type-card" onclick="selectMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút; người hoàn thành 20 câu trước sẽ chiến thắng.</p></button>
           </div>
-          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="showRoomStep()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button id="startOnlineMatchButton" class="setup-action-btn setup-next" onclick="startSelectedOnlineMatch()"><span class="btn-label">Vào trận</span><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span></button></div>
+          <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="showRoomStep()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button id="startOnlineMatchButton" class="setup-action-btn setup-next" onclick="startSelectedOnlineMatch()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span><span class="btn-label">Vào trận</span></button></div>
         </div>
       </div>
     </section>
