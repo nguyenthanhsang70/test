@@ -2927,6 +2927,1400 @@
     }
   </style>
 
+
+  <style id="game-guide-ui">
+    body.guide-modal-open {
+      overflow: hidden !important;
+    }
+
+    .game-guide-open {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      z-index: 3;
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      transform: translateY(-50%);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 15px;
+      color: #eef8ff;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(255,255,255,.16), transparent 38%),
+        linear-gradient(145deg, rgba(17, 94, 89, .96), rgba(8, 47, 73, .98));
+      box-shadow: 0 12px 25px rgba(2, 20, 35, .28), inset 0 1px 0 rgba(255,255,255,.14);
+      font-size: 14px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .game-guide-open:hover {
+      transform: translateY(-50%) translateY(-2px);
+      border-color: rgba(103,232,249,.52);
+      box-shadow: 0 16px 30px rgba(2, 20, 35, .36), 0 0 0 3px rgba(34,211,238,.08);
+    }
+
+    .game-guide-open:active {
+      transform: translateY(-50%) scale(.96);
+    }
+
+    .game-guide-open svg {
+      width: 21px;
+      height: 21px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .game-guide-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: max(18px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      background: rgba(2, 6, 23, .76);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+
+    .game-guide-modal.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .game-guide-dialog {
+      position: relative;
+      width: min(100%, 760px);
+      max-height: min(90dvh, 850px);
+      overflow-y: auto;
+      padding: clamp(20px, 4vw, 34px);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 28px;
+      color: #f8fafc;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(34,211,238,.16), transparent 30%),
+        radial-gradient(circle at 0% 100%, rgba(139,92,246,.14), transparent 34%),
+        linear-gradient(180deg, rgba(16,24,48,.99), rgba(6,11,27,.99));
+      box-shadow: 0 34px 90px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.07);
+      transform: translateY(18px) scale(.97);
+      transition: transform .28s ease;
+      scrollbar-width: thin;
+    }
+
+    .game-guide-modal.show .game-guide-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    .game-guide-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 14px;
+      color: #e2e8f0;
+      background: rgba(255,255,255,.06);
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .game-guide-heading {
+      padding-right: 52px;
+      margin-bottom: 22px;
+    }
+
+    .game-guide-badge {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 15px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 21px;
+      background: linear-gradient(145deg, rgba(34,211,238,.2), rgba(99,102,241,.17));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      font-size: 34px;
+    }
+
+    .game-guide-heading h2 {
+      margin: 0 0 7px;
+      color: #fff;
+      font-size: clamp(27px, 5vw, 38px);
+      line-height: 1.15;
+      letter-spacing: -.03em;
+    }
+
+    .game-guide-heading p {
+      margin: 0;
+      color: #9fb0ca;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .game-guide-steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .game-guide-step {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      background: rgba(255,255,255,.038);
+    }
+
+    .game-guide-step:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .game-guide-number {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #03131d;
+      background: linear-gradient(135deg, #67e8f9, #60a5fa);
+      font-size: 18px;
+      font-weight: 950;
+      box-shadow: 0 10px 20px rgba(34,211,238,.16);
+    }
+
+    .game-guide-step h3 {
+      margin: 1px 0 5px;
+      color: #f8fafc;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .game-guide-step p {
+      margin: 0;
+      color: #9fb0ca;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+
+    .game-guide-tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border: 1px solid rgba(251,191,36,.18);
+      border-radius: 16px;
+      color: #fde68a;
+      background: rgba(245,158,11,.08);
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+
+    .game-guide-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .game-guide-start {
+      min-height: 56px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 17px;
+      color: #04111f;
+      background: linear-gradient(135deg, #67e8f9, #60a5fa 55%, #8b5cf6);
+      box-shadow: 0 14px 30px rgba(59,130,246,.24);
+      font-size: 16px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .game-guide-start svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 720px) {
+      .game-guide-open {
+        width: 46px;
+        height: 46px;
+        min-height: 46px;
+        padding: 0;
+      }
+
+      .game-guide-open span {
+        display: none;
+      }
+
+      .game-guide-dialog {
+        border-radius: 23px;
+        padding: 22px 16px 18px;
+      }
+
+      .game-guide-close {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+      }
+
+      .game-guide-heading {
+        padding-right: 44px;
+      }
+
+      .game-guide-badge {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        font-size: 30px;
+      }
+
+      .game-guide-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .game-guide-step:last-child {
+        grid-column: auto;
+      }
+
+      .game-guide-actions,
+      .game-guide-start {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .game-guide-open {
+        width: 40px;
+        height: 40px;
+        min-height: 40px;
+        border-radius: 13px;
+      }
+
+      .game-guide-open svg {
+        width: 19px;
+        height: 19px;
+      }
+
+      .game-guide-step {
+        grid-template-columns: 38px minmax(0, 1fr);
+        padding: 13px;
+      }
+
+      .game-guide-number {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+      }
+    }
+  </style>
+
+
+
+  <style id="host-controls-match-type">
+    .guest-match-type-notice {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin: 18px 0 4px;
+      padding: 15px 17px;
+      border: 1px solid rgba(34, 211, 238, .24);
+      border-radius: 18px;
+      color: var(--text-2, #c8d7f0);
+      background: linear-gradient(135deg, rgba(34,211,238,.10), rgba(99,102,241,.10));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .guest-match-type-notice[hidden] { display: none !important; }
+
+    .guest-match-type-lock {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(255,255,255,.07);
+      font-size: 20px;
+    }
+
+    .guest-match-type-notice strong,
+    .guest-match-type-notice small { display: block; }
+
+    .guest-match-type-notice strong {
+      color: var(--text-1, #f8fbff);
+      font-size: 15px;
+      margin-bottom: 3px;
+    }
+
+    .guest-match-type-notice small {
+      color: var(--text-3, #8ca3c7);
+      line-height: 1.45;
+    }
+
+    /* Người tham gia vẫn nhìn thấy đầy đủ hai chế độ như chủ phòng,
+       nhưng toàn bộ thẻ đều bị khóa và không thể thay đổi lựa chọn. */
+    #matchTypeStep.guest-match-view .match-type-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: none;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    #matchTypeStep.guest-match-view .match-type-card,
+    #matchTypeStep.guest-match-view .match-type-card:disabled {
+      position: relative;
+      display: flex;
+      cursor: not-allowed;
+      pointer-events: none;
+      opacity: .56 !important;
+      transform: none !important;
+      filter: saturate(.62);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03) !important;
+    }
+
+    #matchTypeStep.guest-match-view .match-type-card::after {
+      content: "ĐÃ KHÓA";
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 7px 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 999px;
+      color: #94a3b8;
+      background: rgba(6,18,34,.76);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    #matchTypeStep.guest-match-view .match-type-card.selected,
+    #matchTypeStep.guest-match-view .match-type-card.selected:disabled {
+      opacity: 1 !important;
+      filter: none;
+      border-color: rgba(34,211,238,.82) !important;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(34,211,238,.17), transparent 35%),
+        linear-gradient(180deg, rgba(17,38,62,.98), rgba(9,18,35,.98)) !important;
+      box-shadow:
+        0 0 0 4px rgba(34,211,238,.11),
+        0 20px 38px rgba(2,10,25,.36),
+        inset 0 1px 0 rgba(255,255,255,.05) !important;
+    }
+
+    #matchTypeStep.guest-match-view .match-type-card.selected::after {
+      content: "✓ CHỦ PHÒNG ĐÃ CHỌN";
+      color: #d9fbff;
+      border-color: rgba(34,211,238,.35);
+      background: linear-gradient(135deg, rgba(8,145,178,.92), rgba(79,70,229,.92));
+      box-shadow: 0 8px 20px rgba(34,211,238,.16);
+    }
+
+    #matchTypeStep.guest-match-view.guest-match-pending .match-type-card,
+    #matchTypeStep.guest-match-view.guest-match-pending .match-type-card:disabled {
+      opacity: .62 !important;
+      filter: saturate(.72);
+    }
+
+    #matchTypeStep.guest-match-view.guest-match-pending .match-type-card::after {
+      content: "ĐANG CHỜ";
+      color: #cbd5e1;
+    }
+
+    #matchTypeStep.guest-match-view #startOnlineMatchButton {
+      cursor: wait;
+    }
+
+    @media (max-width: 680px) {
+      #matchTypeStep.guest-match-view .match-type-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      #matchTypeStep.guest-match-view .match-type-card::after {
+        position: static;
+        align-self: flex-start;
+        margin-bottom: 14px;
+        order: -1;
+      }
+    }
+  </style>
+
+
+
+  <style id="room-directory-redesign-v5">
+    .room-list-panel {
+      margin-top: 20px !important;
+      padding: clamp(15px, 2vw, 20px) !important;
+      border: 1px solid rgba(99, 102, 241, .32) !important;
+      border-radius: 22px !important;
+      background: rgba(5, 18, 35, .86) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035) !important;
+    }
+
+    .room-list-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px !important;
+      color: #f8fafc;
+      font-size: clamp(17px, 2.2vw, 20px) !important;
+      font-weight: 950 !important;
+    }
+
+    .room-list-heading {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .room-list-heading svg {
+      width: 21px;
+      height: 21px;
+      flex: 0 0 21px;
+      fill: currentColor;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+    }
+
+    .room-list-refresh {
+      width: 49px !important;
+      height: 49px !important;
+      min-width: 49px;
+      display: inline-grid !important;
+      place-items: center;
+      padding: 0;
+      border-radius: 15px !important;
+      color: #f8fafc !important;
+      background: linear-gradient(145deg, #1b2a3b, #111d2d) !important;
+    }
+
+    .room-list-refresh svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #roomList.room-list-grid {
+      display: grid;
+      gap: 13px;
+    }
+
+    .room-list-empty {
+      min-height: 112px !important;
+      border: 1px dashed rgba(96,165,250,.24) !important;
+      border-radius: 18px !important;
+      background: rgba(14, 31, 50, .6) !important;
+      color: #93a7c2 !important;
+      line-height: 1.65;
+    }
+
+    .room-directory-card {
+      padding: 17px 15px 14px;
+      border: 1px solid rgba(148, 163, 184, .17);
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(23, 37, 54, .98), rgba(17, 30, 46, .98));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+    }
+
+    .room-directory-card.is-own-room {
+      border-color: rgba(34, 211, 238, .32);
+      box-shadow: 0 0 0 1px rgba(34,211,238,.06) inset;
+    }
+
+    .room-directory-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .room-directory-host {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      color: #f8fafc;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .room-directory-host-icon {
+      color: #f8fafc;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .room-directory-host-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .room-directory-code {
+      flex: 0 0 auto;
+      color: #fde68a;
+      font-size: clamp(17px, 2.5vw, 21px);
+      font-weight: 950;
+      letter-spacing: .045em;
+      text-shadow: 0 4px 18px rgba(251,191,36,.13);
+    }
+
+    .room-directory-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 11px;
+    }
+
+    .room-directory-badge {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border: 1px solid rgba(56, 189, 248, .22);
+      border-radius: 999px;
+      color: #d9e7f8;
+      background: rgba(13, 41, 61, .9);
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .room-directory-badge.status-waiting {
+      border-color: rgba(34,197,94,.32);
+      color: #bbf7d0;
+      background: rgba(5, 78, 57, .55);
+    }
+
+    .room-directory-badge.status-full,
+    .room-directory-badge.status-playing {
+      border-color: rgba(244,114,182,.28);
+      color: #fbcfe8;
+      background: rgba(91,33,65,.45);
+    }
+
+    .room-directory-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #86efac;
+      box-shadow: 0 0 12px rgba(134,239,172,.36);
+    }
+
+    .room-directory-badge.status-full .room-directory-dot,
+    .room-directory-badge.status-playing .room-directory-dot {
+      background: #f9a8d4;
+      box-shadow: 0 0 12px rgba(249,168,212,.28);
+    }
+
+    .room-directory-join {
+      width: 100%;
+      min-height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 15px;
+      color: #fff;
+      background: linear-gradient(100deg, #159bbb 0%, #287bd1 52%, #4f46e5 100%);
+      box-shadow: 0 12px 24px rgba(37,99,235,.18);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .room-directory-join:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(37,99,235,.27);
+    }
+
+    .room-directory-join:disabled {
+      color: #91a3ba;
+      background: rgba(51, 65, 85, .6);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .room-list-footnote {
+      margin: 13px 1px 0;
+      color: #778ba7;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 520px) {
+      .room-list-panel { padding: 13px !important; }
+      .room-directory-card { padding: 15px 12px 12px; }
+      .room-directory-head { align-items: flex-start; }
+      .room-directory-host { max-width: calc(100% - 105px); }
+      .room-directory-badge { min-height: 31px; padding: 6px 8px; font-size: 11px; }
+      .room-list-footnote { font-size: 11px; }
+    }
+  </style>
+
+  <style id="puzzle-image-detail-upgrade">
+    /* Hiển thị hình câu đố lớn, rõ và có thể phóng to để xem chi tiết. */
+    #gameScreen .picture-box {
+      overflow: hidden;
+    }
+
+    #gameScreen .puzzle-image-crop {
+      position: relative;
+      width: min(92%, 940px) !important;
+      max-width: 940px !important;
+      max-height: 620px !important;
+      border: 1px solid rgba(125, 211, 252, .28) !important;
+      background: #eef5ff !important;
+      box-shadow:
+        0 26px 60px rgba(0, 0, 0, .42),
+        0 0 0 1px rgba(255, 255, 255, .06) inset !important;
+      cursor: zoom-in;
+      isolation: isolate;
+    }
+
+    #gameScreen .puzzle-image-crop::after {
+      content: "Bấm vào hình để phóng to";
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      z-index: 3;
+      padding: 8px 11px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(5, 12, 28, .76);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .02em;
+      pointer-events: none;
+      opacity: .92;
+    }
+
+    #gameScreen .puzzle-image {
+      width: 100% !important;
+      height: auto !important;
+      image-rendering: auto;
+      object-fit: contain;
+      filter: contrast(1.08) saturate(1.07) brightness(1.025);
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      cursor: zoom-in;
+    }
+
+    @media (min-width: 1025px) {
+      #gameScreen .picture-box {
+        min-height: 680px !important;
+        padding: 34px 28px !important;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      #gameScreen .puzzle-image-crop {
+        width: min(96%, 820px) !important;
+        max-height: 540px !important;
+      }
+    }
+
+    @media (max-width: 720px) {
+      #gameScreen .picture-box {
+        min-height: 360px !important;
+        padding: 14px 8px !important;
+      }
+
+      #gameScreen .puzzle-image-crop {
+        width: 100% !important;
+        max-height: 470px !important;
+        border-radius: 17px !important;
+      }
+
+      #gameScreen .puzzle-image-crop::after {
+        right: 8px;
+        top: 8px;
+        padding: 6px 9px;
+        font-size: 9px;
+      }
+    }
+
+    body.puzzle-zoom-open {
+      overflow: hidden !important;
+    }
+
+    .puzzle-zoom-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000002;
+      display: grid;
+      place-items: center;
+      padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      background: rgba(1, 5, 15, .94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+
+    .puzzle-zoom-modal.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .puzzle-zoom-dialog {
+      width: min(96vw, 1180px);
+      height: min(92dvh, 900px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(125, 211, 252, .24);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(15, 25, 48, .98), rgba(5, 10, 24, .98));
+      box-shadow: 0 35px 90px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.06);
+      transform: scale(.96);
+      transition: transform .2s ease;
+    }
+
+    .puzzle-zoom-modal.show .puzzle-zoom-dialog {
+      transform: scale(1);
+    }
+
+    .puzzle-zoom-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .puzzle-zoom-title {
+      color: #f8fafc;
+      font-size: clamp(16px, 2.5vw, 22px);
+      font-weight: 900;
+    }
+
+    .puzzle-zoom-close,
+    .puzzle-zoom-control {
+      min-width: 46px;
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      color: #fff;
+      background: rgba(255,255,255,.07);
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .puzzle-zoom-close:hover,
+    .puzzle-zoom-control:hover {
+      background: rgba(56, 189, 248, .18);
+      border-color: rgba(56, 189, 248, .42);
+    }
+
+    .puzzle-zoom-stage {
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      overscroll-behavior: contain;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        #07101f;
+      background-size: 26px 26px;
+      touch-action: pan-x pan-y pinch-zoom;
+    }
+
+    .puzzle-zoom-crop {
+      position: relative;
+      width: min(96%, 1080px);
+      overflow: hidden;
+      border-radius: 18px;
+      background: #eef5ff;
+      box-shadow: 0 24px 58px rgba(0,0,0,.48);
+    }
+
+    .puzzle-zoom-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: none;
+      transform: scale(1);
+      transform-origin: center top;
+      transition: transform .16s ease;
+      image-rendering: auto;
+      filter: contrast(1.09) saturate(1.08) brightness(1.03);
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .puzzle-zoom-tools {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .puzzle-zoom-value {
+      min-width: 74px;
+      color: #cbd5e1;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .puzzle-zoom-dialog {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+        border-radius: 18px;
+      }
+
+      .puzzle-zoom-stage {
+        border-radius: 14px;
+      }
+
+      .puzzle-zoom-crop {
+        width: 100%;
+        border-radius: 13px;
+      }
+    }
+  </style>
+
+
+  <style id="beautiful-result-screen-v1">
+    .result-screen {
+      --result-accent: #38bdf8;
+      --result-accent-2: #8b5cf6;
+      --result-glow: rgba(56, 189, 248, .22);
+      position: relative;
+      isolation: isolate;
+      width: min(100%, 940px);
+      min-height: 610px;
+      display: none;
+      align-content: center;
+      justify-items: center;
+      margin: 0 auto;
+      padding: clamp(28px, 5vw, 58px) clamp(18px, 5vw, 58px);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 50% 0%, var(--result-glow), transparent 38%),
+        linear-gradient(145deg, rgba(18, 27, 53, .98), rgba(6, 11, 27, .99));
+      box-shadow: 0 34px 90px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.07);
+      text-align: center;
+    }
+
+    .result-screen.active {
+      display: grid;
+      animation: resultReveal .55s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .result-screen.result-win {
+      --result-accent: #22d3ee;
+      --result-accent-2: #22c55e;
+      --result-glow: rgba(34, 197, 94, .23);
+    }
+
+    .result-screen.result-loss {
+      --result-accent: #fb7185;
+      --result-accent-2: #f59e0b;
+      --result-glow: rgba(244, 63, 94, .20);
+    }
+
+    .result-screen.result-draw {
+      --result-accent: #a78bfa;
+      --result-accent-2: #38bdf8;
+      --result-glow: rgba(139, 92, 246, .23);
+    }
+
+    .result-screen.result-wait {
+      --result-accent: #38bdf8;
+      --result-accent-2: #6366f1;
+      --result-glow: rgba(59, 130, 246, .20);
+    }
+
+    .result-screen::before,
+    .result-screen::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 310px;
+      height: 310px;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: .34;
+      pointer-events: none;
+    }
+
+    .result-screen::before {
+      top: -180px;
+      left: -110px;
+      background: var(--result-accent);
+    }
+
+    .result-screen::after {
+      right: -120px;
+      bottom: -190px;
+      background: var(--result-accent-2);
+    }
+
+    .result-confetti {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: .72;
+    }
+
+    .result-confetti span {
+      position: absolute;
+      width: 8px;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--result-accent), var(--result-accent-2));
+      box-shadow: 0 0 16px var(--result-glow);
+      animation: resultFloat 4.6s ease-in-out infinite;
+    }
+
+    .result-confetti span:nth-child(1) { left: 8%; top: 18%; transform: rotate(25deg); }
+    .result-confetti span:nth-child(2) { left: 18%; top: 71%; transform: rotate(-40deg); animation-delay: -.8s; }
+    .result-confetti span:nth-child(3) { right: 10%; top: 22%; transform: rotate(55deg); animation-delay: -1.5s; }
+    .result-confetti span:nth-child(4) { right: 18%; top: 74%; transform: rotate(-18deg); animation-delay: -2.2s; }
+    .result-confetti span:nth-child(5) { left: 36%; top: 8%; transform: rotate(75deg); animation-delay: -1.1s; }
+    .result-confetti span:nth-child(6) { right: 34%; bottom: 7%; transform: rotate(-68deg); animation-delay: -2.8s; }
+
+    .result-status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      margin-bottom: 20px;
+      padding: 7px 15px;
+      border: 1px solid color-mix(in srgb, var(--result-accent) 42%, transparent);
+      border-radius: 999px;
+      color: #eafcff;
+      background: color-mix(in srgb, var(--result-accent) 13%, rgba(7,12,28,.86));
+      box-shadow: 0 8px 24px var(--result-glow), inset 0 1px 0 rgba(255,255,255,.08);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .result-icon-wrap {
+      position: relative;
+      width: 132px;
+      height: 132px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+    }
+
+    .result-icon-wrap::before,
+    .result-icon-wrap::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--result-accent) 38%, transparent);
+    }
+
+    .result-icon-wrap::before { inset: 0; animation: resultPulse 2.4s ease-in-out infinite; }
+    .result-icon-wrap::after { inset: 13px; opacity: .58; }
+
+    .result-icon {
+      position: relative;
+      z-index: 2;
+      width: 96px;
+      height: 96px;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.24), transparent 34%),
+        linear-gradient(145deg, color-mix(in srgb, var(--result-accent) 82%, white 4%), color-mix(in srgb, var(--result-accent-2) 82%, #111827 8%));
+      box-shadow: 0 22px 45px var(--result-glow), inset 0 1px 0 rgba(255,255,255,.28);
+      font-size: 50px;
+      transform: rotate(-3deg);
+    }
+
+    .result-spark {
+      position: absolute;
+      z-index: 3;
+      color: #fff;
+      text-shadow: 0 0 15px var(--result-accent);
+      animation: resultSpark 2s ease-in-out infinite;
+    }
+
+    .result-spark.one { top: 7px; right: 5px; font-size: 22px; }
+    .result-spark.two { left: 3px; bottom: 22px; font-size: 15px; animation-delay: -.7s; }
+    .result-spark.three { right: 1px; bottom: 8px; font-size: 12px; animation-delay: -1.3s; }
+
+    .result-kicker {
+      margin: 0 0 7px;
+      color: var(--result-accent);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .result-screen h2 {
+      max-width: 760px;
+      margin: 0;
+      color: #fff;
+      font-size: clamp(32px, 6vw, 58px);
+      font-weight: 950;
+      line-height: 1.06;
+      letter-spacing: -.045em;
+      text-wrap: balance;
+      text-shadow: 0 14px 38px rgba(0,0,0,.34);
+    }
+
+    .result-message {
+      max-width: 680px;
+      margin: 14px auto 0;
+      color: #aebed8;
+      font-size: clamp(15px, 2.3vw, 18px);
+      line-height: 1.65;
+      text-wrap: balance;
+    }
+
+    .result-summary {
+      width: min(100%, 760px);
+      max-width: 760px;
+      margin: 28px auto 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      color: inherit;
+      background: transparent;
+      box-shadow: none;
+      font-size: inherit;
+      line-height: normal;
+    }
+
+    .result-score-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 104px minmax(0, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .result-player-card {
+      position: relative;
+      min-width: 0;
+      padding: 20px 17px 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 23px;
+      background: linear-gradient(180deg, rgba(26,37,67,.92), rgba(10,17,35,.94));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .result-player-card.is-winner {
+      border-color: color-mix(in srgb, var(--result-accent) 62%, transparent);
+      background:
+        radial-gradient(circle at 100% 0%, var(--result-glow), transparent 42%),
+        linear-gradient(180deg, rgba(25,47,69,.96), rgba(9,20,38,.98));
+      box-shadow: 0 18px 42px var(--result-glow), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .result-player-card.is-winner::before {
+      content: "NGƯỜI THẮNG";
+      position: absolute;
+      right: 11px;
+      top: 11px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #07111f;
+      background: linear-gradient(90deg, var(--result-accent), var(--result-accent-2));
+      font-size: 8px;
+      font-weight: 950;
+      letter-spacing: .08em;
+    }
+
+    .result-player-role {
+      display: block;
+      margin-bottom: 8px;
+      color: #7f93b2;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .result-player-name {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      color: #f8fafc;
+      font-size: clamp(17px, 3vw, 22px);
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result-player-value {
+      display: block;
+      margin-top: 12px;
+      color: #fff;
+      font-size: clamp(40px, 7vw, 58px);
+      font-weight: 950;
+      line-height: .95;
+      letter-spacing: -.045em;
+    }
+
+    .result-player-unit {
+      display: block;
+      margin-top: 7px;
+      color: #91a4c2;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .result-versus-box {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 8px;
+    }
+
+    .result-versus-box strong {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(145deg, rgba(56,189,248,.18), rgba(139,92,246,.19));
+      box-shadow: 0 15px 30px rgba(0,0,0,.28);
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    .result-versus-box small {
+      max-width: 100px;
+      color: var(--result-accent);
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.35;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .result-reason {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 14px;
+      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      color: #c8d6ec;
+      background: rgba(255,255,255,.035);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.5;
+    }
+
+    .result-reason::before {
+      content: "✦";
+      color: var(--result-accent);
+      font-size: 16px;
+    }
+
+    .result-wait-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      min-height: 104px;
+      padding: 20px;
+      border: 1px solid rgba(56,189,248,.22);
+      border-radius: 22px;
+      color: #e5f4ff;
+      background: linear-gradient(145deg, rgba(22,42,72,.86), rgba(9,18,38,.94));
+      box-shadow: 0 18px 40px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.05);
+      text-align: left;
+    }
+
+    .result-wait-spinner {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border: 4px solid rgba(255,255,255,.12);
+      border-top-color: var(--result-accent);
+      border-radius: 50%;
+      animation: resultSpin .9s linear infinite;
+    }
+
+    .result-wait-card strong { display: block; font-size: 18px; }
+    .result-wait-card small { display: block; margin-top: 5px; color: #91a4c2; line-height: 1.5; }
+
+    .result-actions {
+      width: min(100%, 620px);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .result-actions .primary-btn,
+    .result-actions .ghost-btn {
+      width: 100%;
+      min-height: 58px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 18px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .result-actions .primary-btn {
+      background: linear-gradient(135deg, var(--result-accent), var(--result-accent-2));
+      box-shadow: 0 16px 32px var(--result-glow);
+    }
+
+    .result-actions svg {
+      width: 19px;
+      height: 19px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @keyframes resultReveal {
+      from { opacity: 0; transform: translateY(18px) scale(.975); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes resultPulse {
+      0%, 100% { transform: scale(.96); opacity: .46; }
+      50% { transform: scale(1.07); opacity: .9; }
+    }
+
+    @keyframes resultSpark {
+      0%, 100% { transform: scale(.75) rotate(0); opacity: .45; }
+      50% { transform: scale(1.15) rotate(25deg); opacity: 1; }
+    }
+
+    @keyframes resultFloat {
+      0%, 100% { translate: 0 -5px; opacity: .35; }
+      50% { translate: 0 8px; opacity: .9; }
+    }
+
+    @keyframes resultSpin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 680px) {
+      .result-screen {
+        min-height: calc(100dvh - 28px);
+        padding: 28px 14px;
+        border-radius: 25px;
+      }
+
+      .result-icon-wrap { width: 110px; height: 110px; }
+      .result-icon { width: 82px; height: 82px; border-radius: 25px; font-size: 43px; }
+
+      .result-score-grid {
+        grid-template-columns: 1fr 52px 1fr;
+        gap: 7px;
+      }
+
+      .result-player-card {
+        padding: 17px 8px 15px;
+        border-radius: 18px;
+      }
+
+      .result-player-card.is-winner::before {
+        position: static;
+        display: inline-flex;
+        margin-bottom: 8px;
+      }
+
+      .result-player-name { font-size: 14px; }
+      .result-player-value { font-size: clamp(34px, 13vw, 46px); }
+      .result-player-unit { font-size: 10px; }
+      .result-versus-box strong { width: 44px; height: 44px; font-size: 12px; }
+      .result-versus-box small { display: none; }
+
+      .result-actions { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .result-screen.active,
+      .result-icon-wrap::before,
+      .result-spark,
+      .result-confetti span,
+      .result-wait-spinner { animation: none !important; }
+    }
+  </style>
+
 </head>
 
 <body>
@@ -2939,6 +4333,14 @@
         </svg>
       </a>
       <h1>Đuổi Hình Bắt Chữ</h1>
+      <button class="game-guide-open" type="button" onclick="openGameGuide()" aria-label="Mở hướng dẫn chơi" title="Hướng dẫn chơi">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M9.8 9a2.35 2.35 0 1 1 3.95 1.72c-.92.75-1.75 1.25-1.75 2.78"></path>
+          <path d="M12 17h.01"></path>
+        </svg>
+        <span>Hướng dẫn</span>
+      </button>
     </header>
     <p class="subtitle">Giải mã hình ảnh và tranh tài cùng bạn bè trong một trải nghiệm mới mẻ, hấp dẫn.</p>
 
@@ -3005,8 +4407,17 @@
               <div><label class="setup-label" for="roomCodeInput">Mã phòng</label><div class="code-row"><input id="roomCodeInput" class="setup-input" maxlength="6" placeholder="Mã phòng" readonly inputmode="none" autocomplete="off" aria-label="Mã phòng do hệ thống tự tạo"><button id="refreshRoomCodeButton" class="icon-action" type="button" onclick="refreshRoomCode()" title="Tạo mã phòng ngẫu nhiên mới">⟳</button></div></div>
             </div>
             <div class="room-list-panel">
-              <div class="room-list-title"><span>☷ DANH SÁCH PHÒNG</span><button class="icon-action" style="width:48px;height:48px" type="button" onclick="refreshRoomList(true)">⟳</button></div>
-              <div id="roomList" class="room-list-empty">Chưa có phòng nào đang chờ.<br>Hãy tạo phòng mới hoặc nhập mã phòng.</div>
+              <div class="room-list-title">
+                <span class="room-list-heading">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"></path><circle cx="4" cy="6" r="1.25"></circle><circle cx="4" cy="12" r="1.25"></circle><circle cx="4" cy="18" r="1.25"></circle></svg>
+                  DANH SÁCH PHÒNG
+                </span>
+                <button class="icon-action room-list-refresh" type="button" onclick="refreshRoomList(true)" title="Làm mới danh sách phòng" aria-label="Làm mới danh sách phòng">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5"></path><path d="M4 18v-5h5"></path><path d="M6.1 9a7 7 0 0 1 11.5-2.6L20 9"></path><path d="m4 15 2.4 2.6A7 7 0 0 0 17.9 15"></path></svg>
+                </button>
+              </div>
+              <div id="roomList" class="room-list-empty" aria-live="polite">Chưa có phòng nào đang chờ.<br>Hãy tạo phòng mới hoặc nhấn nút làm mới.</div>
+              <p class="room-list-footnote">Phòng sẽ biến mất ngay khi chủ phòng rời. Nếu chủ phòng mất mạng đột ngột, phòng sẽ tự ẩn sau 45 giây. Người tham gia rời trận sẽ trả phòng về trạng thái chờ 1/2.</p>
             </div>
           </div>
           <div id="connectionStatus" class="connection-status"></div>
@@ -3015,10 +4426,15 @@
         </div>
 
         <div id="matchTypeStep" style="display:none">
-          <h3 style="font-size:25px;margin-bottom:5px">Chọn kiểu thi đấu</h3><p class="setup-note">Chủ phòng chọn luật chơi cho cả hai người.</p>
-          <div class="match-type-grid">
-            <button id="battleTypeCard" class="match-type-card selected" onclick="selectMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Mỗi câu có 40 giây suy nghĩ. Người trả lời đúng đầu tiên được 10 điểm.</p></button>
-            <button id="raceTypeCard" class="match-type-card" onclick="selectMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút; người hoàn thành 20 câu trước sẽ chiến thắng.</p></button>
+          <h3 id="onlineMatchTypeTitle" style="font-size:25px;margin-bottom:5px">Chọn kiểu thi đấu</h3>
+          <p id="onlineMatchTypeNote" class="setup-note">Chủ phòng chọn luật chơi cho cả hai người.</p>
+          <div id="guestMatchTypeNotice" class="guest-match-type-notice" hidden>
+            <span class="guest-match-type-lock" aria-hidden="true">🔒</span>
+            <div><strong>Chế độ do chủ phòng quyết định</strong><small id="guestMatchTypeText">Đang nhận lựa chọn từ chủ phòng...</small></div>
+          </div>
+          <div id="onlineMatchTypeGrid" class="match-type-grid">
+            <button id="battleTypeCard" class="match-type-card selected" type="button" onclick="selectMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Mỗi câu có 40 giây suy nghĩ. Người trả lời đúng đầu tiên được 10 điểm.</p></button>
+            <button id="raceTypeCard" class="match-type-card" type="button" onclick="selectMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút; người hoàn thành 20 câu trước sẽ chiến thắng.</p></button>
           </div>
           <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="showRoomStep()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button id="startOnlineMatchButton" class="setup-action-btn setup-next" onclick="startSelectedOnlineMatch()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span><span class="btn-label">Vào trận</span></button></div>
         </div>
@@ -3084,21 +4500,101 @@
       </div>
     </section>
 
-    <section id="resultScreen" class="screen result-screen">
-      <div id="resultIcon" class="result-icon">🏆</div>
+    <section id="resultScreen" class="screen result-screen result-draw" aria-live="polite">
+      <div class="result-confetti" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div id="resultStatusBadge" class="result-status-badge">Kết quả trận đấu</div>
+
+      <div class="result-icon-wrap" aria-hidden="true">
+        <div id="resultIcon" class="result-icon">🏆</div>
+        <span class="result-spark one">✦</span>
+        <span class="result-spark two">✦</span>
+        <span class="result-spark three">✦</span>
+      </div>
+
+      <p id="resultKicker" class="result-kicker">Trận đấu đã kết thúc</p>
       <h2 id="resultTitle">Kết quả</h2>
+      <p id="resultMessage" class="result-message">Cùng xem kết quả chung cuộc.</p>
       <div id="resultSummary" class="result-summary"></div>
 
       <div class="result-actions">
         <button class="primary-btn" type="button" onclick="restartMatch()">
-          Chơi lại
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"></path><path d="M20 4v6h-6"></path></svg>
+          <span>Chơi lại</span>
         </button>
         <button class="ghost-btn" type="button" onclick="backToModeScreen()">
-          Chọn chế độ khác
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7"></path><path d="M5 10v10h14V10"></path></svg>
+          <span>Chọn chế độ khác</span>
         </button>
       </div>
     </section>
   </main>
+
+
+
+  <div id="gameGuideModal" class="game-guide-modal show" role="dialog" aria-modal="true" aria-labelledby="gameGuideTitle" aria-hidden="false" onclick="closeGameGuideFromBackdrop(event)">
+    <div class="game-guide-dialog" role="document">
+      <button id="gameGuideCloseButton" class="game-guide-close" type="button" onclick="closeGameGuide()" aria-label="Đóng hướng dẫn">×</button>
+
+      <div class="game-guide-heading">
+        <h2 id="gameGuideTitle">Hướng dẫn chơi</h2>
+        <p>Quan sát hình ảnh, suy luận đáp án và ghi điểm nhanh hơn đối thủ.</p>
+      </div>
+
+      <div class="game-guide-steps">
+        <article class="game-guide-step">
+          <span class="game-guide-number">1</span>
+          <div>
+            <h3>Chọn chế độ</h3>
+            <p>Chọn chơi với Máy hoặc chơi Online cùng bạn bè qua mã phòng.</p>
+          </div>
+        </article>
+
+        <article class="game-guide-step">
+          <span class="game-guide-number">2</span>
+          <div>
+            <h3>Thiết lập trận</h3>
+            <p>Nhập tên người chơi, sau đó chọn Đối kháng hoặc Đua tốc độ.</p>
+          </div>
+        </article>
+
+        <article class="game-guide-step">
+          <span class="game-guide-number">3</span>
+          <div>
+            <h3>Giải mã hình ảnh</h3>
+            <p>Quan sát các hình gợi ý, nhập đáp án rồi nhấn “Kiểm tra”. Có thể viết có dấu hoặc không dấu.</p>
+          </div>
+        </article>
+
+        <article class="game-guide-step">
+          <span class="game-guide-number">4</span>
+          <div>
+            <h3>Ghi điểm</h3>
+            <p>Trả lời đúng được 10 điểm. Sau khi dùng gợi ý, câu trả lời đúng được 5 điểm.</p>
+          </div>
+        </article>
+
+        <article class="game-guide-step">
+          <span class="game-guide-number">5</span>
+          <div>
+            <h3>Luật thời gian</h3>
+            <p>Đối kháng có 40 giây cho mỗi câu. Đua tốc độ có 8 phút để hoàn thành tối đa 20 câu.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="game-guide-tip"><span aria-hidden="true">💡</span><span>Mẹo: dựa vào số từ, số chữ cái và chữ cái đầu trong phần gợi ý để tìm đáp án nhanh hơn.</span></div>
+
+      <div class="game-guide-actions">
+        <button class="game-guide-start" type="button" onclick="closeGameGuide()">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m10 8.8 5.4 3.2-5.4 3.2V8.8Z"></path></svg>
+          <span>Đã hiểu, bắt đầu</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div id="sourceBlockNotice" class="source-block-notice" role="status" aria-live="polite">
     Thao tác này đã bị khóa.
@@ -3116,6 +4612,7 @@
     let answered = false;
     let gameMode = "";
     let onlineMatchType = "battle";
+    let guestMatchTypeKnown = false;
     let roundTimer = null;
     let matchTimer = null;
     let timeRemaining = 0;
@@ -3394,6 +4891,14 @@
           relayConnected = true;
           const remoteName = String(remote.name || "Người chơi").trim().slice(0,24);
           if(remoteName) opponentName = remoteName;
+          if(!isHost && (remote.matchType === "battle" || remote.matchType === "race")){
+            const receivedType = remote.matchType === "race" ? "race" : "battle";
+            guestMatchTypeKnown = true;
+            if(onlineMatchType !== receivedType){
+              onlineMatchType = receivedType;
+            }
+            updateOnlineMatchTypeUI();
+          }
 
           if(firstConnection){
             setConnectionStatus("Đã kết nối đa thiết bị với " + opponentName + ".", "success");
@@ -3673,6 +5178,10 @@
       const normalized = normalizeRoomCode(code);
       if(normalized.length !== 6 || joinInProgress) return;
 
+      const listedRoom = activeRooms().find(function(room){ return room.code === normalized; });
+      guestMatchTypeKnown = Boolean(listedRoom);
+      if(listedRoom) onlineMatchType = listedRoom.matchType === "race" ? "race" : "battle";
+
       document.getElementById("roomActionSelect").value = "join";
       toggleRoomAction();
       document.getElementById("roomCodeInput").value = normalized;
@@ -3701,34 +5210,99 @@
       document.getElementById("stepBar1").className="active";document.getElementById("stepBar2").className="";document.getElementById("stepBar3").className="";
       document.getElementById("setupSubtitle").textContent="Nhập thông tin người chơi và tạo hoặc tham gia phòng.";
     }
+    function getOnlineMatchTypeLabel(type){
+      return type === "race" ? "Đua tốc độ" : "Đối kháng";
+    }
+
+    function setOnlineStartButton(label, disabled, waiting){
+      const startButton = document.getElementById("startOnlineMatchButton");
+      const icon = waiting
+        ? '<span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3h8"></path><path d="M8 21h8"></path><path d="M9 3c0 4 6 4 6 9s-6 5-6 9"></path><path d="M15 3c0 4-6 4-6 9s6 5 6 9"></path></svg></span>'
+        : '<span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span>';
+      startButton.innerHTML = icon + '<span class="btn-label">' + escapeHtml(label) + '</span>';
+      startButton.disabled = Boolean(disabled);
+    }
+
+    function updateOnlineMatchTypeUI(){
+      onlineMatchType = onlineMatchType === "race" ? "race" : "battle";
+      const step = document.getElementById("matchTypeStep");
+      const title = document.getElementById("onlineMatchTypeTitle");
+      const note = document.getElementById("onlineMatchTypeNote");
+      const notice = document.getElementById("guestMatchTypeNotice");
+      const noticeText = document.getElementById("guestMatchTypeText");
+      const battleCard = document.getElementById("battleTypeCard");
+      const raceCard = document.getElementById("raceTypeCard");
+      const label = getOnlineMatchTypeLabel(onlineMatchType);
+
+      const showSelectedChoice = isHost || guestMatchTypeKnown;
+      battleCard.classList.toggle("selected", showSelectedChoice && onlineMatchType === "battle");
+      raceCard.classList.toggle("selected", showSelectedChoice && onlineMatchType === "race");
+      battleCard.disabled = !isHost;
+      raceCard.disabled = !isHost;
+      battleCard.setAttribute("aria-disabled", String(!isHost));
+      raceCard.setAttribute("aria-disabled", String(!isHost));
+
+      if(isHost){
+        step.classList.remove("guest-match-view", "guest-match-pending");
+        title.textContent = "Chọn kiểu thi đấu";
+        note.textContent = "Bạn là chủ phòng. Lựa chọn này sẽ tự động áp dụng cho người tham gia.";
+        notice.hidden = true;
+      }else{
+        step.classList.add("guest-match-view");
+        step.classList.toggle("guest-match-pending", !guestMatchTypeKnown);
+        title.textContent = "Kiểu thi đấu của phòng";
+        note.textContent = "Bạn có thể xem cả hai chế độ nhưng không thể thay đổi. Thẻ có dấu ✓ là lựa chọn của chủ phòng.";
+        notice.hidden = false;
+        noticeText.textContent = guestMatchTypeKnown
+          ? "Chủ phòng đã chọn: " + label + ". Hãy chờ chủ phòng bắt đầu trận."
+          : "Đang nhận lựa chọn chế độ từ chủ phòng...";
+      }
+    }
+
     function showMatchTypeStep(){
       document.getElementById("machineSetupStep").style.display="none";
       document.getElementById("roomSetupStep").style.display="none";
       document.getElementById("matchTypeStep").style.display="block";
       document.getElementById("stepBar1").className="done";
       document.getElementById("stepBar2").className="active";
+      updateOnlineMatchTypeUI();
 
-      const startButton = document.getElementById("startOnlineMatchButton");
       if(isHost){
         const roomCreated = Boolean(currentRoomCode && (peer || relayActive));
         document.getElementById("setupSubtitle").textContent = roomCreated
-          ? "Phòng đã được tạo. Điện thoại và máy tính đều có thể tham gia bằng mã phòng."
-          : "Chọn luật chơi, sau đó nhấn Tạo phòng.";
-        startButton.disabled = false;
-        startButton.textContent = roomCreated
-          ? (isOnlineConnected() ? "Bắt đầu trận →" : "Đang chờ người chơi...")
-          : "Tạo phòng →";
-        if(roomCreated && !isOnlineConnected()) startButton.disabled = true;
+          ? "Phòng đã được tạo. Chế độ " + getOnlineMatchTypeLabel(onlineMatchType) + " sẽ áp dụng cho cả hai người chơi."
+          : "Chọn luật chơi, sau đó tạo phòng để mời người chơi khác.";
+        if(!roomCreated){
+          setOnlineStartButton("Tạo phòng", false, false);
+        }else if(isOnlineConnected()){
+          setOnlineStartButton("Bắt đầu trận", false, false);
+        }else{
+          setOnlineStartButton("Đang chờ người chơi...", true, true);
+        }
       }else{
         const connected = isOnlineConnected();
-        document.getElementById("setupSubtitle").textContent = connected
-          ? "Đã vào phòng " + currentRoomCode + ". Chờ chủ phòng bắt đầu trận đấu."
-          : "Đang kết nối vào phòng " + currentRoomCode + " trên thiết bị này...";
-        startButton.textContent = connected ? "Chờ chủ phòng..." : "Đang kết nối...";
-        startButton.disabled=true;
+        document.getElementById("setupSubtitle").textContent = connected && guestMatchTypeKnown
+          ? "Đã vào phòng " + currentRoomCode + ". Chế độ " + getOnlineMatchTypeLabel(onlineMatchType) + " do chủ phòng lựa chọn."
+          : "Đang kết nối vào phòng " + currentRoomCode + " và nhận cấu hình từ chủ phòng...";
+        setOnlineStartButton(
+          connected && guestMatchTypeKnown ? "Chờ chủ phòng bắt đầu" : "Đang nhận cấu hình...",
+          true,
+          true
+        );
       }
     }
-    function selectMatchType(type){ onlineMatchType=type;document.getElementById("battleTypeCard").classList.toggle("selected",type==="battle");document.getElementById("raceTypeCard").classList.toggle("selected",type==="race"); }
+
+    function selectMatchType(type){
+      if(!isHost) return;
+      onlineMatchType = type === "race" ? "race" : "battle";
+      updateOnlineMatchTypeUI();
+      if(currentRoomCode){
+        publishCurrentRoom(isOnlineConnected() ? "full" : "waiting", isOnlineConnected() ? 2 : 1);
+        publishRelayState();
+        if(isOnlineConnected()) onlineSend({type:"matchType", matchType:onlineMatchType});
+      }
+      showMatchTypeStep();
+    }
     function selectMachineMatchType(type){
       machineMatchType=type;
       document.getElementById("machineBattleTypeCard").classList.toggle("selected",type==="battle");
@@ -3745,6 +5319,7 @@
         // Chỉ chuyển sang bước chọn luật; chưa tạo và chưa đăng phòng.
         closePeerConnection();
         isHost=true;
+        guestMatchTypeKnown=false;
         currentRoomCode="";
         refreshRoomCode();
         setConnectionStatus("","");
@@ -3908,6 +5483,9 @@
       currentSetupMode = "online";
       isHost = false;
       currentRoomCode = code;
+      const listedRoom = activeRooms().find(function(room){ return room.code === code; });
+      guestMatchTypeKnown = Boolean(listedRoom);
+      if(listedRoom) onlineMatchType = listedRoom.matchType === "race" ? "race" : "battle";
       setConnectionStatus("Đang kết nối điện thoại và máy tính vào phòng " + code + "...", "");
       startCloudRelay("guest");
       showMatchTypeStep();
@@ -3992,12 +5570,25 @@
         opponentName = String(data.name || "Người chơi").slice(0, 24);
         showMatchTypeStep();
         setConnectionStatus("Đã kết nối với " + opponentName + ".", "success");
+        if(isHost){
+          onlineSend({type:"matchType", matchType:onlineMatchType});
+        }
+        return;
+      }
+
+      if (data.type === "matchType" && !isHost) {
+        onlineMatchType = data.matchType === "race" ? "race" : "battle";
+        guestMatchTypeKnown = true;
+        updateOnlineMatchTypeUI();
+        showMatchTypeStep();
+        setConnectionStatus("Chủ phòng đã chọn chế độ " + getOnlineMatchTypeLabel(onlineMatchType) + ".", "success");
         return;
       }
 
       if (data.type === "start" && !isHost) {
         opponentName = String(data.hostName || "Chủ phòng").slice(0, 24);
-        onlineMatchType = data.matchType || "battle";
+        onlineMatchType = data.matchType === "race" ? "race" : "battle";
+        guestMatchTypeKnown = true;
         questions = data.order.map(function (index) { return originalQuestions[index]; });
         startMatch();
         return;
@@ -4015,10 +5606,20 @@
       if (data.type === "raceWin") {
         clearGameTimers();
         opponentFinished = true;
-        document.getElementById("resultIcon").textContent = "👏";
-        document.getElementById("resultTitle").textContent = opponentName + " chiến thắng!";
-        document.getElementById("resultSummary").innerHTML = escapeHtml(opponentName) + " đã hoàn thành trước trong chế độ đua tốc độ.";
-        switchScreen(resultScreen);
+        showBeautifulResult({
+          state: "loss",
+          winner: "opponent",
+          icon: "🏁",
+          badge: "Đối thủ về đích",
+          kicker: "Đua tốc độ đã kết thúc",
+          title: opponentName + " chiến thắng!",
+          message: "Đối thủ đã hoàn thành toàn bộ câu hỏi trước bạn.",
+          localValue: Math.min(currentQuestionIndex + 1, questions.length),
+          opponentValue: questions.length,
+          unit: "câu hoàn thành",
+          middleText: "VỀ ĐÍCH TRƯỚC",
+          reason: escapeHtml(opponentName) + " hoàn thành " + questions.length + "/" + questions.length + " câu trước."
+        });
         return;
       }
       if (data.type === "score") {
@@ -4042,6 +5643,8 @@
 
     function resetOnlineLobby() {
       closePeerConnection();
+      onlineMatchType = "battle";
+      guestMatchTypeKnown = false;
       currentRoomCode = "";
       const oldPanel=document.getElementById("roomPanel"); if(oldPanel) oldPanel.classList.remove("show");
       const oldDisplay=document.getElementById("roomCodeDisplay"); if(oldDisplay) oldDisplay.textContent="------";
@@ -4415,6 +6018,61 @@
       }
     }
 
+    function showBeautifulResult(options) {
+      const config = options || {};
+      const state = ["win", "loss", "draw", "wait"].includes(config.state) ? config.state : "draw";
+      const winner = config.winner || "draw";
+      const statusBadge = document.getElementById("resultStatusBadge");
+      const resultKicker = document.getElementById("resultKicker");
+      const resultMessage = document.getElementById("resultMessage");
+      const resultSummary = document.getElementById("resultSummary");
+
+      resultScreen.classList.remove("result-win", "result-loss", "result-draw", "result-wait");
+      resultScreen.classList.add("result-" + state);
+
+      statusBadge.textContent = config.badge || "Kết quả trận đấu";
+      document.getElementById("resultIcon").textContent = config.icon || "🏆";
+      resultKicker.textContent = config.kicker || "Trận đấu đã kết thúc";
+      document.getElementById("resultTitle").textContent = config.title || "Kết quả";
+      resultMessage.textContent = config.message || "Cùng xem kết quả chung cuộc.";
+
+      if (state === "wait") {
+        resultSummary.innerHTML =
+          '<div class="result-wait-card">' +
+            '<span class="result-wait-spinner" aria-hidden="true"></span>' +
+            '<div><strong>' + escapeHtml(config.waitTitle || "Đang chờ đối thủ") + '</strong>' +
+            '<small>' + escapeHtml(config.waitText || "Kết quả sẽ tự động cập nhật khi đối thủ hoàn thành.") + '</small></div>' +
+          '</div>';
+      } else {
+        const localWinnerClass = winner === "local" ? " is-winner" : "";
+        const opponentWinnerClass = winner === "opponent" ? " is-winner" : "";
+        const unit = escapeHtml(config.unit || "điểm");
+        const localRole = gameMode === "machine" ? "Bạn" : "Bạn";
+        const opponentRole = gameMode === "machine" ? "Máy" : "Đối thủ";
+        const middleText = escapeHtml(config.middleText || (winner === "draw" ? "NGANG TÀI" : "CHUNG CUỘC"));
+        const reason = config.reason ? '<div class="result-reason">' + config.reason + '</div>' : '';
+
+        resultSummary.innerHTML =
+          '<div class="result-score-grid">' +
+            '<div class="result-player-card' + localWinnerClass + '">' +
+              '<span class="result-player-role">' + localRole + '</span>' +
+              '<strong class="result-player-name">' + escapeHtml(localName) + '</strong>' +
+              '<b class="result-player-value">' + escapeHtml(config.localValue ?? localScoreValue) + '</b>' +
+              '<span class="result-player-unit">' + unit + '</span>' +
+            '</div>' +
+            '<div class="result-versus-box"><strong>VS</strong><small>' + middleText + '</small></div>' +
+            '<div class="result-player-card' + opponentWinnerClass + '">' +
+              '<span class="result-player-role">' + opponentRole + '</span>' +
+              '<strong class="result-player-name">' + escapeHtml(opponentName) + '</strong>' +
+              '<b class="result-player-value">' + escapeHtml(config.opponentValue ?? opponentScoreValue) + '</b>' +
+              '<span class="result-player-unit">' + unit + '</span>' +
+            '</div>' +
+          '</div>' + reason;
+      }
+
+      switchScreen(resultScreen);
+    }
+
     function finishGame() {
       settleMachineRound();
       localFinished = true;
@@ -4425,51 +6083,91 @@
         else onlineSend({type:"finish",score:localScoreValue});
       }
 
-      switchScreen(resultScreen);
-
       if (gameMode === "online" && onlineMatchType === "race") {
         clearGameTimers();
-        document.getElementById("resultIcon").textContent = "🏆";
-        document.getElementById("resultTitle").textContent = localName + " chiến thắng!";
-        document.getElementById("resultSummary").innerHTML = "Bạn đã hoàn thành trước trong thời gian 8 phút.";
+        showBeautifulResult({
+          state: "win",
+          winner: "local",
+          icon: "🏆",
+          badge: "Bạn đã về đích",
+          kicker: "Đua tốc độ đã kết thúc",
+          title: localName + " chiến thắng!",
+          message: "Xuất sắc! Bạn đã hoàn thành toàn bộ câu hỏi trước đối thủ.",
+          localValue: questions.length,
+          opponentValue: Math.min(Math.max(onlineOpponentProgress, 0), questions.length),
+          unit: "câu hoàn thành",
+          middleText: "VỀ ĐÍCH TRƯỚC",
+          reason: "Bạn hoàn thành " + questions.length + "/" + questions.length + " câu trong thời gian quy định."
+        });
       } else if (gameMode === "online" && !opponentFinished) {
-        document.getElementById("resultIcon").textContent = "⏳";
-        document.getElementById("resultTitle").textContent = "Bạn đã hoàn thành";
-        document.getElementById("resultSummary").innerHTML =
-          "<strong>" + escapeHtml(localName) + ":</strong> " +
-          localScoreValue +
-          " điểm<br>Đang chờ " +
-          escapeHtml(opponentName) +
-          " hoàn thành...";
+        showBeautifulResult({
+          state: "wait",
+          icon: "⏳",
+          badge: "Đã hoàn thành",
+          kicker: "Điểm của bạn đã được ghi nhận",
+          title: "Chờ đối thủ hoàn thành",
+          message: localName + " đang có " + localScoreValue + " điểm.",
+          waitTitle: "Đang chờ " + opponentName,
+          waitText: "Kết quả chung cuộc sẽ tự động hiện khi đối thủ hoàn thành trận đấu."
+        });
       } else {
         renderFinalResult();
       }
     }
 
     function renderFinalResult() {
-      switchScreen(resultScreen);
-
-      let icon = "🤝";
-      let title = "Hòa nhau!";
+      const difference = Math.abs(localScoreValue - opponentScoreValue);
 
       if (localScoreValue > opponentScoreValue) {
-        icon = "🏆";
-        title = localName + " chiến thắng!";
-      } else if (localScoreValue < opponentScoreValue) {
-        icon = "👏";
-        title = opponentName + " chiến thắng!";
+        showBeautifulResult({
+          state: "win",
+          winner: "local",
+          icon: "🏆",
+          badge: "Chiến thắng",
+          kicker: "Trận đấu đã kết thúc",
+          title: localName + " chiến thắng!",
+          message: "Chúc mừng! Bạn đã giành số điểm cao hơn đối thủ.",
+          localValue: localScoreValue,
+          opponentValue: opponentScoreValue,
+          unit: "điểm",
+          middleText: "HƠN " + difference + " ĐIỂM",
+          reason: "Bạn dẫn trước " + difference + " điểm và trở thành người chiến thắng."
+        });
+        return;
       }
 
-      document.getElementById("resultIcon").textContent = icon;
-      document.getElementById("resultTitle").textContent = title;
-      document.getElementById("resultSummary").innerHTML =
-        "<strong>" + escapeHtml(localName) + ":</strong> " +
-        localScoreValue +
-        " điểm<br><strong>" +
-        escapeHtml(opponentName) +
-        ":</strong> " +
-        opponentScoreValue +
-        " điểm";
+      if (localScoreValue < opponentScoreValue) {
+        showBeautifulResult({
+          state: "loss",
+          winner: "opponent",
+          icon: "🥈",
+          badge: "Kết quả chung cuộc",
+          kicker: "Trận đấu đã kết thúc",
+          title: opponentName + " chiến thắng!",
+          message: "Một trận đấu rất sát sao. Hãy thử lại để lật ngược kết quả!",
+          localValue: localScoreValue,
+          opponentValue: opponentScoreValue,
+          unit: "điểm",
+          middleText: "HƠN " + difference + " ĐIỂM",
+          reason: escapeHtml(opponentName) + " dẫn trước " + difference + " điểm."
+        });
+        return;
+      }
+
+      showBeautifulResult({
+        state: "draw",
+        winner: "draw",
+        icon: "🤝",
+        badge: "Bất phân thắng bại",
+        kicker: "Trận đấu đã kết thúc",
+        title: "Hai bên hòa nhau!",
+        message: "Cả hai đã thi đấu ngang tài ngang sức.",
+        localValue: localScoreValue,
+        opponentValue: opponentScoreValue,
+        unit: "điểm",
+        middleText: "ĐỒNG ĐIỂM",
+        reason: "Hai người cùng đạt " + localScoreValue + " điểm."
+      });
     }
 
     function escapeHtml(value) {
@@ -4607,6 +6305,41 @@
       closePeerConnection();
     });
 
+
+
+    function openGameGuide() {
+      const modal = document.getElementById("gameGuideModal");
+      if (!modal) return;
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("guide-modal-open");
+      window.setTimeout(function () {
+        const closeButton = document.getElementById("gameGuideCloseButton");
+        if (closeButton) closeButton.focus({ preventScroll: true });
+      }, 60);
+    }
+
+    function closeGameGuide() {
+      const modal = document.getElementById("gameGuideModal");
+      if (!modal) return;
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("guide-modal-open");
+    }
+
+    function closeGameGuideFromBackdrop(event) {
+      if (event.target === event.currentTarget) closeGameGuide();
+    }
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        const modal = document.getElementById("gameGuideModal");
+        if (modal && modal.classList.contains("show")) closeGameGuide();
+      }
+    });
+
+    document.body.classList.add("guide-modal-open");
+
     (function protectPage() {
       const notice = document.getElementById("sourceBlockNotice");
       const desktopCopyEnabled = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -4703,6 +6436,504 @@
         }
       }, { capture: true });
     })();
+  
+
+    /* Danh sách phòng và vòng đời phòng online: chủ rời thì xóa phòng,
+       khách rời thì phòng trở về trạng thái chờ 1/2. */
+    const handledRoomDepartureIds = new Set();
+    let localConnectionClosing = false;
+
+    function roomDirectoryTimingLabel(matchType){
+      return matchType === "race" ? "8 phút/trận" : "40 giây/câu";
+    }
+
+    function rememberDepartureId(value){
+      const id = String(value || "");
+      if(!id || handledRoomDepartureIds.has(id)) return false;
+      handledRoomDepartureIds.add(id);
+      if(handledRoomDepartureIds.size > 100){
+        const oldest = handledRoomDepartureIds.values().next().value;
+        handledRoomDepartureIds.delete(oldest);
+      }
+      return true;
+    }
+
+    renderRoomList = function(){
+      const list = document.getElementById("roomList");
+      const rooms = activeRooms();
+      list.removeAttribute("style");
+
+      if(!rooms.length){
+        list.className = "room-list-empty";
+        list.innerHTML = "Chưa có phòng nào đang chờ.<br>Hãy tạo phòng mới hoặc nhấn nút làm mới.";
+        return;
+      }
+
+      list.className = "room-list-grid";
+      list.innerHTML = rooms.map(function(room){
+        const ownRoom = isHost && currentRoomCode === room.code;
+        const canJoin = room.status === "waiting" && room.playerCount < 2 && !ownRoom;
+        const statusText = room.status === "playing" ? "Đang chơi" : (room.status === "full" ? "Đã đủ người" : "Đang chờ");
+        const statusClass = room.status === "playing" ? "status-playing" : (room.status === "full" ? "status-full" : "status-waiting");
+        const typeText = room.matchType === "race" ? "Đua tốc độ" : "Đối kháng";
+        const buttonText = ownRoom ? "Phòng của bạn" : (canJoin ? "Tham gia phòng" : statusText);
+
+        return '<article class="room-directory-card' + (ownRoom ? ' is-own-room' : '') + '">' +
+          '<div class="room-directory-head">' +
+            '<div class="room-directory-host"><span class="room-directory-host-icon" aria-hidden="true">♛</span><span class="room-directory-host-name">' + escapeHtml(room.hostName) + '</span></div>' +
+            '<strong class="room-directory-code">' + escapeHtml(room.code) + '</strong>' +
+          '</div>' +
+          '<div class="room-directory-badges">' +
+            '<span class="room-directory-badge ' + statusClass + '"><span class="room-directory-dot"></span>' + statusText + '</span>' +
+            '<span class="room-directory-badge">👥 ' + room.playerCount + '/2</span>' +
+            '<span class="room-directory-badge">🎮 ' + typeText + '</span>' +
+            '<span class="room-directory-badge">⏱ ' + roomDirectoryTimingLabel(room.matchType) + '</span>' +
+          '</div>' +
+          '<button class="room-directory-join room-join-button" type="button" data-room-code="' + room.code + '" ' + (canJoin ? '' : 'disabled') +
+            ' onclick="joinListedRoom(\'' + room.code + '\', this)">' + buttonText + '</button>' +
+        '</article>';
+      }).join("");
+    };
+
+    const publishCurrentRoomBeforeLifecycleUpgrade = publishCurrentRoom;
+    publishCurrentRoom = async function(status, playerCount){
+      let resolvedStatus = status;
+      if(isHost && playerCount >= 2 && gameMode === "online" && gameScreen.classList.contains("active")){
+        resolvedStatus = "playing";
+      }
+      return publishCurrentRoomBeforeLifecycleUpgrade(resolvedStatus, playerCount);
+    };
+
+    publishRelayState = async function(){
+      if(!relayActive || !currentRoomCode || !relayRole) return;
+      const payload = {
+        code: currentRoomCode,
+        role: relayRole,
+        name: localName || "Người chơi",
+        matchType: onlineMatchType || "battle",
+        departed: false,
+        sequence: relaySequence,
+        lastSeen: Date.now(),
+        messages: relayMessages.slice(-RELAY_MESSAGE_LIMIT)
+      };
+      try {
+        await fetchRoomJson(relayCloudUrl(currentRoomCode, relayRole), {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+      } catch (_) {}
+    };
+
+    function publishDepartureMarker(role, code, type){
+      const normalized = normalizeRoomCode(code);
+      if(!normalized || !role) return;
+
+      const departureId = createOnlineMessageId();
+      const departureData = {
+        type: type,
+        name: localName || "Người chơi",
+        departureId: departureId,
+        _messageId: departureId
+      };
+
+      if(isPeerConnected()){
+        try { connection.send(departureData); } catch (_) {}
+      }
+
+      const marker = {
+        code: normalized,
+        role: role,
+        name: localName || "Người chơi",
+        matchType: onlineMatchType || "battle",
+        departed: true,
+        departureType: type,
+        departureId: departureId,
+        sequence: relaySequence + 1,
+        lastSeen: Date.now(),
+        messages: [{
+          id: departureId,
+          sentAt: Date.now(),
+          sequence: relaySequence + 1,
+          data: departureData
+        }]
+      };
+
+      try {
+        fetch(relayCloudUrl(normalized, role), {
+          method: "POST",
+          cache: "no-store",
+          keepalive: true,
+          headers: {"Accept":"application/json", "Content-Type":"application/json"},
+          body: JSON.stringify(marker)
+        }).catch(function(){});
+      } catch (_) {}
+
+      window.setTimeout(function(){
+        try {
+          fetch(relayCloudUrl(normalized, role), {
+            method: "DELETE",
+            cache: "no-store",
+            keepalive: true,
+            headers: {"Accept":"application/json"}
+          }).catch(function(){});
+        } catch (_) {}
+      }, RELAY_TTL_MS + 2500);
+    }
+
+    function closeBoundConnectionOnly(){
+      const oldConnection = connection;
+      connection = null;
+      if(!oldConnection) return;
+      localConnectionClosing = true;
+      try { oldConnection.close(); } catch (_) {}
+      window.setTimeout(function(){ localConnectionClosing = false; }, 80);
+    }
+
+    function handleGuestDeparture(message){
+      if(!isHost || !currentRoomCode) return;
+
+      clearGameTimers();
+      relayConnected = false;
+      closeBoundConnectionOnly();
+      opponentName = "Đang chờ người chơi";
+      opponentScoreValue = 0;
+      onlineOpponentProgress = 0;
+      opponentFinished = false;
+      localFinished = false;
+      currentSetupMode = "online";
+      gameMode = "online";
+
+      publishCurrentRoom("waiting", 1);
+      startRoomDirectory();
+      showMatchTypeStep();
+      switchScreen(onlineSetupScreen);
+      setConnectionStatus(message || "Người tham gia đã rời trận. Phòng đang trống và tiếp tục chờ người mới.", "success");
+      requestRoomList(false);
+    }
+
+    function handleHostDeparture(message){
+      if(isHost || !currentRoomCode) return;
+
+      clearGameTimers();
+      closePeerConnection({notify:false, removeRelayState:true});
+      gameMode = "";
+      currentSetupMode = "online";
+      currentRoomCode = "";
+      guestMatchTypeKnown = false;
+      opponentName = "Máy";
+      document.getElementById("roomActionSelect").value = "join";
+      toggleRoomAction();
+      showRoomStep();
+      switchScreen(onlineSetupScreen);
+      startRoomDirectory();
+      requestRoomList(false);
+      setConnectionStatus(message || "Chủ phòng đã rời. Phòng đã được xóa khỏi danh sách.", "error");
+    }
+
+    pollRelayState = async function(){
+      if(!relayActive || !currentRoomCode || !relayRole) return;
+      const remoteRole = relayRole === "host" ? "guest" : "host";
+      if(relayPollController) relayPollController.abort();
+      relayPollController = new AbortController();
+      const controller = relayPollController;
+      const timeout = window.setTimeout(function(){ controller.abort(); }, 5000);
+
+      try {
+        const remote = await fetchRoomJson(
+          relayCloudUrl(currentRoomCode, remoteRole) + "?t=" + Date.now(),
+          {signal: controller.signal}
+        );
+
+        if(remote && remote.departed){
+          const departureId = String(remote.departureId || remoteRole + "-" + remote.lastSeen);
+          if(rememberDepartureId(departureId)){
+            if(isHost && remoteRole === "guest"){
+              handleGuestDeparture("Người tham gia đã thoát trận. Phòng đã trở về trạng thái chờ 1/2.");
+            }else if(!isHost && remoteRole === "host"){
+              handleHostDeparture("Chủ phòng đã rời. Phòng không còn tồn tại trong danh sách.");
+            }
+          }
+          return;
+        }
+
+        const fresh = remote && Number(remote.lastSeen) && Date.now() - Number(remote.lastSeen) < RELAY_TTL_MS;
+        if(fresh){
+          const firstConnection = !relayConnected;
+          relayConnected = true;
+          const remoteName = String(remote.name || "Người chơi").trim().slice(0,24);
+          if(remoteName) opponentName = remoteName;
+
+          if(!isHost && (remote.matchType === "battle" || remote.matchType === "race")){
+            onlineMatchType = remote.matchType === "race" ? "race" : "battle";
+            guestMatchTypeKnown = true;
+            updateOnlineMatchTypeUI();
+          }
+
+          if(firstConnection){
+            setConnectionStatus("Đã kết nối đa thiết bị với " + opponentName + ".", "success");
+            if(isHost){
+              publishCurrentRoom("full", 2);
+              showMatchTypeStep();
+            }else{
+              finishJoinAttempt();
+            }
+          }
+
+          const messages = Array.isArray(remote.messages) ? remote.messages.slice() : [];
+          messages.sort(function(a,b){
+            return Number(a && a.sequence || 0) - Number(b && b.sequence || 0);
+          });
+          messages.forEach(function(item){
+            if(item && item.data) receiveOnlineData(item.data, relayRole === "host");
+          });
+        }else if(relayConnected && !isPeerConnected()){
+          relayConnected = false;
+          if(isHost){
+            handleGuestDeparture("Người tham gia đã mất kết nối. Phòng đã trở về trạng thái chờ 1/2.");
+          }else{
+            handleHostDeparture("Mất kết nối với chủ phòng. Phòng đã được đóng.");
+          }
+        }
+      } catch (error) {
+        if(error && error.name !== "AbortError" && !isPeerConnected()){
+          setConnectionStatus("Đang thử lại kênh kết nối đa thiết bị...", "");
+        }
+      } finally {
+        window.clearTimeout(timeout);
+        if(relayPollController === controller) relayPollController = null;
+      }
+    };
+
+    bindConnectionEvents = function(hostSide){
+      if(!connection) return;
+      const boundConnection = connection;
+
+      boundConnection.on("open", function(){
+        if(connection !== boundConnection) return;
+        setConnectionStatus("Đã kết nối. Chủ phòng có thể bắt đầu trận đấu.", "success");
+        if(isHost){
+          publishCurrentRoom("full", 2);
+          showMatchTypeStep();
+        }else{
+          finishJoinAttempt();
+        }
+        onlineSend({type:"hello", name:localName});
+      });
+
+      boundConnection.on("data", function(data){
+        receiveOnlineData(data, hostSide);
+      });
+
+      boundConnection.on("close", function(){
+        if(connection === boundConnection) connection = null;
+        if(localConnectionClosing) return;
+
+        if(isHost){
+          if(relayConnected){
+            publishCurrentRoom("full", 2);
+            setConnectionStatus("Kết nối trực tiếp đã ngắt; phòng vẫn hoạt động qua kênh đa thiết bị.", "success");
+          }else{
+            handleGuestDeparture("Người tham gia đã rời. Phòng đang chờ người mới.");
+          }
+        }else if(relayConnected){
+          setConnectionStatus("Kết nối trực tiếp đã ngắt; trận vẫn tiếp tục qua kênh đa thiết bị.", "success");
+        }else{
+          handleHostDeparture("Chủ phòng đã rời hoặc mất kết nối. Phòng đã được đóng.");
+        }
+      });
+
+      boundConnection.on("error", function(){
+        setConnectionStatus(
+          relayConnected ? "Đang dùng kênh tương thích đa thiết bị." : "Kết nối online gặp lỗi.",
+          relayConnected ? "success" : "error"
+        );
+      });
+    };
+
+    const handleOnlineDataBeforeLifecycleUpgrade = handleOnlineData;
+    handleOnlineData = function(data, hostSide){
+      if(data && data.type === "guestLeaving" && isHost){
+        const departureId = String(data.departureId || data._messageId || "guest-" + Date.now());
+        if(rememberDepartureId(departureId)){
+          handleGuestDeparture("Người tham gia đã thoát trận. Phòng đã trở về trạng thái chờ 1/2.");
+        }
+        return;
+      }
+
+      if(data && data.type === "hostLeaving" && !isHost){
+        const departureId = String(data.departureId || data._messageId || "host-" + Date.now());
+        if(rememberDepartureId(departureId)){
+          handleHostDeparture("Chủ phòng đã rời. Phòng không còn hiển thị trong danh sách.");
+        }
+        return;
+      }
+
+      return handleOnlineDataBeforeLifecycleUpgrade(data, hostSide);
+    };
+
+    closePeerConnection = function(options){
+      const settings = options || {};
+      const notify = settings.notify !== false;
+      const wasHost = isHost;
+      const oldCode = currentRoomCode;
+      const oldRole = relayRole || (wasHost ? "host" : "guest");
+      const hadOnlineRoom = Boolean(oldCode && (gameMode === "online" || currentSetupMode === "online" || relayActive || peer || connection));
+
+      if(notify && hadOnlineRoom){
+        publishDepartureMarker(oldRole, oldCode, wasHost ? "hostLeaving" : "guestLeaving");
+      }
+
+      stopRoomHeartbeat();
+      stopCloudRelay(settings.removeRelayState === true || !notify);
+
+      const oldConnection = connection;
+      connection = null;
+      localConnectionClosing = true;
+      try { if(oldConnection) oldConnection.close(); } catch (_) {}
+      try { if(peer) peer.destroy(); } catch (_) {}
+      peer = null;
+      window.setTimeout(function(){ localConnectionClosing = false; }, 80);
+
+      setJoinButtonsBusy(false, null);
+      if(wasHost && oldCode) deletePublishedRoom(oldCode);
+      isHost = false;
+    };
+
+    const startMatchBeforeRoomLifecycleUpgrade = startMatch;
+    startMatch = function(){
+      startMatchBeforeRoomLifecycleUpgrade();
+      if(isHost && currentRoomCode){
+        publishCurrentRoom("playing", 2);
+      }
+    };
+
+    window.addEventListener("pagehide", function(){
+      if(isHost && currentRoomCode){
+        const code = currentRoomCode;
+        publishDepartureMarker("host", code, "hostLeaving");
+        try { fetch(roomCloudUrl(code), {method:"DELETE", keepalive:true, cache:"no-store"}); } catch (_) {}
+      }else if(currentRoomCode && relayRole === "guest"){
+        publishDepartureMarker("guest", currentRoomCode, "guestLeaving");
+      }
+    });
+</script>
+
+  <div id="puzzleZoomModal" class="puzzle-zoom-modal" role="dialog" aria-modal="true" aria-labelledby="puzzleZoomTitle" aria-hidden="true" onclick="closePuzzleZoomFromBackdrop(event)">
+    <div class="puzzle-zoom-dialog" role="document">
+      <div class="puzzle-zoom-head">
+        <div id="puzzleZoomTitle" class="puzzle-zoom-title">Xem rõ hình câu đố</div>
+        <button class="puzzle-zoom-close" type="button" onclick="closePuzzleZoom()" aria-label="Đóng hình phóng to" title="Đóng">×</button>
+      </div>
+      <div id="puzzleZoomStage" class="puzzle-zoom-stage">
+        <div id="puzzleZoomCrop" class="puzzle-zoom-crop">
+          <img id="puzzleZoomImage" class="puzzle-zoom-image" alt="Hình câu đố được phóng to">
+        </div>
+      </div>
+      <div class="puzzle-zoom-tools" aria-label="Điều khiển phóng to hình ảnh">
+        <button class="puzzle-zoom-control" type="button" onclick="changePuzzleZoom(-0.25)" aria-label="Thu nhỏ">−</button>
+        <span id="puzzleZoomValue" class="puzzle-zoom-value">100%</span>
+        <button class="puzzle-zoom-control" type="button" onclick="changePuzzleZoom(0.25)" aria-label="Phóng to">+</button>
+        <button class="puzzle-zoom-control" type="button" onclick="resetPuzzleZoom()" aria-label="Đặt lại tỷ lệ" style="font-size:14px;padding:0 13px">100%</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script id="puzzle-image-detail-script">
+    let puzzleZoomScale = 1;
+
+    function updatePuzzleZoomView() {
+      const image = document.getElementById("puzzleZoomImage");
+      const value = document.getElementById("puzzleZoomValue");
+      if (image) image.style.transform = "scale(" + puzzleZoomScale + ")";
+      if (value) value.textContent = Math.round(puzzleZoomScale * 100) + "%";
+    }
+
+    function openPuzzleZoom(sourceImage) {
+      const modal = document.getElementById("puzzleZoomModal");
+      const image = document.getElementById("puzzleZoomImage");
+      const crop = document.getElementById("puzzleZoomCrop");
+      const stage = document.getElementById("puzzleZoomStage");
+      if (!modal || !image || !crop || !sourceImage) return;
+
+      puzzleZoomScale = 1;
+      image.onload = function () {
+        const visibleHeight = Math.max(1, image.naturalHeight * 0.82);
+        crop.style.aspectRatio = image.naturalWidth + " / " + visibleHeight;
+        updatePuzzleZoomView();
+        if (stage) {
+          stage.scrollTop = 0;
+          stage.scrollLeft = 0;
+        }
+      };
+      image.src = sourceImage.currentSrc || sourceImage.src;
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("puzzle-zoom-open");
+      window.setTimeout(function () {
+        const closeButton = modal.querySelector(".puzzle-zoom-close");
+        if (closeButton) closeButton.focus();
+      }, 30);
+    }
+
+    function closePuzzleZoom() {
+      const modal = document.getElementById("puzzleZoomModal");
+      if (!modal) return;
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("puzzle-zoom-open");
+    }
+
+    function closePuzzleZoomFromBackdrop(event) {
+      if (event.target && event.target.id === "puzzleZoomModal") closePuzzleZoom();
+    }
+
+    function changePuzzleZoom(amount) {
+      puzzleZoomScale = Math.min(3, Math.max(1, puzzleZoomScale + amount));
+      updatePuzzleZoomView();
+    }
+
+    function resetPuzzleZoom() {
+      puzzleZoomScale = 1;
+      updatePuzzleZoomView();
+      const stage = document.getElementById("puzzleZoomStage");
+      if (stage) {
+        stage.scrollTop = 0;
+        stage.scrollLeft = 0;
+      }
+    }
+
+    document.addEventListener("click", function (event) {
+      const image = event.target && event.target.closest ? event.target.closest("#gameScreen .puzzle-image") : null;
+      if (image) openPuzzleZoom(image);
+    });
+
+    document.addEventListener("keydown", function (event) {
+      const modal = document.getElementById("puzzleZoomModal");
+      if (event.key === "Escape" && modal && modal.classList.contains("show")) {
+        closePuzzleZoom();
+        return;
+      }
+      const image = event.target && event.target.matches ? event.target.matches("#gameScreen .puzzle-image") : false;
+      if (image && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        openPuzzleZoom(event.target);
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const observer = new MutationObserver(function () {
+        document.querySelectorAll("#gameScreen .puzzle-image").forEach(function (image) {
+          image.tabIndex = 0;
+          image.setAttribute("role", "button");
+          image.setAttribute("aria-label", "Phóng to hình câu đố để xem rõ chi tiết");
+          image.title = "Bấm để phóng to hình ảnh";
+        });
+      });
+      const box = document.getElementById("pictureBox");
+      if (box) observer.observe(box, {childList: true, subtree: true});
+    });
   </script>
+
 </body>
 </html>
