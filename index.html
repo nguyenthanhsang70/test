@@ -3139,7 +3139,8 @@
 
     .game-guide-actions {
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: center;
       margin-top: 20px;
     }
 
@@ -3213,9 +3214,14 @@
         grid-column: auto;
       }
 
-      .game-guide-actions,
-      .game-guide-start {
+      .game-guide-actions {
         width: 100%;
+        justify-content: center;
+      }
+
+      .game-guide-start {
+        width: auto;
+        min-width: 150px;
       }
     }
 
@@ -4321,6 +4327,192 @@
     }
   </style>
 
+
+  <style id="remove-mode-badges">
+    .mode-card::after {
+      display: none !important;
+      content: none !important;
+    }
+  </style>
+
+  <style id="puzzle-image-sharp-fix">
+    /* Giữ ảnh nhỏ gọn hơn ở màn hình chơi nhưng vẫn rõ nét và xem được đầy đủ chi tiết. */
+    #gameScreen .puzzle-image-crop {
+      width: min(68%, 620px) !important;
+      max-width: 620px !important;
+      max-height: 460px !important;
+      background: #ffffff !important;
+      border-radius: 18px !important;
+    }
+
+    #gameScreen .puzzle-image,
+    #gameScreen .picture-box img {
+      filter: none !important;
+      image-rendering: auto !important;
+      backface-visibility: visible !important;
+      -webkit-backface-visibility: visible !important;
+    }
+
+    .puzzle-zoom-crop {
+      width: min(92%, 860px) !important;
+      max-width: 860px !important;
+      background: #ffffff !important;
+    }
+
+    .puzzle-zoom-image {
+      width: 100% !important;
+      max-width: none !important;
+      height: auto !important;
+      filter: none !important;
+      image-rendering: auto !important;
+      backface-visibility: visible !important;
+      -webkit-backface-visibility: visible !important;
+    }
+
+    @media (max-width: 1024px) {
+      #gameScreen .puzzle-image-crop {
+        width: min(78%, 560px) !important;
+        max-width: 560px !important;
+        max-height: 430px !important;
+      }
+    }
+
+    @media (max-width: 720px) {
+      #gameScreen .puzzle-image-crop {
+        width: min(88%, 420px) !important;
+        max-width: 420px !important;
+        max-height: 360px !important;
+      }
+
+      .puzzle-zoom-crop {
+        width: min(100%, 100%) !important;
+        max-width: 100% !important;
+      }
+    }
+  </style>
+
+
+  <style id="compact-game-layout-fix">
+    /* Thu gọn màn hình chơi để bớt khoảng trống và cân đối hơn. */
+    #gameScreen.active {
+      gap: 12px 18px !important;
+    }
+
+    #gameScreen .match-board {
+      padding: 12px !important;
+      border-radius: 22px !important;
+      gap: 10px !important;
+    }
+
+    #gameScreen .player-panel {
+      min-height: 118px !important;
+      padding: 16px 14px !important;
+      border-radius: 18px !important;
+    }
+
+    #gameScreen .player-score {
+      margin: 4px 0 2px !important;
+    }
+
+    #gameScreen .game-info {
+      padding: 10px !important;
+      gap: 8px !important;
+      border-radius: 18px !important;
+    }
+
+    #gameScreen .info-box,
+    #gameScreen .timer-pill {
+      min-height: 44px !important;
+      padding: 8px 12px !important;
+      border-radius: 13px !important;
+    }
+
+    #gameScreen .picture-box {
+      min-height: clamp(280px, 34vh, 390px) !important;
+      padding: 14px 12px !important;
+      gap: 10px !important;
+      border-radius: 24px !important;
+    }
+
+    #gameScreen .picture-box::before {
+      top: 14px !important;
+      left: 16px !important;
+    }
+
+    #gameScreen .puzzle-image-crop {
+      width: min(74%, 680px) !important;
+      max-width: 680px !important;
+      max-height: 500px !important;
+    }
+
+    #gameScreen .question-text {
+      padding: 0 !important;
+      font-size: 15px !important;
+      line-height: 1.45 !important;
+    }
+
+    #gameScreen .answer-input {
+      min-height: 58px !important;
+    }
+
+    #gameScreen .message {
+      min-height: 48px !important;
+      padding: 10px 12px !important;
+    }
+
+    #gameScreen .button-group {
+      gap: 8px !important;
+    }
+
+    #gameScreen .game-btn {
+      min-height: 52px !important;
+      border-radius: 16px !important;
+    }
+
+    #gameScreen .progress-bar {
+      margin-top: 0 !important;
+      height: 10px !important;
+    }
+
+    @media (max-width: 1024px) {
+      #gameScreen .picture-box {
+        min-height: clamp(250px, 32vh, 340px) !important;
+      }
+
+      #gameScreen .puzzle-image-crop {
+        width: min(82%, 600px) !important;
+        max-width: 600px !important;
+        max-height: 430px !important;
+      }
+    }
+
+    @media (max-width: 720px) {
+      #gameScreen.active {
+        gap: 10px !important;
+      }
+
+      #gameScreen .match-board,
+      #gameScreen .game-info {
+        padding: 9px !important;
+      }
+
+      #gameScreen .picture-box {
+        min-height: clamp(220px, 28vh, 300px) !important;
+        padding: 12px 8px !important;
+      }
+
+      #gameScreen .puzzle-image-crop {
+        width: min(90%, 420px) !important;
+        max-width: 420px !important;
+        max-height: 320px !important;
+      }
+
+      #gameScreen .question-text {
+        font-size: 14px !important;
+      }
+    }
+  </style>
+
 </head>
 
 <body>
@@ -4391,8 +4583,8 @@
             <p class="setup-note">Chọn luật chơi khi thi đấu với máy.</p>
           </div>
           <div class="match-type-grid">
-            <button id="machineBattleTypeCard" class="match-type-card selected" onclick="selectMachineMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Mỗi câu có 40 giây suy nghĩ. Bạn hoặc máy trả lời đúng trước sẽ nhận 10 điểm.</p></button>
-            <button id="machineRaceTypeCard" class="match-type-card" onclick="selectMachineMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút. Bạn giải câu hỏi liên tục, máy sẽ tự tích lũy điểm theo tiến độ.</p></button>
+            <button id="machineBattleTypeCard" class="match-type-card selected" onclick="selectMachineMatchType('battle')"><div class="type-icon">⚔️</div><h3>Đối kháng</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Máy sẽ dành thêm thời gian quan sát và suy nghĩ theo độ khó, đôi lúc trả lời sai rồi mới thử lại. Bạn hoặc máy trả lời đúng trước sẽ nhận 10 điểm.</p></button>
+            <button id="machineRaceTypeCard" class="match-type-card" onclick="selectMachineMatchType('race')"><div class="type-icon">🏁</div><h3>Đua tốc độ</h3><p>Mỗi trận chọn ngẫu nhiên 20 câu trong 172 câu. Thời gian toàn trận là 8 phút. Máy tự giải từng câu theo độ khó, đôi lúc trả lời sai ở câu khó và tiếp tục thử lại.</p></button>
           </div>
           <div class="setup-actions"><button class="setup-action-btn setup-back" onclick="backToModeScreen()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.25 6.75 10 12l5.25 5.25"></path><path d="M10.75 12H19"></path></svg></span><span class="btn-label">Quay lại</span></button><button class="setup-action-btn setup-next" onclick="startMachineConfiguredMode()"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"></circle><path d="m10.2 8.9 5.3 3.1-5.3 3.1V8.9Z"></path></svg></span><span class="btn-label">Vào trận</span></button></div>
         </div>
@@ -4589,8 +4781,7 @@
 
       <div class="game-guide-actions">
         <button class="game-guide-start" type="button" onclick="closeGameGuide()">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m10 8.8 5.4 3.2-5.4 3.2V8.8Z"></path></svg>
-          <span>Đã hiểu, bắt đầu</span>
+          <span>Đã hiểu</span>
         </button>
       </div>
     </div>
@@ -4649,6 +4840,13 @@
     let currentSetupMode = "";
     let machineMatchType = "battle";
     let machineAnswerTimeout = null;
+    let machineRaceTimeout = null;
+    let machineQuestionIndex = 0;
+    let machineRaceRetryCount = 0;
+    let machineCorrectAnswers = 0;
+    let machineWrongAnswers = 0;
+    let machinePlannedToWin = true;
+    const MACHINE_MATCH_WIN_RATE = 0.70;
 
     // Danh bạ phòng online dùng chung giữa nhiều thiết bị (cùng cơ chế với Caro).
     const ROOM_DIRECTORY_API_BASE = "https://mantledb.sh/v2";
@@ -5679,6 +5877,13 @@
       localFinished = false;
       opponentFinished = false;
       machineRoundSettled = false;
+      machineQuestionIndex = 0;
+      machineRaceRetryCount = 0;
+      machineCorrectAnswers = 0;
+      machineWrongAnswers = 0;
+      // Mỗi trận được định hướng độc lập: khoảng 70% trận máy sẽ thi đấu
+      // quyết liệt để hướng tới chiến thắng, 30% còn lại chơi nhẹ tay hơn.
+      machinePlannedToWin = Math.random() < MACHINE_MATCH_WIN_RATE;
 
       document.getElementById("localPlayerName").textContent = localName;
       document.getElementById("opponentPlayerName").textContent = opponentName;
@@ -5699,16 +5904,24 @@
       window.clearInterval(roundTimer);
       window.clearInterval(matchTimer);
       window.clearTimeout(machineAnswerTimeout);
+      window.clearTimeout(machineRaceTimeout);
       roundTimer=null;
       matchTimer=null;
       machineAnswerTimeout=null;
+      machineRaceTimeout=null;
     }
     function formatTime(sec){ sec=Math.max(0,sec);return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0"); }
     function startModeTimer(){
       clearGameTimers();
       if(onlineMatchType==="race"){
-        timeRemaining=480;document.getElementById("gameTimer").textContent=formatTime(timeRemaining);
-        matchTimer=setInterval(function(){timeRemaining--;document.getElementById("gameTimer").textContent=formatTime(timeRemaining);if(timeRemaining<=0){clearGameTimers();finishGame();}},1000);
+        timeRemaining=480;
+        document.getElementById("gameTimer").textContent=formatTime(timeRemaining);
+        if(gameMode === "machine") startMachineRaceBot();
+        matchTimer=setInterval(function(){
+          timeRemaining--;
+          document.getElementById("gameTimer").textContent=formatTime(timeRemaining);
+          if(timeRemaining<=0){clearGameTimers();finishGame();}
+        },1000);
       } else {
         startRoundTimer();
       }
@@ -5734,16 +5947,90 @@
         }
       },1000);
     }
+    function getMachineQuestionDifficulty(question){
+      const answer = question && question.answer ? question.answer : "";
+      const letters = countLetters(answer);
+      const words = countWords(answer);
+      const imagePenalty = question && question.image ? 2 : 0;
+      const difficultyScore = letters + Math.max(0, words - 1) * 2 + imagePenalty;
+
+      if(difficultyScore <= 10) return "easy";
+      if(difficultyScore <= 18) return "medium";
+      return "hard";
+    }
+
+    function getMachineThinkDelay(question){
+      const difficulty = getMachineQuestionDifficulty(question);
+      const ranges = {
+        // Cho người chơi có thời gian quan sát hình và suy nghĩ trước khi máy trả lời.
+        easy: [4000, 5000],
+        medium: [5000, 7000],
+        hard: [7000, 12000]
+      };
+      const range = ranges[difficulty];
+      return Math.round(range[0] + Math.random() * (range[1] - range[0]));
+    }
+
+    function getMachineCorrectChance(question, retryCount, context){
+      const difficulty = getMachineQuestionDifficulty(question);
+      let chance = difficulty === "easy" ? 0.90 : (difficulty === "medium" ? 0.78 : 0.56);
+
+      // Khoảng 70% trận máy được định hướng thắng. Việc điều chỉnh chỉ tác động
+      // nhẹ lên xác suất từng câu để bot vẫn có thể thắng/thua tự nhiên.
+      chance += machinePlannedToWin ? 0.07 : -0.18;
+
+      if(context === "battle"){
+        const scoreGap = opponentScoreValue - localScoreValue;
+        const remaining = Math.max(0, questions.length - currentQuestionIndex - 1);
+        if(machinePlannedToWin && scoreGap <= 0) chance += remaining <= 5 ? 0.14 : 0.07;
+        if(!machinePlannedToWin && scoreGap >= 0) chance -= remaining <= 5 ? 0.18 : 0.09;
+      }
+
+      if(retryCount > 0) chance += Math.min(0.24, retryCount * 0.12);
+      // Câu khó luôn có khả năng sai, kể cả khi máy đang được định hướng thắng.
+      const upperLimit = difficulty === "hard" ? 0.78 : 0.96;
+      return Math.max(0.22, Math.min(upperLimit, chance));
+    }
+
+    function setMachineProgressStatus(text){
+      const progress = document.getElementById("opponentProgress");
+      if(progress) progress.textContent = text;
+    }
+
     function scheduleMachineBattleAnswer(){
       if(gameMode!=="machine" || onlineMatchType!=="battle") return;
-      const progressFactor = 0.52 + Math.min(0.22, currentQuestionIndex / Math.max(1, questions.length) * 0.22);
-      const willAnswerCorrectly = Math.random() < progressFactor;
-      if(!willAnswerCorrectly) return;
-      const delay = 5000 + Math.floor(Math.random() * 17000);
-      machineAnswerTimeout = window.setTimeout(function(){
+      const question = questions[currentQuestionIndex];
+      const delay = getMachineThinkDelay(question);
+
+      machineAnswerTimeout = window.setTimeout(function machineFirstAttempt(){
         if(roundResolved || answered) return;
-        const nextScore = opponentScoreValue + 10;
-        resolveBattleRound(opponentName, questions[currentQuestionIndex].answer, false, nextScore);
+
+        const willAnswerCorrectly = Math.random() < getMachineCorrectChance(question, 0, "battle");
+        if(willAnswerCorrectly){
+          machineCorrectAnswers++;
+          const nextScore = opponentScoreValue + 10;
+          resolveBattleRound(opponentName, question.answer, false, nextScore);
+          return;
+        }
+
+        machineWrongAnswers++;
+        setMachineProgressStatus("Máy vừa trả lời sai • Câu " + (currentQuestionIndex + 1) + "/" + questions.length);
+
+        // Sau khi sai, máy chờ thêm khoảng 6–10 giây rồi mới thử lại;
+        // không bao giờ chuyển từ sai sang đúng ngay lập tức.
+        const retryDelay = 6000 + Math.floor(Math.random() * 4000);
+        machineAnswerTimeout = window.setTimeout(function machineRetry(){
+          if(roundResolved || answered) return;
+          const retryCorrect = Math.random() < getMachineCorrectChance(question, 1, "battle");
+          if(retryCorrect){
+            machineCorrectAnswers++;
+            const nextScore = opponentScoreValue + 10;
+            resolveBattleRound(opponentName, question.answer, false, nextScore);
+          }else{
+            machineWrongAnswers++;
+            setMachineProgressStatus("Máy chưa tìm ra đáp án • Câu " + (currentQuestionIndex + 1) + "/" + questions.length);
+          }
+        }, retryDelay);
       }, delay);
     }
     function resolveBattleRound(winner,correctAnswer,isLocalEvent,winnerScore){
@@ -5955,20 +6242,87 @@
       answerInput.focus();
     }
 
-    function settleMachineRound() {
-      if (gameMode !== "machine" || machineRoundSettled || onlineMatchType === "battle") return;
+    function startMachineRaceBot(){
+      if(gameMode !== "machine" || onlineMatchType !== "race") return;
+      window.clearTimeout(machineRaceTimeout);
+      machineQuestionIndex = 0;
+      machineRaceRetryCount = 0;
+      scheduleMachineRaceAnswer(false);
+    }
 
-      machineRoundSettled = true;
-
-      const progressFactor =
-        0.54 + Math.min(0.18, currentQuestionIndex / Math.max(1, questions.length) * 0.18);
-      const machineCorrect = Math.random() < progressFactor;
-
-      if (machineCorrect) {
-        opponentScoreValue += Math.random() < 0.22 ? 5 : 10;
+    function scheduleMachineRaceAnswer(isRetry){
+      if(gameMode !== "machine" || onlineMatchType !== "race" || localFinished || opponentFinished) return;
+      if(machineQuestionIndex >= questions.length){
+        finishMachineRaceAsWinner();
+        return;
       }
 
+      const question = questions[machineQuestionIndex];
+      const delay = isRetry
+        ? 6000 + Math.floor(Math.random() * 4000)
+        : getMachineThinkDelay(question);
+
+      machineRaceTimeout = window.setTimeout(function(){
+        if(gameMode !== "machine" || onlineMatchType !== "race" || localFinished || opponentFinished) return;
+
+        const correctChance = getMachineCorrectChance(question, machineRaceRetryCount, "race");
+        const maxWrongAttempts = machinePlannedToWin ? 1 : 2;
+        const machineCorrect = Math.random() < correctChance || machineRaceRetryCount > maxWrongAttempts;
+
+        if(machineCorrect){
+          machineCorrectAnswers++;
+          opponentScoreValue += 10;
+          machineQuestionIndex++;
+          machineRaceRetryCount = 0;
+          updateScoreboard();
+
+          if(machineQuestionIndex >= questions.length){
+            finishMachineRaceAsWinner();
+          }else{
+            scheduleMachineRaceAnswer(false);
+          }
+          return;
+        }
+
+        machineWrongAnswers++;
+        machineRaceRetryCount++;
+        setMachineProgressStatus("Máy trả lời sai, đang thử lại • Câu " + (machineQuestionIndex + 1) + "/" + questions.length);
+        scheduleMachineRaceAnswer(true);
+      }, delay);
+    }
+
+    function finishMachineRaceAsWinner(){
+      if(opponentFinished || localFinished) return;
+      opponentFinished = true;
+      machineQuestionIndex = questions.length;
+      clearGameTimers();
       updateScoreboard();
+
+      const localCompleted = Math.min(
+        currentQuestionIndex + (answered ? 1 : 0),
+        questions.length
+      );
+
+      showBeautifulResult({
+        state: "loss",
+        winner: "opponent",
+        icon: "🤖",
+        badge: "Máy về đích trước",
+        kicker: "Đua tốc độ đã kết thúc",
+        title: "Máy chiến thắng!",
+        message: "Máy đã hoàn thành toàn bộ câu hỏi trước bạn.",
+        localValue: localCompleted,
+        opponentValue: questions.length,
+        unit: "câu hoàn thành",
+        middleText: "VỀ ĐÍCH TRƯỚC",
+        reason: "Máy hoàn thành " + questions.length + "/" + questions.length + " câu sau khi suy nghĩ theo độ khó và có " + machineWrongAnswers + " lần trả lời sai."
+      });
+    }
+
+    function settleMachineRound() {
+      // Bot đua tốc độ chạy độc lập bằng bộ đếm thời gian riêng, vì vậy việc
+      // người chơi chuyển câu không còn làm máy trả lời ngay lập tức.
+      return;
     }
 
     function nextQuestion() {
@@ -5999,7 +6353,9 @@
       const localQuestion = Math.min(currentQuestionIndex + 1, questions.length);
       const opponentQuestion =
         gameMode === "machine"
-          ? localQuestion
+          ? (onlineMatchType === "race"
+              ? Math.min(machineQuestionIndex + (opponentFinished ? 0 : 1), questions.length)
+              : localQuestion)
           : Math.min(Math.max(onlineOpponentProgress, 1), questions.length);
 
       document.getElementById("localProgress").textContent =
@@ -6077,6 +6433,25 @@
       settleMachineRound();
       localFinished = true;
       document.getElementById("progress").style.width = "100%";
+
+      if(gameMode === "machine" && onlineMatchType === "race" && currentQuestionIndex >= questions.length){
+        clearGameTimers();
+        showBeautifulResult({
+          state: "win",
+          winner: "local",
+          icon: "🏆",
+          badge: "Bạn về đích trước",
+          kicker: "Đua tốc độ đã kết thúc",
+          title: localName + " chiến thắng!",
+          message: "Bạn đã hoàn thành toàn bộ câu hỏi trước máy.",
+          localValue: questions.length,
+          opponentValue: Math.min(machineQuestionIndex, questions.length),
+          unit: "câu hoàn thành",
+          middleText: "VỀ ĐÍCH TRƯỚC",
+          reason: "Bạn hoàn thành " + questions.length + "/" + questions.length + " câu trước khi máy về đích."
+        });
+        return;
+      }
 
       if (gameMode === "online" && isOnlineConnected()) {
         if(onlineMatchType === "race") onlineSend({type:"raceWin",winner:localName});
@@ -6889,7 +7264,7 @@
     }
 
     function changePuzzleZoom(amount) {
-      puzzleZoomScale = Math.min(3, Math.max(1, puzzleZoomScale + amount));
+      puzzleZoomScale = Math.min(5, Math.max(1, puzzleZoomScale + amount));
       updatePuzzleZoomView();
     }
 
@@ -6920,6 +7295,15 @@
         openPuzzleZoom(event.target);
       }
     });
+
+    document.addEventListener("wheel", function (event) {
+      const modal = document.getElementById("puzzleZoomModal");
+      const stage = document.getElementById("puzzleZoomStage");
+      if (!modal || !stage || !modal.classList.contains("show")) return;
+      if (!stage.contains(event.target)) return;
+      event.preventDefault();
+      changePuzzleZoom(event.deltaY < 0 ? 0.2 : -0.2);
+    }, { passive: false });
 
     document.addEventListener("DOMContentLoaded", function () {
       const observer = new MutationObserver(function () {
