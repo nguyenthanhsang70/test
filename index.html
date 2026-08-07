@@ -1,3408 +1,2442 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Vòng quay may mắn</title>
-
-  <style>
-    :root {
-      --primary: #7c3aed;
-      --primary-dark: #4c1d95;
-      --danger: #ef4444;
-      --text: #1e293b;
-      --muted: #64748b;
-      --card: rgba(255, 255, 255, 0.95);
-      --border: rgba(255, 255, 255, 0.55);
-      --shadow: 0 25px 60px rgba(49, 18, 99, 0.25);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      padding: 35px 20px;
-      overflow-x: hidden;
-      background:
-        radial-gradient(
-          circle at 10% 20%,
-          rgba(236, 72, 153, 0.4),
-          transparent 30%
-        ),
-        radial-gradient(
-          circle at 90% 80%,
-          rgba(34, 211, 238, 0.3),
-          transparent 34%
-        ),
-        linear-gradient(
-          135deg,
-          #32106b 0%,
-          #6d28d9 45%,
-          #2563eb 100%
-        );
-      color: var(--text);
-      font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    }
-
-    body::before,
-    body::after {
-      position: fixed;
-      z-index: -1;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      content: "";
-      filter: blur(15px);
-      opacity: 0.45;
-    }
-
-    body::before {
-      top: -90px;
-      right: -70px;
-      background: #fbbf24;
-    }
-
-    body::after {
-      bottom: -110px;
-      left: -70px;
-      background: #22d3ee;
-    }
-
-    body.modal-open {
-      overflow: hidden;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      border: none;
-    }
-
-    /* =========================
-       TIÊU ĐỀ
-    ========================== */
-
-    .page-header {
-      margin-bottom: 30px;
-      color: #ffffff;
-      text-align: center;
-    }
-
-    .page-header h1 {
-      margin: 0;
-      font-size: clamp(34px, 5vw, 58px);
-      line-height: 1.05;
-      letter-spacing: -2px;
-      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    }
-
-    .page-header p {
-      max-width: 650px;
-      margin: 13px auto 0;
-      color: rgba(255, 255, 255, 0.82);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    /* =========================
-       BỐ CỤC CHÍNH
-    ========================== */
-
-    .app-container {
-      display: grid;
-      grid-template-columns:
-        minmax(0, 1.25fr)
-        minmax(320px, 0.75fr);
-      gap: 24px;
-      width: min(1180px, 100%);
-      margin: 0 auto;
-      align-items: start;
-    }
-
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      background: var(--card);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(22px);
-    }
-
-    /* =========================
-       KHUNG VÒNG QUAY
-    ========================== */
-
-    .wheel-card {
-      display: flex;
-      width: 100%;
-      height: auto;
-      min-height: 0;
-      padding: 32px 24px 38px;
-      overflow: visible;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
-    .wheel-heading {
-      width: 100%;
-      margin-bottom: 18px;
-      text-align: center;
-    }
-
-    .wheel-heading h2 {
-      margin: 0 0 7px;
-      font-size: 25px;
-    }
-
-    .wheel-heading p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .wheel-stage {
-      position: relative;
-      display: flex;
-      width: min(560px, 82vw);
-      aspect-ratio: 1;
-      margin: 38px auto 0;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .wheel-glow {
-      position: absolute;
-      inset: 5%;
-      border-radius: 50%;
-      background:
-        radial-gradient(
-          circle,
-          rgba(168, 85, 247, 0.5),
-          rgba(236, 72, 153, 0.2) 45%,
-          transparent 70%
-        );
-      filter: blur(38px);
-      animation: wheelGlow 2.8s ease-in-out infinite alternate;
-    }
-
-    @keyframes wheelGlow {
-      from {
-        opacity: 0.65;
-        transform: scale(0.93);
-      }
-
-      to {
-        opacity: 1;
-        transform: scale(1.07);
-      }
-    }
-
-    .wheel-frame {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      padding: 35px;
-      border-radius: 50%;
-      background:
-        linear-gradient(
-          145deg,
-          #fff8d4 0%,
-          #f5c451 14%,
-          #9b5c00 40%,
-          #ffe89a 65%,
-          #a96000 82%,
-          #ffd76a 100%
-        );
-      box-shadow:
-        0 38px 70px rgba(44, 17, 91, 0.38),
-        0 16px 25px rgba(0, 0, 0, 0.2),
-        inset 0 6px 12px rgba(255, 255, 255, 0.85),
-        inset 0 -9px 16px rgba(107, 56, 0, 0.58);
-    }
-
-    .wheel-frame::before {
-      position: absolute;
-      inset: 13px;
-      border: 3px solid rgba(255, 249, 206, 0.68);
-      border-radius: 50%;
-      content: "";
-      box-shadow:
-        inset 0 0 17px rgba(255, 255, 255, 0.8),
-        0 0 14px rgba(255, 221, 113, 0.5);
-      pointer-events: none;
-    }
-
-    .wheel-frame::after {
-      position: absolute;
-      inset: 26px;
-      border: 2px solid rgba(105, 54, 0, 0.35);
-      border-radius: 50%;
-      content: "";
-      pointer-events: none;
-    }
-
-    .wheel-inner-frame {
-      position: relative;
-      z-index: 3;
-      width: 100%;
-      height: 100%;
-      padding: 7px;
-      border-radius: 50%;
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.96),
-          rgba(255, 220, 122, 0.82),
-          rgba(124, 58, 237, 0.38)
-        );
-      box-shadow:
-        inset 0 0 13px rgba(255, 255, 255, 0.98),
-        0 6px 17px rgba(0, 0, 0, 0.25);
-    }
-
-    #wheelCanvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      filter: saturate(1.08) contrast(1.03);
-    }
-
-    /* =========================
-       ĐÈN TRANG TRÍ
-    ========================== */
-
-    .decorative-lights {
-      position: absolute;
-      z-index: 8;
-      inset: 0;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .wheel-light {
-      position: absolute;
-      width: 13px;
-      height: 13px;
-      border: 2px solid rgba(255, 255, 255, 0.88);
-      border-radius: 50%;
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #ffffff 0%,
-          #fff3a7 20%,
-          #ffc928 50%,
-          #ff7a00 100%
-        );
-      box-shadow:
-        0 0 8px #fff4ad,
-        0 0 15px rgba(255, 179, 0, 0.95);
-      transform: translate(-50%, -50%);
-      animation: lightBlink 1.4s ease-in-out infinite alternate;
-      animation-delay: var(--delay);
-    }
-
-    @keyframes lightBlink {
-      from {
-        opacity: 0.5;
-        filter: brightness(0.8);
-      }
-
-      to {
-        opacity: 1;
-        filter: brightness(1.5);
-      }
-    }
-
-    /* =========================
-       CÂY KIM
-    ========================== */
-
-    .pointer-wrapper {
-      position: absolute;
-      top: -31px;
-      left: 50%;
-      z-index: 60;
-      width: 72px;
-      height: 112px;
-      transform: translateX(-50%);
-      pointer-events: none;
-    }
-
-    .pointer {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-origin: 50% 28px;
-      animation: pointerIdle 2.2s ease-in-out infinite;
-    }
-
-    .pointer-cap {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      z-index: 4;
-      width: 58px;
-      height: 58px;
-      border: 5px solid #fff3ba;
-      border-radius: 50%;
-      background:
-        radial-gradient(
-          circle at 32% 25%,
-          #ffd4df 0%,
-          #fb7185 24%,
-          #e11d48 55%,
-          #9f1239 100%
-        );
-      box-shadow:
-        0 7px 15px rgba(72, 15, 43, 0.38),
-        0 0 0 3px rgba(136, 75, 5, 0.3),
-        inset 0 4px 6px rgba(255, 255, 255, 0.42),
-        inset 0 -7px 10px rgba(88, 5, 32, 0.42);
-      transform: translateX(-50%);
-    }
-
-    .pointer-cap::before {
-      position: absolute;
-      inset: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      border-radius: 50%;
-      content: "";
-    }
-
-    .pointer-highlight {
-      position: absolute;
-      top: 9px;
-      left: 11px;
-      width: 20px;
-      height: 9px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.62);
-      transform: rotate(-28deg);
-    }
-
-    .pointer-dot {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 18px;
-      height: 18px;
-      border: 3px solid #fff7c2;
-      border-radius: 50%;
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #fffce3,
-          #fbbf24 45%,
-          #b45309 100%
-        );
-      box-shadow:
-        0 2px 5px rgba(91, 42, 0, 0.35),
-        inset 0 2px 3px rgba(255, 255, 255, 0.7);
-      transform: translate(-50%, -50%);
-    }
-
-    .pointer-arrow-border {
-      position: absolute;
-      top: 42px;
-      left: 50%;
-      z-index: 2;
-      width: 42px;
-      height: 68px;
-      background: #fff3ba;
-      clip-path: polygon(
-        50% 100%,
-        4% 19%,
-        18% 0,
-        82% 0,
-        96% 19%
-      );
-      filter: drop-shadow(0 7px 5px rgba(81, 8, 37, 0.28));
-      transform: translateX(-50%);
-    }
-
-    .pointer-arrow {
-      position: absolute;
-      inset: 5px;
-      background:
-        linear-gradient(
-          160deg,
-          #ff9caf 0%,
-          #f43f5e 35%,
-          #be123c 68%,
-          #881337 100%
-        );
-      clip-path: polygon(
-        50% 100%,
-        0 18%,
-        15% 0,
-        85% 0,
-        100% 18%
-      );
-    }
-
-    .pointer-arrow::after {
-      position: absolute;
-      top: 7px;
-      left: 8px;
-      width: 7px;
-      height: 30px;
-      border-radius: 999px;
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.55),
-          rgba(255, 255, 255, 0)
-        );
-      content: "";
-      transform: rotate(-8deg);
-    }
-
-    @keyframes pointerIdle {
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(2px);
-      }
-    }
-
-    .pointer-wrapper.is-spinning .pointer {
-      animation: pointerTick 0.11s ease-in-out infinite alternate;
-    }
-
-    @keyframes pointerTick {
-      from {
-        transform: rotate(-5deg);
-      }
-
-      to {
-        transform: rotate(5deg);
-      }
-    }
-
-    /* =========================
-       NÚT QUAY
-    ========================== */
-
-    .spin-button {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      z-index: 30;
-      display: flex;
-      width: 135px;
-      height: 135px;
-      padding: 0;
-      border: 9px solid rgba(255, 248, 199, 0.97);
-      border-radius: 50%;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(
-          circle at 35% 25%,
-          #ff9bd6 0%,
-          #ec4899 25%,
-          #8b5cf6 60%,
-          #4c1d95 100%
-        );
-      color: #ffffff;
-      cursor: pointer;
-      box-shadow:
-        0 15px 30px rgba(76, 29, 149, 0.52),
-        inset 0 5px 8px rgba(255, 255, 255, 0.42),
-        inset 0 -10px 17px rgba(48, 15, 98, 0.58),
-        0 0 0 5px rgba(122, 66, 15, 0.36);
-      transform: translate(-50%, -50%);
-      transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        filter 0.2s ease;
-    }
-
-    .spin-button::before {
-      position: absolute;
-      inset: 9px;
-      border: 2px dashed rgba(255, 255, 255, 0.48);
-      border-radius: 50%;
-      content: "";
-    }
-
-    .spin-button:hover:not(:disabled) {
-      filter: brightness(1.1);
-      transform:
-        translate(-50%, -50%)
-        scale(1.07);
-    }
-
-    .spin-button:active:not(:disabled) {
-      transform:
-        translate(-50%, -50%)
-        scale(0.96);
-    }
-
-    .spin-button:disabled {
-      cursor: not-allowed;
-      filter: grayscale(0.2);
-      opacity: 0.78;
-    }
-
-    .spin-button-small {
-      position: relative;
-      z-index: 2;
-      margin-bottom: 2px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      opacity: 0.85;
-    }
-
-    .spin-button-main {
-      position: relative;
-      z-index: 2;
-      font-size: 25px;
-      font-weight: 950;
-      letter-spacing: 1px;
-      text-shadow:
-        0 3px 6px rgba(49, 13, 80, 0.5);
-    }
-
-    /* =========================
-       KẾT QUẢ DƯỚI VÒNG QUAY
-    ========================== */
-
-    .result-box {
-      display: flex;
-      width: min(520px, 100%);
-      min-height: 82px;
-      margin-top: 45px;
-      padding: 16px 20px;
-      border: 1px solid rgba(124, 58, 237, 0.14);
-      border-radius: 20px;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: center;
-      background:
-        linear-gradient(
-          135deg,
-          rgba(124, 58, 237, 0.08),
-          rgba(236, 72, 153, 0.08)
-        );
-      text-align: center;
-    }
-
-    .result-placeholder {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .result-content {
-      animation: resultAppear 0.5s ease;
-    }
-
-    .result-label {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    .result-value {
-      display: block;
-      color: var(--primary-dark);
-      font-size: 25px;
-      font-weight: 950;
-      word-break: break-word;
-    }
-
-    @keyframes resultAppear {
-      from {
-        opacity: 0;
-        transform:
-          translateY(10px)
-          scale(0.93);
-      }
-
-      to {
-        opacity: 1;
-        transform:
-          translateY(0)
-          scale(1);
-      }
-    }
-
-    /* =========================
-       KHUNG THÊM NỘI DUNG
-    ========================== */
-
-    .control-card {
-      display: flex;
-      height: 750px;
-      min-height: 750px;
-      max-height: 750px;
-      padding: 28px;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .control-card h2 {
-      margin: 0 0 7px;
-      flex: 0 0 auto;
-      font-size: 23px;
-    }
-
-    .control-description {
-      margin: 0 0 24px;
-      flex: 0 0 auto;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .input-group {
-      display: grid;
-      grid-template-columns:
-        minmax(0, 1fr)
-        auto;
-      gap: 10px;
-      flex: 0 0 auto;
-    }
-
-    .input-wrapper {
-      position: relative;
-      min-width: 0;
-    }
-
-    .input-icon {
-      position: absolute;
-      top: 50%;
-      left: 15px;
-      width: 20px;
-      height: 20px;
-      color: #94a3b8;
-      transform: translateY(-50%);
-      pointer-events: none;
-    }
-
-    #itemInput {
-      width: 100%;
-      height: 52px;
-      padding: 0 15px 0 45px;
-      border: 2px solid #e2e8f0;
-      border-radius: 15px;
-      outline: none;
-      background: #ffffff;
-      color: var(--text);
-      font-size: 15px;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-    }
-
-    #itemInput:focus {
-      border-color: var(--primary);
-      box-shadow:
-        0 0 0 4px rgba(124, 58, 237, 0.12);
-    }
-
-    #addButton {
-      height: 52px;
-      padding: 0 21px;
-      border-radius: 15px;
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary-dark)
-        );
-      color: #ffffff;
-      cursor: pointer;
-      font-weight: 850;
-      box-shadow:
-        0 9px 20px rgba(91, 33, 182, 0.28);
-      transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-    }
-
-    #addButton:hover {
-      box-shadow:
-        0 13px 26px rgba(91, 33, 182, 0.35);
-      transform: translateY(-2px);
-    }
-
-    #addButton:active {
-      transform: translateY(0);
-    }
-
-    .helper-text {
-      margin: 9px 2px 0;
-      flex: 0 0 auto;
-      color: #94a3b8;
-      font-size: 12px;
-    }
-
-    .list-header {
-      display: flex;
-      margin-top: 26px;
-      margin-bottom: 14px;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .list-title {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      font-size: 15px;
-      font-weight: 850;
-    }
-
-    .item-count {
-      display: inline-flex;
-      min-width: 29px;
-      height: 29px;
-      padding: 0 8px;
-      border-radius: 999px;
-      align-items: center;
-      justify-content: center;
-      background:
-        rgba(124, 58, 237, 0.1);
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .clear-button {
-      padding: 8px 11px;
-      border-radius: 10px;
-      background: transparent;
-      color: var(--danger);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 850;
-      transition: background 0.2s ease;
-    }
-
-    .clear-button:hover {
-      background:
-        rgba(239, 68, 68, 0.09);
-    }
-
-    .list-container {
-      min-height: 0;
-      padding-right: 6px;
-      flex: 1 1 auto;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-width: thin;
-      scrollbar-color:
-        #a78bfa transparent;
-    }
-
-    .list-container::-webkit-scrollbar {
-      width: 7px;
-    }
-
-    .list-container::-webkit-scrollbar-track {
-      border-radius: 999px;
-      background: transparent;
-    }
-
-    .list-container::-webkit-scrollbar-thumb {
-      border-radius: 999px;
-      background:
-        linear-gradient(
-          180deg,
-          #a78bfa,
-          #7c3aed
-        );
-    }
-
-    .list-container::-webkit-scrollbar-thumb:hover {
-      background: #6d28d9;
-    }
-
-    #itemList {
-      display: flex;
-      width: 100%;
-      margin: 0;
-      padding: 0 2px 12px 0;
-      flex-direction: column;
-      gap: 9px;
-      list-style: none;
-    }
-
-    .list-item {
-      display: flex;
-      width: 100%;
-      min-height: 56px;
-      padding: 9px 10px 9px 14px;
-      border: 1px solid #edf0f5;
-      border-radius: 15px;
-      flex: 0 0 auto;
-      align-items: center;
-      gap: 11px;
-      background: #ffffff;
-      box-shadow:
-        0 5px 15px rgba(15, 23, 42, 0.05);
-      animation: itemAppear 0.3s ease;
-    }
-
-    .list-item:first-child {
-      border-color:
-        rgba(124, 58, 237, 0.25);
-      background:
-        linear-gradient(
-          135deg,
-          rgba(124, 58, 237, 0.07),
-          rgba(236, 72, 153, 0.04)
-        );
-    }
-
-    @keyframes itemAppear {
-      from {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .item-number {
-      display: flex;
-      width: 31px;
-      height: 31px;
-      flex: 0 0 31px;
-      border-radius: 10px;
-      align-items: center;
-      justify-content: center;
-      background:
-        rgba(124, 58, 237, 0.1);
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .item-name {
-      min-width: 0;
-      flex: 1;
-      overflow: hidden;
-      font-size: 14px;
-      font-weight: 750;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .top-badge {
-      flex: 0 0 auto;
-      padding: 4px 7px;
-      border-radius: 999px;
-      background:
-        rgba(16, 185, 129, 0.12);
-      color: #047857;
-      font-size: 9px;
-      font-weight: 900;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-    }
-
-    .delete-button {
-      display: flex;
-      width: 35px;
-      height: 35px;
-      flex: 0 0 35px;
-      border-radius: 10px;
-      align-items: center;
-      justify-content: center;
-      background:
-        rgba(239, 68, 68, 0.08);
-      color: var(--danger);
-      cursor: pointer;
-      transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-    }
-
-    .delete-button:hover {
-      background:
-        rgba(239, 68, 68, 0.17);
-      transform: scale(1.08);
-    }
-
-    .delete-button svg {
-      width: 17px;
-      height: 17px;
-    }
-
-    .empty-list {
-      padding: 36px 15px;
-      border: 2px dashed #e2e8f0;
-      border-radius: 17px;
-      color: #94a3b8;
-      text-align: center;
-    }
-
-    .empty-list strong {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .empty-list span {
-      font-size: 12px;
-    }
-
-    .notice {
-      display: flex;
-      margin-top: 19px;
-      padding: 13px 14px;
-      border-radius: 14px;
-      flex: 0 0 auto;
-      align-items: flex-start;
-      gap: 9px;
-      background:
-        rgba(16, 185, 129, 0.08);
-      color: #047857;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .notice svg {
-      width: 18px;
-      height: 18px;
-      flex: 0 0 18px;
-    }
-
-    /* =========================
-       THÔNG BÁO KẾT QUẢ
-    ========================== */
-
-    .result-modal {
-      position: fixed;
-      z-index: 10000;
-      inset: 0;
-      display: flex;
-      padding: 20px;
-      align-items: center;
-      justify-content: center;
-      visibility: hidden;
-      opacity: 0;
-      transition:
-        opacity 0.25s ease,
-        visibility 0.25s ease;
-    }
-
-    .result-modal.is-visible {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .result-modal-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.35);
-    }
-
-    .result-modal-card {
-      --result-accent: #3867e8;
-      --result-accent-dark: #2d57c7;
-      position: relative;
-      z-index: 1;
-      width: min(470px, 100%);
-      padding: 34px 0 0;
-      border: 1px solid #d7d7d7;
-      background: #ffffff;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-      text-align: center;
-      overflow: hidden;
-      transform: scale(0.92) translateY(14px);
-      transition: transform 0.25s ease;
-    }
-
-    .result-modal.is-visible .result-modal-card {
-      transform: scale(1) translateY(0);
-    }
-
-    .result-modal-close {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      display: flex;
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      border-radius: 50%;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      color: #8d8d8d;
-      cursor: pointer;
-      font-size: 24px;
-      line-height: 1;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-
-    .result-modal-close:hover {
-      background: rgba(0, 0, 0, 0.06);
-      color: #555555;
-    }
-
-    .result-modal-label {
-      display: block;
-      margin-bottom: 20px;
-      color: #7b7b7b;
-      font-size: 16px;
-      font-weight: 750;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-    }
-
-    .result-modal-check {
-      display: flex;
-      width: 76px;
-      height: 76px;
-      margin: 0 auto 20px;
-      border: 5px solid var(--result-accent);
-      border-radius: 50%;
-      align-items: center;
-      justify-content: center;
-      background: #ffffff;
-    }
-
-    .result-modal-check svg {
-      width: 36px;
-      height: 36px;
-      stroke: var(--result-accent);
-      stroke-width: 3.2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .result-modal.is-visible .result-modal-check {
-      animation: checkPop 0.35s ease both;
-    }
-
-    .result-modal.is-visible .result-modal-check svg path {
-      stroke-dasharray: 36;
-      stroke-dashoffset: 36;
-      animation: drawCheck 0.5s ease 0.15s forwards;
-    }
-
-    @keyframes checkPop {
-      from {
-        opacity: 0;
-        transform: scale(0.7);
-      }
-
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    @keyframes drawCheck {
-      from {
-        stroke-dashoffset: 36;
-      }
-
-      to {
-        stroke-dashoffset: 0;
-      }
-    }
-
-    .result-modal-value {
-      margin: 0;
-      padding: 0 26px 28px;
-      color: var(--result-accent);
-      font-size: clamp(34px, 7vw, 50px);
-      font-weight: 500;
-      line-height: 1.15;
-      overflow-wrap: anywhere;
-    }
-
-    .result-modal-footer {
-      display: flex;
-      padding: 20px 18px 16px;
-      border-top: 1px solid #d9d9d9;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: #fafafa;
-    }
-
-    .result-modal-button,
-    .result-modal-delete {
-      min-width: 120px;
-      height: 44px;
-      padding: 0 16px;
-      border-radius: 6px;
-      color: #ffffff;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 700;
-      transition: filter 0.2s ease, transform 0.2s ease;
-    }
-
-    .result-modal-button {
-      background: #808a97;
-    }
-
-    .result-modal-delete {
-      background: #e63946;
-    }
-
-    .result-modal-button:hover,
-    .result-modal-delete:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-    }
-
-
-    /* =========================
-       HOA GIẤY
-    ========================== */
-
-    .confetti {
-      position: fixed;
-      z-index: 10001;
-      top: -20px;
-      width: 10px;
-      height: 18px;
-      border-radius: 2px;
-      pointer-events: none;
-      animation:
-        confettiFall linear forwards;
-    }
-
-    @keyframes confettiFall {
-      from {
-        opacity: 1;
-        transform:
-          translateY(-20px)
-          rotate(0deg);
-      }
-
-      to {
-        opacity: 0;
-        transform:
-          translateY(110vh)
-          rotate(900deg);
-      }
-    }
-
-    /* =========================
-       RESPONSIVE
-    ========================== */
-
-    @media (max-width: 960px) {
-      .app-container {
-        grid-template-columns: 1fr;
-        align-items: start;
-      }
-
-      .wheel-card {
-        width: 100%;
-        height: auto;
-        min-height: 0;
-        overflow: visible;
-      }
-
-      .control-card {
-        width: 100%;
-        height: 650px;
-        min-height: 650px;
-        max-height: 650px;
-      }
-    }
-
-    @media (max-width: 650px) {
-      body {
-        padding: 24px 12px;
-      }
-
-      .page-header {
-        margin-bottom: 24px;
-      }
-
-      .page-header h1 {
-        font-size: 36px;
-        letter-spacing: -1px;
-      }
-
-      .page-header p {
-        font-size: 13px;
-      }
-
-      .card {
-        border-radius: 22px;
-      }
-
-      .wheel-card {
-        height: auto;
-        min-height: 0;
-        padding: 27px 10px 32px;
-        overflow: visible;
-      }
-
-      .control-card {
-        height: 600px;
-        min-height: 600px;
-        max-height: 600px;
-        padding: 22px 17px;
-      }
-
-      .wheel-stage {
-        width: min(430px, 86vw);
-        margin-top: 32px;
-      }
-
-      .wheel-frame {
-        padding: 27px;
-      }
-
-      .wheel-light {
-        width: 10px;
-        height: 10px;
-      }
-
-      .pointer-wrapper {
-        top: -26px;
-        transform:
-          translateX(-50%)
-          scale(0.8);
-      }
-
-      .spin-button {
-        width: 104px;
-        height: 104px;
-        border-width: 7px;
-      }
-
-      .spin-button-main {
-        font-size: 19px;
-      }
-
-      .spin-button-small {
-        font-size: 8px;
-      }
-
-      .input-group {
-        grid-template-columns: 1fr;
-      }
-
-      #addButton {
-        width: 100%;
-      }
-
-      .result-box {
-        width: calc(100% - 20px);
-        margin-top: 35px;
-      }
-
-      .top-badge {
-        display: none;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .result-modal-card {
-        width: min(94vw, 470px);
-      }
-
-      .result-modal-check {
-        width: 68px;
-        height: 68px;
-      }
-
-      .result-modal-value {
-        padding: 0 18px 24px;
-        font-size: 27px;
-      }
-
-      .result-modal-footer {
-        flex-wrap: wrap;
-      }
-
-      .result-modal-button,
-      .result-modal-delete {
-        min-width: 130px;
-      }
-    }
-
-    @media (max-width: 420px) {
-      .wheel-heading {
-        margin-bottom: 10px;
-      }
-
-      .wheel-stage {
-        width: 84vw;
-        margin-top: 28px;
-      }
-
-      .control-card {
-        height: 570px;
-        min-height: 570px;
-        max-height: 570px;
-      }
-
-      .result-box {
-        min-height: 70px;
-        margin-top: 28px;
-      }
-    }
-
-
-    /* Cho phép bôi đen và sao chép nội dung */
-    html,
-    body {
-      -webkit-user-select: text;
-      user-select: text;
-    }
-
-
-    /* =========================
-       HƯỚNG DẪN SỬ DỤNG
-    ========================== */
-
-    .guide-open-button {
-      position: fixed;
-      z-index: 9000;
-      right: 18px;
-      bottom: 18px;
-      display: inline-flex;
-      min-height: 44px;
-      padding: 0 16px;
-      border: 1px solid rgba(255, 255, 255, 0.55);
-      border-radius: 999px;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: rgba(76, 29, 149, 0.9);
-      color: #ffffff;
-      cursor: pointer;
-      box-shadow: 0 12px 30px rgba(49, 18, 99, 0.32);
-      font-size: 13px;
-      font-weight: 850;
-      backdrop-filter: blur(12px);
-      transition: transform 0.2s ease, filter 0.2s ease;
-    }
-
-    .guide-open-button:hover {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
-    }
-
-    .guide-open-button svg {
-      width: 18px;
-      height: 18px;
-      flex: 0 0 18px;
-    }
-
-    .guide-modal {
-      position: fixed;
-      z-index: 11000;
-      inset: 0;
-      display: flex;
-      padding: 20px;
-      align-items: center;
-      justify-content: center;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.25s ease, visibility 0.25s ease;
-    }
-
-    .guide-modal.is-visible {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .guide-modal-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(20, 8, 45, 0.62);
-      backdrop-filter: blur(5px);
-    }
-
-    .guide-modal-card {
-      position: relative;
-      z-index: 1;
-      width: min(520px, 100%);
-      padding: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.62);
-      border-radius: 24px;
-      background: #ffffff;
-      box-shadow: 0 30px 80px rgba(28, 9, 64, 0.42);
-      transform: translateY(18px) scale(0.95);
-      transition: transform 0.25s ease;
-    }
-
-    .guide-modal.is-visible .guide-modal-card {
-      transform: translateY(0) scale(1);
-    }
-
-    .guide-modal-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      display: flex;
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border-radius: 50%;
-      align-items: center;
-      justify-content: center;
-      background: #f1f5f9;
-      color: #64748b;
-      cursor: pointer;
-      font-size: 24px;
-      line-height: 1;
-    }
-
-    .guide-heading {
-      margin: 0 38px 7px 0;
-      color: var(--primary-dark);
-      font-size: 27px;
-      line-height: 1.2;
-    }
-
-    .guide-intro {
-      margin: 0 0 22px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .guide-steps {
-      display: grid;
-      margin: 0;
-      padding: 0;
-      gap: 12px;
-      list-style: none;
-    }
-
-    .guide-step {
-      display: grid;
-      grid-template-columns: 38px minmax(0, 1fr);
-      padding: 13px 14px;
-      border: 1px solid #ede9fe;
-      border-radius: 16px;
-      align-items: start;
-      gap: 12px;
-      background: linear-gradient(135deg, #faf5ff, #f8fafc);
-    }
-
-    .guide-step-number {
-      display: flex;
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 950;
-      box-shadow: 0 7px 14px rgba(91, 33, 182, 0.2);
-    }
-
-    .guide-step strong {
-      display: block;
-      margin: 1px 0 3px;
-      color: var(--text);
-      font-size: 14px;
-    }
-
-    .guide-step span:last-child {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .guide-start-button {
-      width: 100%;
-      height: 50px;
-      margin-top: 22px;
-      border-radius: 15px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #ffffff;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 900;
-      box-shadow: 0 10px 22px rgba(91, 33, 182, 0.28);
-      transition: transform 0.2s ease, filter 0.2s ease;
-    }
-
-    .guide-start-button:hover {
-      filter: brightness(1.08);
-      transform: translateY(-1px);
-    }
-
-    @media (max-width: 520px) {
-      .guide-modal-card {
-        padding: 24px 18px 20px;
-        border-radius: 20px;
-      }
-
-      .guide-heading {
-        font-size: 23px;
-      }
-
-      .guide-open-button {
-        right: 12px;
-        bottom: 12px;
-      }
-    }
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caro</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --bg:#07111f;--panel:#0d1b2d;--panel2:#13253b;--line:rgba(255,255,255,.1);
+  --text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--blue:#3b82f6;--purple:#8b5cf6;
+  --red:#fb7185;--green:#22c55e;--gold:#fbbf24;--cell:#f5efe3;--cell-line:#cabd9e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;font-family:Inter,"Segoe UI",sans-serif;color:var(--text);
+  background:radial-gradient(circle at 10% 0%,rgba(34,211,238,.16),transparent 32%),
+             radial-gradient(circle at 95% 20%,rgba(139,92,246,.16),transparent 30%),
+             linear-gradient(150deg,#050b14,#0a1627 55%,#08111e);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:32px 32px;mask-image:linear-gradient(#000,transparent 90%)
+}
+button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.room-join-button,.icon-btn,.ghost-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.app{width:min(1180px,100%);margin:auto;padding:20px;position:relative;z-index:1}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.brand-wrap{display:flex;align-items:center;gap:10px}.title-back-btn{width:42px;height:42px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;display:grid;place-items:center;text-decoration:none;transition:.2s;flex:0 0 auto}.title-back-btn:hover{transform:translateX(-2px);background:rgba(255,255,255,.12)}.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-weight:900;font-size:20px;background:linear-gradient(145deg,var(--cyan),var(--purple));box-shadow:0 12px 30px rgba(34,211,238,.18)}
+.brand h1{font-size:20px;margin:0}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.top-actions{display:flex;gap:9px}
+.icon-btn,.ghost-btn{height:42px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;border-radius:13px;cursor:pointer;transition:.2s}
+.icon-btn{width:42px}.ghost-btn{padding:0 15px;font-weight:800}
+.icon-btn:hover,.ghost-btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.11)}
+.hero{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;padding:22px 24px;margin-bottom:18px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:0 24px 80px rgba(0,0,0,.25);backdrop-filter:blur(18px)}
+.hero h2{font-size:clamp(24px,4vw,42px);line-height:1.05;margin:0 0 8px}
+.hero h2 span{background:linear-gradient(90deg,var(--cyan),#a78bfa,#fb7185);-webkit-background-clip:text;color:transparent}
+.hero p{margin:0;color:var(--muted)}
+.status-pill{padding:13px 17px;border:1px solid rgba(34,197,94,.3);border-radius:999px;background:rgba(34,197,94,.1);color:#bbf7d0;font-weight:800;white-space:nowrap}
+.status-pill i{margin-right:7px;color:var(--green)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(120px);min-width:min(90vw,420px);max-width:90vw;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(8,20,36,.95);color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.35);z-index:120;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.warn{border-color:rgba(251,113,133,.5)}.toast.success{border-color:rgba(34,197,94,.45)}.toast i{margin-right:8px}
+.game-layout{display:grid;grid-template-columns:230px minmax(0,1fr) 230px;gap:16px;align-items:start}
+.player-card,.center-panel{border:1px solid var(--line);background:rgba(10,24,41,.78);backdrop-filter:blur(18px);box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.player-card{border-radius:23px;padding:18px;position:relative;overflow:hidden}
+.player-card.active{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 2px rgba(34,211,238,.1),0 20px 60px rgba(0,0,0,.28)}
+.player-card.active:after{content:"ĐANG ĐÁNH";position:absolute;right:-31px;top:21px;transform:rotate(42deg);font-size:10px;font-weight:900;letter-spacing:1px;background:var(--cyan);color:#06202b;padding:6px 35px}
+.avatar{width:72px;height:72px;border-radius:22px;display:grid;place-items:center;margin:0 auto 12px;font-size:30px;font-weight:900;background:linear-gradient(145deg,#1e3a5f,#132238);border:1px solid var(--line)}
+.player-card.x .avatar{color:#7dd3fc;box-shadow:inset 0 0 25px rgba(59,130,246,.18)}
+.player-card.o .avatar{color:#fda4af;box-shadow:inset 0 0 25px rgba(251,113,133,.18)}
+.player-name{text-align:center;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-label{text-align:center;color:var(--muted);font-size:12px;margin-top:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+.stat{padding:10px;border-radius:14px;background:rgba(255,255,255,.045);text-align:center}
+.stat strong{display:block;font-size:20px}
+.stat span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.piece-badge{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:13px;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);font-weight:900}
+.piece-dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#111;font-weight:900}
+.center-panel{border-radius:26px;padding:18px}
+.match-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:15px}
+.mode-info{font-size:13px;color:var(--muted)}
+.mode-info strong{display:block;color:#fff;font-size:14px}
+.timer{width:96px;height:48px;border-radius:15px;position:relative;overflow:hidden;display:grid;place-items:center;border:1px solid var(--line);background:#0a1524;font-weight:900}
+.timer-fill{position:absolute;inset:auto 0 0;height:100%;background:linear-gradient(90deg,rgba(34,211,238,.25),rgba(139,92,246,.2));transition:height 1s linear}
+.timer.warning{border-color:rgba(251,113,133,.55);color:#fecdd3}.timer.warning .timer-fill{background:rgba(251,113,133,.25)}
+.timer span{position:relative;z-index:1}
+.turn-info{text-align:right;font-size:13px;color:var(--muted)}
+.turn-info strong{display:block;color:#fff}
+.board-shell{padding:13px;border-radius:22px;background:linear-gradient(145deg,#8b6a3b,#4e341e);box-shadow:inset 0 0 0 2px rgba(255,255,255,.1),0 18px 35px rgba(0,0,0,.34)}
+.board{display:grid;grid-template-columns:repeat(10,1fr);aspect-ratio:1/1;background:var(--cell);border:1px solid #a99670;position:relative;contain:layout paint style;transform:translateZ(0);backface-visibility:hidden}
+.cell{min-width:0;aspect-ratio:1;border-right:1px solid var(--cell-line);border-bottom:1px solid var(--cell-line);display:grid;place-items:center;cursor:pointer;position:relative;transition:background-color .08s ease;font-size:clamp(20px,3vw,32px);font-weight:900;user-select:none;contain:layout paint;backface-visibility:hidden}
+.cell:nth-child(10n){border-right:0}.cell:nth-last-child(-n+10){border-bottom:0}
+.cell:hover{background:rgba(59,130,246,.13)}
+.cell.X{color:#2563eb;text-shadow:0 2px 8px rgba(37,99,235,.25)}
+.cell.O{color:#e11d48;text-shadow:0 2px 8px rgba(225,29,72,.25)}
+.cell.piece-enter{animation:pieceEnter .13s cubic-bezier(.2,.9,.25,1)}
+@keyframes pieceEnter{0%{transform:scale(.72);opacity:.35}100%{transform:scale(1);opacity:1}}
+.cell.last:after{content:"";position:absolute;inset:9%;border:2px solid rgba(255,255,255,.8);border-radius:10px;pointer-events:none}
+.cell.win{animation:pulseWin .75s infinite alternate;background:rgba(251,191,36,.35)}
+@keyframes pulseWin{to{filter:brightness(1.25)}}
+.message{min-height:27px;text-align:center;margin-top:12px;font-weight:800;color:#dbeafe}
+.bottom-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-top:12px}
+.control-btn{border:1px solid var(--line);border-radius:14px;height:44px;background:rgba(255,255,255,.055);color:#fff;font-weight:800;cursor:pointer;transition:.2s}
+.control-btn.primary{background:linear-gradient(135deg,#0284c7,#4f46e5);border:0}
+.control-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.control-btn.leave{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.12);color:#fde68a}
+.control-btn.dissolve{min-width:190px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:9px;white-space:nowrap;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg,#fb3f63 0%,#e11d48 48%,#be123c 100%);color:#fff;box-shadow:0 10px 24px rgba(225,29,72,.28),inset 0 1px 0 rgba(255,255,255,.18)}
+.control-btn.dissolve i{width:28px;height:28px;flex:0 0 28px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.15);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.control-btn.dissolve:hover{transform:translateY(-3px);filter:brightness(1.08);box-shadow:0 14px 30px rgba(225,29,72,.36),inset 0 1px 0 rgba(255,255,255,.2)}
+.control-btn.dissolve:active{transform:translateY(0) scale(.98)}
+.hidden{display:none!important}
+.modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,6,23,.77);backdrop-filter:blur(12px)}
+.modal.show{display:flex}
+.modal-card{width:min(640px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(255,255,255,.14);border-radius:26px;background:linear-gradient(155deg,#10233a,#091526);box-shadow:0 35px 100px rgba(0,0,0,.55);padding:24px}
+#setupModal .modal-card{width:min(980px,100%)}
+.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:start}
+.modal-head h3{font-size:26px;margin:0}.modal-head p{color:var(--muted);margin:7px 0 0}
+.close-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;cursor:pointer}
+.head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}.back-game-btn{height:38px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;font-weight:800;cursor:pointer}.back-game-btn:hover{background:rgba(255,255,255,.12)}
+.steps{display:flex;gap:7px;margin:20px 0}.step{height:5px;flex:1;border-radius:99px;background:rgba(255,255,255,.09)}.step.active{background:linear-gradient(90deg,var(--cyan),var(--purple))}
+.wizard-page{display:none}.wizard-page.active{display:block}
+.choice-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.choice{padding:20px;border-radius:19px;border:1px solid var(--line);background:rgba(255,255,255,.045);cursor:pointer;text-align:left;color:#fff;transition:.2s}
+.choice:hover,.choice.selected{transform:translateY(-3px);border-color:rgba(34,211,238,.55);background:rgba(34,211,238,.09)}
+.choice i{font-size:25px;color:var(--cyan);margin-bottom:13px}.choice strong{display:block;font-size:17px}.choice span{display:block;color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:7px}
+.field input,.field select{width:100%;height:47px;padding:0 13px;border-radius:13px;border:1px solid var(--line);background:#091525;color:#fff;outline:none}
+.field input:focus,.field select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.1)}
+.inline-room{display:flex;gap:8px;align-items:center}.inline-room input{flex:1}.mini-btn{height:47px;min-width:47px;padding:0 14px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;cursor:pointer}.mini-btn:hover{background:rgba(255,255,255,.12)}
+.room-box,.computer-box{display:none;margin-top:13px;padding:15px;border-radius:15px;border:1px dashed rgba(34,211,238,.35);background:rgba(34,211,238,.06)}
+.room-box.show,.computer-box.show{display:block}
+.room-setup-layout{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+.room-config-pane{min-width:0}
+.room-browser{min-width:0;padding:14px;border-radius:15px;border:1px solid rgba(139,92,246,.28);background:rgba(7,17,31,.72)}
+.room-browser-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.room-browser-title{font-size:14px;font-weight:900;color:#f8fafc}
+.room-refresh-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:#fff;cursor:pointer;transition:.2s}
+.room-refresh-btn:hover{background:rgba(255,255,255,.13)}
+.room-refresh-btn.refreshing i{animation:roomSpin .65s linear infinite}
+@keyframes roomSpin{to{transform:rotate(360deg)}}
+.open-room-list{display:grid;gap:9px;max-height:300px;overflow:auto;padding-right:2px}
+.room-list-empty{padding:22px 12px;border:1px dashed rgba(148,163,184,.28);border-radius:13px;color:var(--muted);text-align:center;font-size:12px;line-height:1.55}
+.room-list-item{padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045)}
+.room-list-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.room-host{font-weight:900;font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.room-code{color:#fde68a;font-weight:950;letter-spacing:.09em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.room-list-meta{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}
+.room-chip{display:inline-flex;align-items:center;min-height:27px;padding:4px 8px;border-radius:999px;border:1px solid rgba(125,211,252,.18);background:rgba(56,189,248,.07);color:#bae6fd;font-size:10px;font-weight:850;white-space:nowrap}
+.room-chip.waiting{border-color:rgba(34,197,94,.28);background:rgba(34,197,94,.1);color:#bbf7d0}
+.room-chip.full{border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.1);color:#fde68a}
+.room-chip.playing{border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.1);color:#fbcfe8}
+.room-join-button{width:100%;min-height:39px;border:0;border-radius:11px;background:linear-gradient(135deg,#0891b2,#4f46e5);color:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.room-join-button:disabled{cursor:not-allowed;opacity:.46;background:rgba(148,163,184,.22)}
+.room-browser-note{margin-top:9px;color:#718096;font-size:10px;line-height:1.5}
+.piece-select{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.piece-choice{padding:18px;border:1px solid var(--line);border-radius:18px;text-align:center;background:rgba(255,255,255,.04)}
+.big-piece{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;margin:12px auto;font-size:34px;font-weight:900;background:#f8fafc}
+.big-piece.x{color:#2563eb;box-shadow:0 10px 30px rgba(37,99,235,.25)}.big-piece.o{color:#e11d48;box-shadow:0 10px 30px rgba(225,29,72,.25)}
+.swap-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.08);color:#fff;cursor:pointer}
+.helper-text{color:var(--muted);font-size:12px;line-height:1.5;margin-top:12px}
+.wizard-actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.wizard-btn{height:47px;padding:0 20px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;font-weight:900;cursor:pointer}
+.wizard-btn.next{margin-left:auto;background:linear-gradient(135deg,#0891b2,#4f46e5);border:0}
+.result-card{text-align:center}.trophy{font-size:62px;color:var(--gold);filter:drop-shadow(0 12px 25px rgba(251,191,36,.25))}.result-card h3{font-size:30px;margin:10px 0 6px}.result-card p{color:var(--muted)}
+@media(max-width:900px){.game-layout{grid-template-columns:1fr 1fr}.center-panel{grid-column:1/-1;grid-row:1}.player-card{grid-row:2}.hero{grid-template-columns:1fr}.status-pill{justify-self:start}.room-setup-layout{grid-template-columns:1fr}.open-room-list{max-height:245px}}
+@media(max-width:600px){.app{padding:12px}.brand p,.hero p{display:none}.hero{padding:16px}.game-layout{gap:10px}.player-card{padding:12px}.avatar{width:52px;height:52px;border-radius:16px}.stats{display:none}.piece-badge{font-size:12px}.center-panel{padding:10px;border-radius:18px}.board-shell{padding:8px}.match-bar{grid-template-columns:1fr auto}.turn-info{display:none}.bottom-controls{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.piece-select{grid-template-columns:1fr}.swap-btn{margin:auto;transform:rotate(90deg)}.modal-card{padding:18px}.top-actions .ghost-btn span{display:none}}
+
+@media (hover:none),(pointer:coarse){
+  .cell:hover,.control-btn:hover,.choice:hover,.icon-btn:hover,.ghost-btn:hover,.room-refresh-btn:hover{transform:none;filter:none}
+}
+@media(max-width:600px){
+  body:before{display:none}
+  .player-card,.center-panel,.modal,.modal-card,.hero{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .player-card,.center-panel,.modal-card,.hero{box-shadow:0 10px 28px rgba(0,0,0,.2)}
+  .board-shell{box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 8px 20px rgba(0,0,0,.24)}
+  .cell{transition:none}
+  .cell.win{animation-duration:1.1s}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+
+/* Mini chat online */
+.mini-chat{position:fixed;right:18px;bottom:18px;width:min(350px,calc(100vw - 24px));z-index:45;border:1px solid rgba(34,211,238,.26);border-radius:19px;background:rgba(7,17,31,.96);box-shadow:0 22px 65px rgba(0,0,0,.46);overflow:hidden;backdrop-filter:blur(18px);transition:transform .2s ease,opacity .2s ease}
+.mini-chat.hidden{display:none!important}
+.mini-chat.minimized .chat-body,.mini-chat.minimized .chat-compose{display:none}
+.chat-head{min-height:54px;padding:10px 11px 10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,rgba(34,211,238,.13),rgba(139,92,246,.13));border-bottom:1px solid var(--line)}
+.chat-title{min-width:0;display:flex;align-items:center;gap:10px}.chat-title-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#0891b2,#4f46e5);flex:0 0 auto}.chat-title-text{min-width:0}.chat-title-text strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-status{display:flex;align-items:center;gap:6px;margin-top:3px;color:var(--muted);font-size:10px}.chat-status-dot{width:7px;height:7px;border-radius:50%;background:#64748b;box-shadow:0 0 0 3px rgba(100,116,139,.12)}.chat-status.online .chat-status-dot{background:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.13)}
+.chat-head-actions{display:flex;align-items:center;gap:6px}.chat-unread{min-width:20px;height:20px;padding:0 6px;border-radius:999px;display:none;place-items:center;background:var(--red);color:#fff;font-size:10px;font-weight:900}.chat-unread.show{display:grid}.chat-toggle{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.06);color:#fff;cursor:pointer}.chat-toggle:hover{background:rgba(255,255,255,.12)}
+.chat-body{height:230px;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:9px;scroll-behavior:smooth}.chat-empty{margin:auto;text-align:center;color:var(--muted);font-size:12px;line-height:1.55;padding:18px}.chat-message{max-width:84%;display:flex;flex-direction:column;gap:3px;align-self:flex-start}.chat-message.own{align-self:flex-end;align-items:flex-end}.chat-message.system{max-width:100%;align-self:center;align-items:center}.chat-sender{padding:0 4px;color:var(--muted);font-size:9px;font-weight:800}.chat-bubble{padding:9px 11px;border-radius:14px 14px 14px 4px;background:rgba(255,255,255,.075);color:#e5edf7;font-size:12px;line-height:1.45;overflow-wrap:anywhere;white-space:pre-wrap}.chat-message.own .chat-bubble{border-radius:14px 14px 4px 14px;background:linear-gradient(135deg,#0284c7,#4f46e5);color:#fff}.chat-message.system .chat-bubble{padding:5px 9px;border-radius:999px;background:rgba(148,163,184,.1);color:#94a3b8;font-size:10px;text-align:center}.chat-time{padding:0 4px;color:#64748b;font-size:9px}
+.chat-compose{padding:10px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:8px;background:rgba(2,8,18,.5)}.chat-input{width:100%;height:42px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:#091525;color:#fff;outline:none}.chat-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.1)}.chat-input:disabled{opacity:.5;cursor:not-allowed}.chat-send{width:42px;height:42px;border:0;border-radius:12px;background:linear-gradient(135deg,#0891b2,#4f46e5);color:#fff;cursor:pointer}.chat-send:disabled{opacity:.42;cursor:not-allowed}.chat-send:not(:disabled):hover{filter:brightness(1.12);transform:translateY(-1px)}
+@media(max-width:600px){.mini-chat{right:12px;bottom:12px;width:calc(100vw - 24px);border-radius:17px;backdrop-filter:none}.chat-body{height:190px}.mini-chat:not(.minimized){bottom:8px}.chat-head{min-height:50px}}
+
+</style>
 </head>
-
 <body>
-  <header class="page-header">
-    <h1>Vòng quay may mắn</h1>
-
-    <p>
-      Thêm tên, phần thưởng hoặc nội dung vào danh sách.
-      Nhấn nút quay để chọn kết quả ngẫu nhiên.
-    </p>
-  </header>
-
-  <main class="app-container">
-    <section class="card wheel-card">
-      <div class="wheel-heading">
-        <h2>Sẵn sàng quay</h2>
-
-        <p>
-          Kim chỉ phía trên là vị trí kết quả
-        </p>
+<div class="app">
+  <div class="topbar">
+    <div class="brand-wrap">
+      <a class="title-back-btn" href="game.html" title="Quay lại trang game" aria-label="Quay lại trang game"><i class="fa-solid fa-arrow-left"></i></a>
+      <div class="brand">
+        <div>
+          <h1>Caro</h1>
+        </div>
       </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="soundBtn" title="Âm thanh"><i class="fa-solid fa-volume-high"></i></button>
+      <button class="ghost-btn" onclick="openGuide()"><i class="fa-solid fa-circle-question"></i> <span>Hướng dẫn chơi</span></button>
+      <button class="ghost-btn" onclick="openSetup()"><i class="fa-solid fa-sliders"></i> <span>Thiết lập</span></button>
+    </div>
+  </div>
 
-      <div class="wheel-stage">
-        <div class="wheel-glow"></div>
+  <section class="hero">
+    <div>
+      <h2>Chơi <span>Caro</span> theo cách của bạn</h2>
+      <p>Chơi với máy, chơi offline cùng bạn bè hoặc tạo và tham gia phòng online trên nhiều thiết bị.</p>
+    </div>
+    <div class="status-pill"><i class="fa-solid fa-circle-check"></i><span id="networkStatus">Sẵn sàng bắt đầu trận đấu</span></div>
+  </section>
 
-        <div class="wheel-frame">
-          <div
-            class="decorative-lights"
-            id="decorativeLights"
-          ></div>
+  <section class="game-layout">
+    <aside class="player-card x active" id="player1Card">
+      <div class="avatar" id="p1Avatar">X</div>
+      <div class="player-name" id="p1Name">Người chơi 1</div>
+      <div class="player-label" id="p1Label">PLAYER 1</div>
+      <div class="stats">
+        <div class="stat"><strong id="p1Score">0</strong><span>Điểm</span></div>
+        <div class="stat"><strong id="p1Wins">0</strong><span>Thắng</span></div>
+      </div>
+      <div class="piece-badge"><span class="piece-dot" id="p1PieceBadge">X</span><span>Quân cờ</span></div>
+    </aside>
 
-          <div
-            class="pointer-wrapper"
-            id="wheelPointer"
-          >
-            <div class="pointer">
-              <div class="pointer-cap">
-                <span class="pointer-highlight"></span>
-                <span class="pointer-dot"></span>
-              </div>
+    <main class="center-panel">
+      <div class="match-bar">
+        <div class="mode-info"><strong id="modeTitle">Chưa chọn chế độ</strong><span id="roomText">Thiết lập trận đấu để bắt đầu</span></div>
+        <div class="timer" id="timer"><div class="timer-fill" id="timerFill"></div><span id="timeText">20</span></div>
+        <div class="turn-info"><strong>Lượt hiện tại</strong><span id="turnName">-</span></div>
+      </div>
+      <div class="board-shell"><div class="board" id="board"></div></div>
+      <div class="message" id="message"></div>
+      <div class="bottom-controls">
+        <button class="control-btn primary" onclick="resetRound()"><i class="fa-solid fa-rotate-right"></i> Chơi lại</button>
+        <button class="control-btn" onclick="undoMove()"><i class="fa-solid fa-arrow-rotate-left"></i> Đi lại</button>
+        <button class="control-btn" onclick="openSetup()"><i class="fa-solid fa-plus"></i> Trận mới</button>
+        <button class="control-btn leave hidden" id="leaveMatchButton" onclick="leaveOnlineMatch()"><i class="fa-solid fa-right-from-bracket"></i> Rời trận</button>
+        <button class="control-btn dissolve hidden" id="dissolveRoomButton" onclick="dissolveOnlineRoom()"><i class="fa-solid fa-trash-can"></i> Giải tán phòng</button>
+      </div>
+    </main>
 
-              <div class="pointer-arrow-border">
-                <div class="pointer-arrow"></div>
-              </div>
+    <aside class="player-card o" id="player2Card">
+      <div class="avatar" id="p2Avatar">O</div>
+      <div class="player-name" id="p2Name">Người chơi 2</div>
+      <div class="player-label" id="p2Label">PLAYER 2</div>
+      <div class="stats">
+        <div class="stat"><strong id="p2Score">0</strong><span>Điểm</span></div>
+        <div class="stat"><strong id="p2Wins">0</strong><span>Thắng</span></div>
+      </div>
+      <div class="piece-badge"><span class="piece-dot" id="p2PieceBadge">O</span><span>Quân cờ</span></div>
+    </aside>
+  </section>
+</div>
+
+<div class="mini-chat hidden minimized" id="miniChat" aria-label="Chat với người chơi thứ hai">
+  <div class="chat-head">
+    <div class="chat-title">
+      <div class="chat-title-icon"><i class="fa-solid fa-comments"></i></div>
+      <div class="chat-title-text">
+        <strong id="chatPartnerName">Chat với người chơi 2</strong>
+        <div class="chat-status" id="chatStatus"><span class="chat-status-dot"></span><span id="chatStatusText">Chưa kết nối</span></div>
+      </div>
+    </div>
+    <div class="chat-head-actions">
+      <span class="chat-unread" id="chatUnread">0</span>
+      <button class="chat-toggle" id="chatToggle" type="button" onclick="toggleMiniChat()" title="Mở chat" aria-label="Mở hoặc thu gọn chat"><i class="fa-solid fa-chevron-up"></i></button>
+    </div>
+  </div>
+  <div class="chat-body" id="chatMessages" aria-live="polite">
+    <div class="chat-empty" id="chatEmpty"><i class="fa-regular fa-comments"></i><br>Chat sẽ hoạt động khi người chơi thứ hai kết nối.</div>
+  </div>
+  <form class="chat-compose" id="chatForm" onsubmit="sendChatMessage(event)">
+    <input class="chat-input" id="chatInput" maxlength="240" autocomplete="off" placeholder="Nhập tin nhắn..." disabled>
+    <button class="chat-send" id="chatSendBtn" type="submit" title="Gửi tin nhắn" disabled><i class="fa-solid fa-paper-plane"></i></button>
+  </form>
+</div>
+
+<div class="modal show" id="setupModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <h3>Thiết lập trận đấu</h3>
+        <p id="stepSubtitle">Chọn cách bạn muốn chơi.</p>
+      </div>
+      <div class="head-actions"><button class="close-btn" onclick="closeSetup()"><i class="fa-solid fa-xmark"></i></button></div>
+    </div>
+    <div class="steps"><div class="step active"></div><div class="step"></div><div class="step"></div></div>
+
+    <div class="wizard-page active" data-page="1">
+      <div class="choice-grid">
+        <button class="choice" data-mode="computer" onclick="selectMode('computer',this)">
+          <i class="fa-solid fa-robot"></i><strong>Chơi với máy</strong>
+          <span>Giữ nguyên chế độ chơi với máy. Máy sẽ tự động đánh theo độ khó bạn chọn.</span>
+        </button>
+        <button class="choice" data-mode="offline" onclick="selectMode('offline',this)">
+          <i class="fa-solid fa-users"></i><strong>Chơi với người - Offline</strong>
+          <span>Hai người chơi trực tiếp trên cùng một thiết bị.</span>
+        </button>
+        <button class="choice" data-mode="online" onclick="selectMode('online',this)">
+          <i class="fa-solid fa-globe"></i><strong>Chơi với người - Online</strong>
+          <span>Tạo phòng hoặc chọn phòng đang chờ trong danh sách để chơi trên nhiều thiết bị.</span>
+        </button>
+      </div>
+      <div class="wizard-actions"><a class="wizard-btn" href="game.html" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none"><i class="fa-solid fa-arrow-left"></i>&nbsp; Quay lại trang game</a><button class="wizard-btn next" onclick="nextStep()">Tiếp tục <i class="fa-solid fa-arrow-right"></i></button></div>
+    </div>
+
+    <div class="wizard-page" data-page="2">
+      <div class="form-grid">
+        <div class="field"><label>TÊN NGƯỜI CHƠI 1</label><input id="name1Input" maxlength="20" value="" placeholder="Bắt buộc nhập tên người chơi 1" required></div>
+        <div class="field" id="name2Field"><label id="name2Label">TÊN NGƯỜI CHƠI 2</label><input id="name2Input" maxlength="20" value="" placeholder="Bắt buộc nhập tên người chơi 2" required></div>
+      </div>
+      <div class="computer-box" id="computerBox">
+        <div class="form-grid">
+          <div class="field"><label>ĐỘ KHÓ CỦA MÁY</label><select id="difficultySelect"><option value="easy">Dễ</option><option value="medium" selected>Trung bình</option><option value="hard">Khó</option></select></div>
+          <div class="field"><label>TÊN HIỂN THỊ CỦA MÁY</label><input id="computerNameInput" maxlength="20" value="Máy" placeholder="Tên máy"></div>
+        </div>
+      </div>
+      <div class="room-box" id="roomBox">
+        <div class="room-setup-layout">
+          <div class="room-config-pane">
+            <div class="form-grid">
+              <div class="field"><label>LOẠI PHÒNG</label><select id="roomType"><option value="create">Tạo phòng mới</option><option value="join">Tham gia phòng</option></select></div>
+              <div class="field" id="createRoomField"><label>MÃ PHÒNG CỦA BẠN</label><div class="inline-room"><input id="roomCodeInput" maxlength="8" placeholder="Ví dụ: CARO88" readonly><button type="button" class="mini-btn" onclick="generateRoomCode()" title="Tạo mã mới"><i class="fa-solid fa-rotate"></i></button></div></div>
+              <div class="field" id="joinRoomField" style="display:none"><label>NHẬP MÃ PHÒNG</label><input id="joinRoomCodeInput" maxlength="8" placeholder="Nhập mã phòng để tham gia"></div>
             </div>
           </div>
-
-          <div class="wheel-inner-frame">
-            <canvas
-              id="wheelCanvas"
-              width="800"
-              height="800"
-            ></canvas>
-          </div>
-
-          <button
-            type="button"
-            id="spinButton"
-            class="spin-button"
-          >
-            <span class="spin-button-small">
-              NHẤN ĐỂ
-            </span>
-
-            <span class="spin-button-main">
-              QUAY
-            </span>
-          </button>
+          <aside class="room-browser" aria-label="Danh sách phòng Caro online">
+            <div class="room-browser-head">
+              <div class="room-browser-title"><i class="fa-solid fa-list"></i> DANH SÁCH PHÒNG</div>
+              <button class="room-refresh-btn" id="roomRefreshBtn" type="button" onclick="refreshOpenRooms(true)" title="Làm mới danh sách phòng"><i class="fa-solid fa-rotate"></i></button>
+            </div>
+            <div class="open-room-list" id="openRoomList">
+              <div class="room-list-empty">Đang tải danh sách phòng...</div>
+            </div>
+            <div class="room-browser-note">Phòng của chủ phòng mất kết nối sẽ tự ẩn sau 45 giây. Nhấn nút làm mới để cập nhật ngay.</div>
+          </aside>
         </div>
       </div>
+      <div class="helper-text" id="onlineRoomHelp"></div>
+      <div class="wizard-actions"><button class="wizard-btn" onclick="prevStep()"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button class="wizard-btn next" onclick="nextStep()">Tiếp tục <i class="fa-solid fa-arrow-right"></i></button></div>
+    </div>
 
-      <div
-        id="resultBox"
-        class="result-box"
-      >
-        <span class="result-placeholder">
-          Kết quả sẽ xuất hiện tại đây
-        </span>
+    <div class="wizard-page" data-page="3">
+      <div class="piece-select">
+        <div class="piece-choice"><strong id="pieceName1">Người chơi 1</strong><div class="big-piece x" id="bigPiece1">X</div><span id="pieceHint1">Đi trước</span></div>
+        <button class="swap-btn" onclick="swapPieces()"><i class="fa-solid fa-right-left"></i></button>
+        <div class="piece-choice"><strong id="pieceName2">Người chơi 2</strong><div class="big-piece o" id="bigPiece2">O</div><span id="pieceHint2">Đi sau</span></div>
       </div>
-    </section>
-
-    <aside class="card control-card">
-      <h2>Thêm nội dung</h2>
-
-      <p class="control-description">
-        Nội dung mới sẽ được đưa lên đầu danh sách và
-        tự động đặt ở vị trí trên cùng của vòng quay.
-      </p>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <svg
-            class="input-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M12 5v14M5 12h14"></path>
-          </svg>
-
-          <input
-            type="text"
-            id="itemInput"
-            maxlength="40"
-            autocomplete="off"
-            placeholder="Nhập tên hoặc phần thưởng..."
-          >
-        </div>
-
-        <button
-          type="button"
-          id="addButton"
-        >
-          Thêm
-        </button>
+      <div class="form-grid" style="margin-top:15px">
+        <div class="field"><label>SỐ Ô LIÊN TIẾP ĐỂ THẮNG</label><select id="winLengthSelect"><option value="6" id="win6Option">6 ô</option><option value="5" selected>5 ô</option><option value="4">4 ô</option><option value="3">3 ô</option></select></div>
+        <div class="field"><label>THỜI GIAN MỖI LƯỢT</label><select id="turnTimeSelect"><option value="20" selected>20 giây</option><option value="60">60 giây</option></select></div>
       </div>
-
-      <p class="helper-text">
-        Nhấn Enter để thêm nhanh.
-      </p>
-
-      <div class="list-header">
-        <div class="list-title">
-          Danh sách
-
-          <span
-            id="itemCount"
-            class="item-count"
-          >
-            0
-          </span>
-        </div>
-
-        <button
-          type="button"
-          id="clearButton"
-          class="clear-button"
-        >
-          Xóa tất cả
-        </button>
-      </div>
-
-      <div
-        class="list-container"
-        id="listContainer"
-      >
-        <ul id="itemList"></ul>
-
-        <div
-          id="emptyList"
-          class="empty-list"
-        >
-          <strong>
-            Danh sách đang trống
-          </strong>
-
-          <span>
-            Hãy thêm ít nhất 2 nội dung để bắt đầu.
-          </span>
-        </div>
-      </div>
-
-      <div class="notice">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <circle
-            cx="12"
-            cy="12"
-            r="9"
-          ></circle>
-
-          <path d="M12 8v4M12 16h.01"></path>
-        </svg>
-
-        <span>
-          Mỗi ô trên vòng quay có xác suất được chọn
-          như nhau.
-        </span>
-      </div>
-    </aside>
-  </main>
-
-
-
-  <!-- Hướng dẫn sử dụng khi vào trang lần đầu -->
-  <button
-    type="button"
-    class="guide-open-button"
-    id="guideOpenButton"
-    aria-label="Mở hướng dẫn sử dụng"
-  >
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="9"></circle>
-      <path d="M9.7 9a2.4 2.4 0 1 1 3.5 2.1c-.8.4-1.2.9-1.2 1.9"></path>
-      <path d="M12 17h.01"></path>
-    </svg>
-    Hướng dẫn
-  </button>
-
-  <div
-    class="guide-modal"
-    id="guideModal"
-    aria-hidden="true"
-  >
-    <div class="guide-modal-backdrop" id="guideModalBackdrop"></div>
-
-    <div
-      class="guide-modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="guideHeading"
-    >
-      <button
-        type="button"
-        class="guide-modal-close"
-        id="guideModalClose"
-        aria-label="Đóng hướng dẫn"
-      >
-        ×
-      </button>
-
-      <h2 class="guide-heading" id="guideHeading">
-        Cách sử dụng vòng quay
-      </h2>
-
-      <p class="guide-intro">
-        Chỉ cần làm theo 4 bước đơn giản dưới đây để bắt đầu.
-      </p>
-
-      <ol class="guide-steps">
-        <li class="guide-step">
-          <span class="guide-step-number">1</span>
-          <span>
-            <strong>Nhập nội dung</strong>
-            Gõ tên hoặc phần thưởng vào ô bên phải rồi nhấn “Thêm”.
-          </span>
-        </li>
-
-        <li class="guide-step">
-          <span class="guide-step-number">2</span>
-          <span>
-            <strong>Chuẩn bị danh sách</strong>
-            Cần ít nhất 2 nội dung để vòng quay có thể hoạt động.
-          </span>
-        </li>
-
-        <li class="guide-step">
-          <span class="guide-step-number">3</span>
-          <span>
-            <strong>Bắt đầu quay</strong>
-            Nhấn nút “QUAY” ở giữa vòng tròn và chờ kết quả.
-          </span>
-        </li>
-
-        <li class="guide-step">
-          <span class="guide-step-number">4</span>
-          <span>
-            <strong>Quản lý kết quả</strong>
-            Sau khi có kết quả, bạn có thể đóng thông báo hoặc xóa ô vừa trúng.
-          </span>
-        </li>
-      </ol>
-
-      <button
-        type="button"
-        class="guide-start-button"
-        id="guideStartButton"
-      >
-        Đã hiểu, bắt đầu thôi
-      </button>
+      <div class="helper-text" id="pieceHelperText">Bạn có thể chọn X hoặc O. Quân X luôn là quân đi trước.</div>
+      <div class="wizard-actions"><button class="wizard-btn" onclick="prevStep()"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button class="wizard-btn next" id="startMatchBtn" onclick="startMatch()"><i class="fa-solid fa-play"></i> Bắt đầu trận</button></div>
     </div>
   </div>
+</div>
 
-
-  <!-- Thông báo kết quả giữa màn hình -->
-  <div
-    class="result-modal"
-    id="resultModal"
-    aria-hidden="true"
-  >
-    <div class="result-modal-backdrop"></div>
-
-    <div
-      class="result-modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modalResultLabel"
-    >
-      <button
-        type="button"
-        class="result-modal-close"
-        id="resultModalClose"
-        aria-label="Đóng thông báo"
-      >
-        ×
-      </button>
-
-      <span
-        class="result-modal-label"
-        id="modalResultLabel"
-      >
-        KẾT QUẢ VÒNG QUAY
-      </span>
-
-      <div class="result-modal-check" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <path d="M5 12.5l4.2 4.2L19 7.8"></path>
-        </svg>
+<div class="modal" id="guideModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <h3>Hướng dẫn chơi Caro</h3>
+        <p>Cách bắt đầu và luật chơi cơ bản.</p>
       </div>
-
-      <div
-        class="result-modal-value"
-        id="modalResultValue"
-      ></div>
-
-      <div class="result-modal-footer">
-        <button
-          type="button"
-          class="result-modal-delete"
-          id="resultModalDelete"
-        >
-          Xóa ô này
-        </button>
-
-        <button
-          type="button"
-          class="result-modal-button"
-          id="resultModalButton"
-        >
-          Đóng lại
-        </button>
-      </div>
+      <button class="close-btn" onclick="closeGuide()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="helper-text" style="font-size:14px;line-height:1.8;color:#dbeafe;margin-top:18px">
+      <p><strong>1. Chọn chế độ chơi</strong><br>Chọn Chơi với máy, Chơi với người Offline hoặc Chơi với người Online.</p>
+      <p><strong>2. Nhập tên người chơi</strong><br>Khi chơi với người, cả hai người chơi phải nhập tên. Khi chơi với máy, tên máy mặc định là “Máy”.</p>
+      <p><strong>3. Chọn quân cờ</strong><br>Người chơi có thể chọn X hoặc O. Quân X luôn được đi trước.</p>
+      <p><strong>4. Luật thắng</strong><br>Người đầu tiên tạo đủ số ô liên tiếp theo chiều ngang, dọc hoặc chéo sẽ chiến thắng. Có thể chọn 3, 4, 5 hoặc 6 ô tùy chế độ.</p>
+      <p><strong>5. Thời gian mỗi lượt</strong><br>Mỗi người có 20 hoặc 60 giây để đánh. Khi gần hết giờ, game sẽ phát âm thanh cảnh báo.</p>
+      <p><strong>6. Chơi Online</strong><br>Một người chọn Tạo phòng để lấy mã. Người còn lại có thể chọn trực tiếp phòng đang chờ trong Danh sách phòng hoặc nhập mã thủ công rồi nhấn Vào phòng.</p>
+      <p><strong>7. Kết thúc trận</strong><br>Khi thắng, thua hoặc hòa, bạn có thể chọn Đấu lại hoặc Thoát.</p>
+    </div>
+    <div class="wizard-actions">
+      <a class="wizard-btn" href="game.html" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none"><i class="fa-solid fa-arrow-left"></i>&nbsp; Quay lại</a>
+      <button class="wizard-btn next" onclick="closeGuide()">Đã hiểu</button>
     </div>
   </div>
+</div>
 
-  <script>
+<div class="modal" id="resultModal">
+  <div class="modal-card result-card">
+    <div class="trophy"><i class="fa-solid fa-trophy"></i></div>
+    <h3 id="resultTitle">Chiến thắng!</h3>
+    <p id="resultText"></p>
+    <div class="wizard-actions" style="justify-content:center">
+      <button class="wizard-btn" onclick="exitMatch()">Thoát</button>
+      <button class="wizard-btn next" onclick="resetRound();closeResult()">Đấu lại</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="notifyToast"></div>
+
+<script>
+const SIZE = 10;
+let board = [];
+let moves = [];
+let active = false;
+let gameMode = 'computer';
+let currentPiece = 'X';
+let p1Piece = 'X';
+let p2Piece = 'O';
+let p1Name = 'Người chơi 1';
+let p2Name = 'Máy';
+let winLength = 5;
+let turnTime = 20;
+let timeLeft = 20;
+let timerId = null;
+let scores = {p1:0,p2:0};
+let wins = {p1:0,p2:0};
+let wizardStep = 1;
+let soundOn = true;
+let difficultyLevel = 'medium';
+let peer = null;
+let connection = null;
+let onlineRole = null;
+let onlineConnected = false;
+let myOnlinePiece = null;
+let suppressNetworkSend = false;
+let devtoolsWarningShown = false;
+let toastTimer = null;
+let lastWarningSecond = null;
+let intentionalOnlineExit = '';
+const ROOM_DIRECTORY_API_BASE = 'https://mantledb.sh/v2';
+const ROOM_DIRECTORY_NAMESPACE = 'caro-zhaowen-global-rooms-2026-v1';
+const ROOM_DIRECTORY_PREFIX = 'rooms';
+const ROOM_TTL_MS = 45000;
+const ROOM_LIST_POLL_MS = 8000;
+let globalOpenRooms = [];
+let roomListPollTimer = null;
+let roomListRequestController = null;
+let roomHeartbeatTimer = null;
+let currentOnlineRoomCode = '';
+let currentRoomStatus = 'waiting';
+let currentRoomPlayerCount = 1;
+let roomCloudAvailable = true;
+let peerLibraryPromise = null;
+let joinAttemptTimer = null;
+let cloudRelaySession = null;
+let cloudRelayJoinFallbackStarted = false;
+let roomStatePollTimer = null;
+let roomStateSyncBusy = false;
+let roomSnapshotVersion = 0;
+let lastAppliedSnapshotVersion = 0;
+let latestGameSnapshot = null;
+let roomWriteChain = Promise.resolve();
+let boardRevision = 0;
+let lastAppliedBoardRevision = 0;
+let lastMoveCell = null;
+let sharedAudioContext = null;
+let chatUnreadCount = 0;
+let chatMessageCount = 0;
+const CHAT_MAX_MESSAGES = 80;
+const ROOM_STATE_POLL_MS = 1800;
+const CLOUD_RELAY_POLL_MS = 320;
+const CLOUD_RELAY_HEARTBEAT_MS = 1000;
+const CLOUD_RELAY_STALE_MS = 12000;
+const PEERJS_CDN_SOURCES = [
+  'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
+  'https://cdn.bootcdn.net/ajax/libs/peerjs/1.5.5/peerjs.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js',
+  'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'
+];
+
+const $ = id => document.getElementById(id);
+const boardEl = $('board');
+const message = $('message');
+boardEl.addEventListener('click', event => {
+  const cell = event.target.closest('.cell');
+  if(!cell || !boardEl.contains(cell)) return;
+  const index = Number(cell.dataset.index);
+  if(Number.isInteger(index)) playCell(index);
+});
+
+function showToast(text, type = 'warn'){
+  const toast = $('notifyToast');
+  if(!toast) return;
+  const icons = { warn:'fa-triangle-exclamation', success:'fa-circle-check', info:'fa-circle-info' };
+  toast.className = 'toast ' + type;
+  toast.innerHTML = '<i class="fa-solid ' + (icons[type] || icons.info) + '"></i>' + text;
+  clearTimeout(toastTimer);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+}
 
 
-    const guideModal =
-      document.getElementById("guideModal");
 
-    const guideOpenButton =
-      document.getElementById("guideOpenButton");
+function getLocalOnlineName(){
+  if(onlineRole === 'host') return cleanRoomName(p1Name) || 'Chủ phòng';
+  if(onlineRole === 'guest') return cleanRoomName(p2Name) || cleanRoomName($('name1Input').value) || 'Người tham gia';
+  return 'Bạn';
+}
 
-    const guideModalClose =
-      document.getElementById("guideModalClose");
+function getChatPartnerName(){
+  if(onlineRole === 'host') return cleanRoomName(p2Name) || 'Người chơi 2';
+  if(onlineRole === 'guest') return cleanRoomName(p1Name) || 'Chủ phòng';
+  return 'Người chơi 2';
+}
 
-    const guideModalBackdrop =
-      document.getElementById("guideModalBackdrop");
+function updateChatUI(){
+  const chat = $('miniChat');
+  if(!chat) return;
+  const inOnlineRoom = gameMode === 'online' && Boolean(currentOnlineRoomCode);
+  chat.classList.toggle('hidden', !inOnlineRoom);
+  $('chatPartnerName').textContent = 'Chat với ' + getChatPartnerName();
+  const ready = inOnlineRoom && onlineConnected && Boolean(connection && connection.open);
+  $('chatStatus').classList.toggle('online', ready);
+  $('chatStatusText').textContent = ready ? 'Đang online' : (onlineRole === 'host' ? 'Đang chờ người chơi 2' : 'Chưa kết nối');
+  $('chatInput').disabled = !ready;
+  $('chatSendBtn').disabled = !ready;
+  $('chatInput').placeholder = ready ? 'Nhập tin nhắn...' : 'Chờ người chơi kết nối...';
+}
 
-    const guideStartButton =
-      document.getElementById("guideStartButton");
+function resetMiniChat(){
+  const list = $('chatMessages');
+  if(!list) return;
+  list.innerHTML = '<div class="chat-empty" id="chatEmpty"><i class="fa-regular fa-comments"></i><br>Chat sẽ hoạt động khi người chơi thứ hai kết nối.</div>';
+  chatUnreadCount = 0;
+  chatMessageCount = 0;
+  updateChatUnread();
+}
 
-    const guideStorageKey =
-      "luckyWheelGuideSeenV1";
+function updateChatUnread(){
+  const badge = $('chatUnread');
+  if(!badge) return;
+  badge.textContent = chatUnreadCount > 99 ? '99+' : String(chatUnreadCount);
+  badge.classList.toggle('show', chatUnreadCount > 0);
+}
 
-    function openGuideModal() {
-      guideModal.classList.add("is-visible");
-      guideModal.setAttribute("aria-hidden", "false");
-      document.body.classList.add("modal-open");
+function toggleMiniChat(forceOpen = null){
+  const chat = $('miniChat');
+  if(!chat) return;
+  const open = forceOpen === null ? chat.classList.contains('minimized') : Boolean(forceOpen);
+  chat.classList.toggle('minimized', !open);
+  $('chatToggle').innerHTML = '<i class="fa-solid ' + (open ? 'fa-chevron-down' : 'fa-chevron-up') + '"></i>';
+  $('chatToggle').title = open ? 'Thu gọn chat' : 'Mở chat';
+  if(open){
+    chatUnreadCount = 0;
+    updateChatUnread();
+    requestAnimationFrame(() => {
+      const list = $('chatMessages');
+      if(list) list.scrollTop = list.scrollHeight;
+      if(!$('chatInput').disabled) $('chatInput').focus();
+    });
+  }
+}
 
-      setTimeout(() => {
-        guideStartButton.focus();
-      }, 100);
+function formatChatTime(value){
+  const date = new Date(Number(value) || Date.now());
+  return date.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+}
+
+function appendChatMessage({name,text,own = false,system = false,sentAt = Date.now()}){
+  const list = $('chatMessages');
+  if(!list) return;
+  const cleanText = String(text || '').trim().slice(0,240);
+  if(!cleanText) return;
+  const empty = $('chatEmpty');
+  if(empty) empty.remove();
+
+  const item = document.createElement('div');
+  item.className = 'chat-message' + (own ? ' own' : '') + (system ? ' system' : '');
+  if(!system){
+    const sender = document.createElement('div');
+    sender.className = 'chat-sender';
+    sender.textContent = own ? 'Bạn' : (cleanRoomName(name) || 'Người chơi');
+    item.appendChild(sender);
+  }
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble';
+  bubble.textContent = cleanText;
+  item.appendChild(bubble);
+  if(!system){
+    const time = document.createElement('div');
+    time.className = 'chat-time';
+    time.textContent = formatChatTime(sentAt);
+    item.appendChild(time);
+  }
+  list.appendChild(item);
+  chatMessageCount += 1;
+  while(list.children.length > CHAT_MAX_MESSAGES) list.removeChild(list.firstElementChild);
+  list.scrollTop = list.scrollHeight;
+
+  const chat = $('miniChat');
+  if(!own && !system && chat && chat.classList.contains('minimized')){
+    chatUnreadCount += 1;
+    updateChatUnread();
+    playTone(620,.055);
+  }
+}
+
+function appendChatSystem(text){
+  appendChatMessage({text,system:true});
+}
+
+function sendChatMessage(event){
+  if(event) event.preventDefault();
+  const input = $('chatInput');
+  const text = String(input?.value || '').trim().slice(0,240);
+  if(!text) return;
+  if(gameMode !== 'online' || !onlineConnected || !connection || !connection.open){
+    showToast('Người chơi thứ hai chưa kết nối.','warn');
+    updateChatUI();
+    return;
+  }
+  const packet = {type:'chat',name:getLocalOnlineName(),text,sentAt:Date.now()};
+  try{
+    sendOnline(packet);
+    appendChatMessage({name:packet.name,text:packet.text,own:true,sentAt:packet.sentAt});
+    input.value = '';
+    input.focus();
+  }catch(_){
+    showToast('Không gửi được tin nhắn. Hãy kiểm tra kết nối.','warn');
+  }
+}
+
+function receiveChatMessage(data){
+  const text = String(data?.text || '').trim().slice(0,240);
+  if(!text) return;
+  appendChatMessage({name:data.name || getChatPartnerName(),text,own:false,sentAt:data.sentAt});
+}
+
+function cleanRoomName(value){
+  return String(value || '').trim().replace(/\s+/g,' ').slice(0,20);
+}
+
+function escapeRoomText(value){
+  return String(value || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function getRoomCloudUrl(code = ''){
+  const suffix = code ? '/' + ROOM_DIRECTORY_PREFIX + '/' + encodeURIComponent(String(code).toUpperCase()) : '';
+  return ROOM_DIRECTORY_API_BASE + '/' + ROOM_DIRECTORY_NAMESPACE + suffix;
+}
+
+function getRoomCloudListUrl(){
+  return ROOM_DIRECTORY_API_BASE + '/list/' + ROOM_DIRECTORY_NAMESPACE;
+}
+
+async function fetchJsonResponse(url, options = {}){
+  const response = await fetch(url, {
+    cache:'no-store',
+    ...options,
+    headers:{
+      'Accept':'application/json',
+      ...(options.body ? {'Content-Type':'application/json'} : {}),
+      ...(options.headers || {})
     }
+  });
+  if(response.status === 404) return null;
+  if(!response.ok) throw new Error('HTTP ' + response.status);
+  const body = await response.text();
+  if(!body) return null;
+  try{ return JSON.parse(body); }catch(_){ return null; }
+}
 
-    function closeGuideModal() {
-      guideModal.classList.remove("is-visible");
-      guideModal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("modal-open");
 
-      try {
-        localStorage.setItem(guideStorageKey, "true");
-      } catch (error) {
-        console.warn("Không thể lưu trạng thái hướng dẫn.", error);
+function loadPeerScript(url, timeoutMs = 7000){
+  return new Promise(resolve => {
+    if(typeof window.Peer !== 'undefined'){
+      resolve(true);
+      return;
+    }
+    const existing = Array.from(document.scripts).find(script => script.src === url);
+    const script = existing || document.createElement('script');
+    let finished = false;
+    const finish = ok => {
+      if(finished) return;
+      finished = true;
+      clearTimeout(timer);
+      script.onload = null;
+      script.onerror = null;
+      resolve(Boolean(ok && typeof window.Peer !== 'undefined'));
+    };
+    const timer = setTimeout(() => finish(false), timeoutMs);
+    script.onload = () => finish(true);
+    script.onerror = () => finish(false);
+    if(!existing){
+      script.src = url;
+      script.async = true;
+      script.crossOrigin = 'anonymous';
+      script.referrerPolicy = 'no-referrer';
+      document.head.appendChild(script);
+    }
+  });
+}
+
+async function ensurePeerJsLoaded(){
+  if(typeof window.Peer !== 'undefined') return true;
+  if(peerLibraryPromise) return peerLibraryPromise;
+  peerLibraryPromise = (async () => {
+    for(const source of PEERJS_CDN_SOURCES){
+      if(await loadPeerScript(source)) return true;
+    }
+    return false;
+  })();
+  const loaded = await peerLibraryPromise;
+  if(!loaded) peerLibraryPromise = null;
+  return loaded;
+}
+
+function createConfiguredPeer(id = ''){
+  const options = {
+    host:'0.peerjs.com',
+    port:443,
+    path:'/',
+    secure:true,
+    debug:1,
+    pingInterval:5000,
+    config:{
+      iceServers:[
+        {urls:'stun:stun.l.google.com:19302'},
+        {urls:'stun:global.stun.twilio.com:3478'}
+      ]
+    }
+  };
+  return id ? new Peer(id, options) : new Peer(options);
+}
+
+function clearJoinAttempt(){
+  if(joinAttemptTimer){
+    clearTimeout(joinAttemptTimer);
+    joinAttemptTimer = null;
+  }
+}
+
+function getCloudRelayUrl(code, role){
+  const safeCode = normalizeRoomCode(code);
+  const safeRole = role === 'host' ? 'host' : 'guest';
+  return ROOM_DIRECTORY_API_BASE + '/' + ROOM_DIRECTORY_NAMESPACE + '/relay-' + safeCode + '-' + safeRole;
+}
+
+function createCloudDataConnection(){
+  const listeners = {open:[],data:[],close:[],error:[]};
+  return {
+    open:false,
+    _closed:false,
+    _transport:'cloud',
+    on(type, handler){
+      if(listeners[type] && typeof handler === 'function') listeners[type].push(handler);
+    },
+    _emit(type, payload){
+      (listeners[type] || []).slice().forEach(handler => {
+        try{ handler(payload); }catch(error){ console.error(error); }
+      });
+    },
+    send(data){
+      if(this._closed || !cloudRelaySession || cloudRelaySession.conn !== this){
+        throw new Error('Cloud relay is not active');
       }
+      queueCloudRelayMessage(data);
+    },
+    close(){
+      if(this._closed) return;
+      this._closed = true;
+      this.open = false;
+      stopCloudRelay(true,false);
+      this._emit('close');
     }
+  };
+}
 
-    function shouldShowGuide() {
-      try {
-        return localStorage.getItem(guideStorageKey) !== "true";
-      } catch (error) {
+async function writeCloudRelayState(session = cloudRelaySession){
+  if(!session || session.stopped) return false;
+  const localName = $('name1Input').value.trim() || (session.role === 'host' ? p1Name : p2Name) || 'Người chơi';
+  const payload = {
+    code:session.code,
+    role:session.role,
+    name:localName,
+    updatedAt:Date.now(),
+    closed:Boolean(session.closed),
+    messages:session.messages.slice(-50)
+  };
+  session.writeChain = session.writeChain
+    .catch(() => {})
+    .then(() => fetchJsonResponse(getCloudRelayUrl(session.code,session.role), {
+      method:'POST',
+      body:JSON.stringify(payload)
+    }))
+    .catch(() => null);
+  await session.writeChain;
+  return true;
+}
+
+function queueCloudRelayMessage(data){
+  const session = cloudRelaySession;
+  if(!session || session.stopped) return;
+  session.localSeq += 1;
+  session.messages.push({seq:session.localSeq,at:Date.now(),data});
+  if(session.messages.length > 50) session.messages.splice(0,session.messages.length - 50);
+  void writeCloudRelayState(session);
+}
+
+async function pollCloudRelay(session = cloudRelaySession){
+  if(!session || session.stopped || session.polling) return;
+  session.polling = true;
+  try{
+    const remote = await fetchJsonResponse(getCloudRelayUrl(session.code,session.remoteRole) + '?t=' + Date.now());
+    if(!remote || typeof remote !== 'object') return;
+    const messages = Array.isArray(remote.messages) ? remote.messages : [];
+    messages
+      .filter(item => Number(item && item.seq) > session.remoteSeq)
+      .sort((a,b) => Number(a.seq) - Number(b.seq))
+      .forEach(item => {
+        session.remoteSeq = Math.max(session.remoteSeq,Number(item.seq) || 0);
+        session.conn._emit('data',item.data);
+      });
+    const remoteFresh = Date.now() - Number(remote.updatedAt || 0) < CLOUD_RELAY_STALE_MS;
+    if(remoteFresh && !remote.closed && !session.conn.open && !session.conn._closed){
+      if(connection && connection !== session.conn && connection.open){
+        stopCloudRelay(true,false);
+        return;
+      }
+      session.conn.open = true;
+      session.conn._emit('open');
+    }else if((!remoteFresh || remote.closed) && session.conn.open && !session.conn._closed){
+      session.conn.open = false;
+      session.conn._emit('close');
+    }
+  }catch(_){
+    // Giữ phiên và tự thử lại; hữu ích khi trình duyệt hoặc mạng tạm chặn WebRTC.
+  }finally{
+    session.polling = false;
+  }
+}
+
+function startCloudRelay(role, code){
+  stopCloudRelay(false,false);
+  const conn = createCloudDataConnection();
+  const session = {
+    code:normalizeRoomCode(code),
+    role:role === 'host' ? 'host' : 'guest',
+    remoteRole:role === 'host' ? 'guest' : 'host',
+    conn,
+    localSeq:0,
+    remoteSeq:0,
+    messages:[],
+    writeChain:Promise.resolve(),
+    polling:false,
+    closed:false,
+    stopped:false,
+    pollTimer:null,
+    heartbeatTimer:null
+  };
+  cloudRelaySession = session;
+  setupOnlineConnection(conn);
+  void writeCloudRelayState(session);
+  void pollCloudRelay(session);
+  session.pollTimer = setInterval(() => void pollCloudRelay(session),CLOUD_RELAY_POLL_MS);
+  session.heartbeatTimer = setInterval(() => void writeCloudRelayState(session),CLOUD_RELAY_HEARTBEAT_MS);
+  return conn;
+}
+
+function stopCloudRelay(markClosed = true, emitClose = false){
+  const session = cloudRelaySession;
+  if(!session) return;
+  cloudRelaySession = null;
+  session.stopped = true;
+  clearInterval(session.pollTimer);
+  clearInterval(session.heartbeatTimer);
+  if(markClosed){
+    session.stopped = false;
+    session.closed = true;
+    void writeCloudRelayState(session).finally(() => { session.stopped = true; });
+  }
+  if(emitClose && session.conn.open && !session.conn._closed){
+    session.conn.open = false;
+    session.conn._emit('close');
+  }
+}
+
+function ensureCloudHostRelay(){
+  if(onlineRole !== 'host' || !currentOnlineRoomCode) return;
+  if(cloudRelaySession && cloudRelaySession.code === currentOnlineRoomCode && cloudRelaySession.role === 'host') return;
+  startCloudRelay('host',currentOnlineRoomCode);
+}
+
+function startCloudGuestJoin(code, reason = 'Kết nối trực tiếp bị chặn. Đang chuyển sang chế độ tương thích...'){
+  if(cloudRelayJoinFallbackStarted && cloudRelaySession) return;
+  cloudRelayJoinFallbackStarted = true;
+  clearJoinAttempt();
+  try{ if(peer) peer.destroy(); }catch(_){ }
+  peer = null;
+  try{ if(connection && connection.open) connection.close(); }catch(_){ }
+  connection = null;
+  $('networkStatus').textContent = 'Đang kết nối tương thích';
+  message.textContent = reason;
+  showToast(reason,'info');
+  startCloudRelay('guest',code);
+  joinAttemptTimer = setTimeout(() => {
+    if(onlineConnected) return;
+    stopCloudRelay(true,false);
+    connection = null;
+    clearJoinAttempt();
+    const errorText = 'Không thể vào phòng ' + code + '. Hãy kiểm tra Internet, làm mới danh sách và thử lại.';
+    $('networkStatus').textContent = 'Kết nối phòng thất bại';
+    message.textContent = errorText;
+    returnToOnlineSetup('', 'join');
+    showToast(errorText,'warn');
+  },22000);
+}
+
+function sanitizeDirectoryRoom(room){
+  if(!room || typeof room !== 'object') return null;
+  const code = normalizeRoomCode(room.code || '');
+  if(code.length < 4) return null;
+  const playerCount = Math.min(Math.max(Number(room.playerCount) || 1,1),2);
+  const status = ['waiting','full','playing'].includes(room.status)
+    ? room.status
+    : (playerCount >= 2 ? 'full' : 'waiting');
+  return {
+    code,
+    hostName:cleanRoomName(room.hostName) || 'Người chơi',
+    winLength:[3,4,5,6].includes(Number(room.winLength)) ? Number(room.winLength) : 5,
+    turnTime:[20,60].includes(Number(room.turnTime)) ? Number(room.turnTime) : 20,
+    playerCount,
+    status,
+    createdAt:Number(room.createdAt || Date.now()),
+    lastSeen:Number(room.lastSeen || Date.now())
+  };
+}
+
+function extractRoomPaths(payload){
+  const entries = Array.isArray(payload) ? payload : (Array.isArray(payload?.entries) ? payload.entries : []);
+  const prefix = ROOM_DIRECTORY_PREFIX + '/';
+  return [...new Set(entries
+    .map(entry => typeof entry === 'string' ? entry : entry?.path)
+    .filter(path => typeof path === 'string' && path.startsWith(prefix))
+    .map(path => normalizeRoomCode(path.slice(prefix.length)))
+    .filter(code => code.length >= 4))];
+}
+
+function getActiveRooms(){
+  const now = Date.now();
+  return globalOpenRooms
+    .map(sanitizeDirectoryRoom)
+    .filter(Boolean)
+    .filter(room => now - room.lastSeen < ROOM_TTL_MS)
+    .sort((a,b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+}
+
+function applyGlobalRoomList(rooms){
+  const now = Date.now();
+  const unique = new Map();
+  (Array.isArray(rooms) ? rooms : []).forEach(raw => {
+    const room = sanitizeDirectoryRoom(raw);
+    if(!room || now - room.lastSeen >= ROOM_TTL_MS) return;
+    const previous = unique.get(room.code);
+    if(!previous || room.lastSeen >= previous.lastSeen) unique.set(room.code, room);
+  });
+  globalOpenRooms = [...unique.values()];
+  renderOpenRooms();
+}
+
+function getRoomStatusInfo(room){
+  const status = room.status === 'playing' ? 'playing' : (room.playerCount >= 2 || room.status === 'full' ? 'full' : 'waiting');
+  if(status === 'playing') return {status,label:'Đang chơi',icon:'fa-gamepad'};
+  if(status === 'full') return {status,label:'Phòng đầy',icon:'fa-lock'};
+  return {status,label:'Đang chờ',icon:'fa-circle'};
+}
+
+function renderOpenRooms(){
+  const list = $('openRoomList');
+  if(!list) return;
+  const rooms = getActiveRooms();
+  if(!rooms.length){
+    list.innerHTML = '<div class="room-list-empty">Chưa có phòng nào đang chờ.<br>Hãy tạo phòng mới hoặc nhấn Làm mới.</div>';
+    return;
+  }
+  list.innerHTML = rooms.map(room => {
+    const info = getRoomStatusInfo(room);
+    const canJoin = info.status === 'waiting' && room.playerCount < 2;
+    const ownRoom = onlineRole === 'host' && currentOnlineRoomCode === room.code;
+    const buttonText = ownRoom ? 'Phòng của bạn' : (canJoin ? 'Tham gia phòng' : info.label);
+    return '<div class="room-list-item">' +
+      '<div class="room-list-top"><div class="room-host"><i class="fa-solid fa-crown"></i> ' + escapeRoomText(room.hostName) + '</div><div class="room-code">' + escapeRoomText(room.code) + '</div></div>' +
+      '<div class="room-list-meta">' +
+        '<span class="room-chip ' + info.status + '"><i class="fa-solid ' + info.icon + '"></i>&nbsp; ' + info.label + '</span>' +
+        '<span class="room-chip"><i class="fa-solid fa-users"></i>&nbsp; ' + room.playerCount + '/2</span>' +
+        '<span class="room-chip">Thắng ' + room.winLength + ' ô</span>' +
+        '<span class="room-chip">' + room.turnTime + ' giây/lượt</span>' +
+      '</div>' +
+      '<button class="room-join-button" type="button" ' + ((!canJoin || ownRoom) ? 'disabled' : '') + ' onclick="joinListedRoom(\'' + escapeRoomText(room.code) + '\')">' + buttonText + '</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function deleteCloudRoom(code, silent = true){
+  const normalized = normalizeRoomCode(code);
+  if(!normalized) return false;
+  try{
+    const response = await fetch(getRoomCloudUrl(normalized), {method:'DELETE',cache:'no-store',keepalive:true,headers:{'Accept':'application/json'}});
+    if(!response.ok && response.status !== 404) throw new Error('HTTP ' + response.status);
+    return true;
+  }catch(_){
+    if(!silent) showToast('Không thể xóa phòng khỏi danh sách online.','warn');
+    return false;
+  }
+}
+
+async function upsertCloudRoom(room){
+  const cleanRoom = sanitizeDirectoryRoom(room);
+  if(!cleanRoom) return false;
+  const payload = Object.assign({}, room || {}, cleanRoom);
+  roomWriteChain = roomWriteChain
+    .catch(() => false)
+    .then(async () => {
+      try{
+        await fetchJsonResponse(getRoomCloudUrl(cleanRoom.code), {method:'POST',body:JSON.stringify(payload)});
+        roomCloudAvailable = true;
         return true;
+      }catch(_){
+        roomCloudAvailable = false;
+        return false;
       }
+    });
+  return roomWriteChain;
+}
+
+async function requestGlobalRooms(manual = false){
+  if(roomListRequestController) roomListRequestController.abort();
+  const controller = new AbortController();
+  roomListRequestController = controller;
+  const timeout = setTimeout(() => controller.abort(),7000);
+  try{
+    const listPayload = await fetchJsonResponse(getRoomCloudListUrl() + '?t=' + Date.now(), {signal:controller.signal});
+    const roomCodes = extractRoomPaths(listPayload);
+    const results = await Promise.allSettled(roomCodes.map(code => fetchJsonResponse(getRoomCloudUrl(code) + '?t=' + Date.now(), {signal:controller.signal})));
+    const activeRooms = [];
+    const staleCodes = [];
+    const now = Date.now();
+    results.forEach((result,index) => {
+      if(result.status !== 'fulfilled') return;
+      const room = sanitizeDirectoryRoom(result.value);
+      if(!room) return;
+      if(now - room.lastSeen >= ROOM_TTL_MS) staleCodes.push(roomCodes[index]);
+      else activeRooms.push(room);
+    });
+    applyGlobalRoomList(activeRooms);
+    roomCloudAvailable = true;
+    staleCodes.forEach(code => void deleteCloudRoom(code,true));
+    if(manual) showToast(activeRooms.length ? 'Đã tải ' + activeRooms.length + ' phòng đang hoạt động.' : 'Chưa có phòng nào đang hoạt động.','info');
+    return true;
+  }catch(error){
+    if(error?.name !== 'AbortError') roomCloudAvailable = false;
+    if(manual) showToast('Không thể tải danh sách phòng. Hãy kiểm tra Internet.','warn');
+    return false;
+  }finally{
+    clearTimeout(timeout);
+    if(roomListRequestController === controller) roomListRequestController = null;
+  }
+}
+
+async function refreshOpenRooms(manual = false){
+  const button = $('roomRefreshBtn');
+  if(button){ button.disabled = true; button.classList.add('refreshing'); }
+  if(onlineRole === 'host' && currentOnlineRoomCode) await publishCurrentRoom();
+  await requestGlobalRooms(manual);
+  if(button){ button.disabled = false; setTimeout(() => button.classList.remove('refreshing'),250); }
+}
+
+function initRoomDirectory(){
+  clearInterval(roomListPollTimer);
+  roomListPollTimer = setInterval(() => void requestGlobalRooms(false),ROOM_LIST_POLL_MS);
+  void requestGlobalRooms(false);
+}
+
+function stopRoomDirectory(){
+  clearInterval(roomListPollTimer);
+  roomListPollTimer = null;
+  if(roomListRequestController){ roomListRequestController.abort(); roomListRequestController = null; }
+}
+
+async function publishCurrentRoom(extraData = null){
+  if(onlineRole !== 'host' || !currentOnlineRoomCode) return false;
+  const previous = globalOpenRooms.find(room => room.code === currentOnlineRoomCode);
+  const room = Object.assign({
+    code:currentOnlineRoomCode,
+    hostName:p1Name || $('name1Input').value.trim() || 'Người chơi',
+    winLength,
+    turnTime,
+    playerCount:currentRoomPlayerCount,
+    status:currentRoomStatus,
+    createdAt:Number(previous?.createdAt || Date.now()),
+    lastSeen:Date.now(),
+    gameSnapshot:latestGameSnapshot
+  }, extraData || {});
+  if(room.gameSnapshot) latestGameSnapshot = room.gameSnapshot;
+  globalOpenRooms = [room,...globalOpenRooms.filter(item => item.code !== room.code)];
+  renderOpenRooms();
+  return upsertCloudRoom(room);
+}
+
+function buildCurrentStateSignature(){
+  return JSON.stringify({
+    currentPiece,
+    active:Boolean(active),
+    p1Name,p2Name,p1Piece,p2Piece,
+    scores,wins,
+    moves,
+    winLength,
+    turnTime
+  });
+}
+
+function buildRoomSnapshot(){
+  return {
+    snapshotVersion:roomSnapshotVersion,
+    boardRevision,
+    updatedAt:Date.now(),
+    currentPiece,
+    active:Boolean(active),
+    p1Name,
+    p2Name,
+    p1Piece,
+    p2Piece,
+    scores:{p1:Number((scores || {}).p1) || 0, p2:Number((scores || {}).p2) || 0},
+    wins:{p1:Number((wins || {}).p1) || 0, p2:Number((wins || {}).p2) || 0},
+    winLength,
+    turnTime,
+    roomStatus:currentRoomStatus,
+    roomPlayerCount:currentRoomPlayerCount,
+    moves:(Array.isArray(moves) ? moves : []).map(move => ({
+      row:Number(move.row),
+      col:Number(move.col),
+      piece:move.piece === 'O' ? 'O' : 'X'
+    }))
+  };
+}
+
+async function publishOnlineSnapshot(){
+  if(gameMode !== 'online' || onlineRole !== 'host' || !currentOnlineRoomCode) return false;
+  roomSnapshotVersion = Math.max(Date.now(), roomSnapshotVersion + 1);
+  latestGameSnapshot = buildRoomSnapshot();
+  return publishCurrentRoom({gameSnapshot:latestGameSnapshot});
+}
+
+function normalizeSnapshotMoves(list){
+  return (Array.isArray(list) ? list : [])
+    .map(item => ({row:Number(item && item.row), col:Number(item && item.col), piece:item && item.piece === 'O' ? 'O' : 'X'}))
+    .filter(item => Number.isInteger(item.row) && Number.isInteger(item.col) && item.row >= 0 && item.row < SIZE && item.col >= 0 && item.col < SIZE);
+}
+
+function sameMove(a,b){
+  return Boolean(a && b && Number(a.row) === Number(b.row) && Number(a.col) === Number(b.col) && a.piece === b.piece);
+}
+
+function setLastMoveCell(cell){
+  if(lastMoveCell && lastMoveCell !== cell) lastMoveCell.classList.remove('last');
+  lastMoveCell = cell || null;
+  if(lastMoveCell) lastMoveCell.classList.add('last');
+}
+
+function animatePlacedCell(cell){
+  if(!cell) return;
+  cell.classList.remove('piece-enter');
+  void cell.offsetWidth;
+  cell.classList.add('piece-enter');
+  setTimeout(() => cell.classList.remove('piece-enter'),150);
+}
+
+function renderSnapshotMove(move, isLast, animate = false){
+  if(!move) return;
+  board[move.row][move.col] = move.piece;
+  const cell = boardEl.children[move.row * SIZE + move.col];
+  if(!cell) return;
+  cell.className = 'cell ' + move.piece;
+  cell.textContent = move.piece;
+  if(isLast) setLastMoveCell(cell);
+  if(animate) animatePlacedCell(cell);
+}
+
+function applyRoomSnapshot(snapshot){
+  if(gameMode !== 'online' || onlineRole === 'host' || !snapshot || typeof snapshot !== 'object') return false;
+  const snapshotVersion = Number(snapshot.snapshotVersion || 0);
+  const remoteBoardRevision = Number(snapshot.boardRevision || 0);
+  if(!snapshotVersion || snapshotVersion <= lastAppliedSnapshotVersion) return false;
+  if(remoteBoardRevision < lastAppliedBoardRevision) return false;
+
+  const remoteMoves = normalizeSnapshotMoves(snapshot.moves);
+  const localMoves = Array.isArray(moves) ? moves : [];
+  if(remoteBoardRevision === lastAppliedBoardRevision && remoteMoves.length < localMoves.length) return false;
+  const sharedLength = Math.min(localMoves.length, remoteMoves.length);
+  let prefixMatches = true;
+  for(let i = 0; i < sharedLength; i++){
+    if(!sameMove(localMoves[i],remoteMoves[i])){
+      prefixMatches = false;
+      break;
     }
+  }
 
-    guideOpenButton.addEventListener(
-      "click",
-      openGuideModal
-    );
+  const previousPiece = currentPiece;
+  const previousActive = active;
+  lastAppliedSnapshotVersion = snapshotVersion;
+  lastAppliedBoardRevision = Math.max(lastAppliedBoardRevision,remoteBoardRevision);
+  boardRevision = Math.max(boardRevision,remoteBoardRevision);
+  roomSnapshotVersion = Math.max(roomSnapshotVersion,snapshotVersion);
 
-    guideModalClose.addEventListener(
-      "click",
-      closeGuideModal
-    );
+  p1Name = cleanRoomName(snapshot.p1Name) || p1Name || 'Chủ phòng';
+  p2Name = cleanRoomName(snapshot.p2Name) || p2Name || 'Người tham gia';
+  p1Piece = snapshot.p1Piece === 'O' ? 'O' : 'X';
+  p2Piece = snapshot.p2Piece === 'X' ? 'X' : 'O';
+  currentPiece = snapshot.currentPiece === 'O' ? 'O' : 'X';
+  winLength = [3,4,5,6].includes(Number(snapshot.winLength)) ? Number(snapshot.winLength) : winLength;
+  turnTime = [20,60].includes(Number(snapshot.turnTime)) ? Number(snapshot.turnTime) : turnTime;
+  currentRoomStatus = ['waiting','full','playing'].includes(snapshot.roomStatus) ? snapshot.roomStatus : currentRoomStatus;
+  currentRoomPlayerCount = Math.min(Math.max(Number(snapshot.roomPlayerCount) || currentRoomPlayerCount || 1,1),2);
+  scores = {p1:Number(((snapshot || {}).scores || {}).p1) || 0, p2:Number(((snapshot || {}).scores || {}).p2) || 0};
+  wins = {p1:Number(((snapshot || {}).wins || {}).p1) || 0, p2:Number(((snapshot || {}).wins || {}).p2) || 0};
+  active = Boolean(snapshot.active);
 
-    guideStartButton.addEventListener(
-      "click",
-      closeGuideModal
-    );
-
-    guideModalBackdrop.addEventListener(
-      "click",
-      closeGuideModal
-    );
-
-    document.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key === "Escape" &&
-          guideModal.classList.contains("is-visible")
-        ) {
-          closeGuideModal();
-        }
-      }
-    );
-
-    if (shouldShowGuide()) {
-      setTimeout(openGuideModal, 250);
+  if(prefixMatches && remoteMoves.length >= localMoves.length){
+    if(lastMoveCell) lastMoveCell.classList.remove('last');
+    for(let i = localMoves.length; i < remoteMoves.length; i++){
+      renderSnapshotMove(remoteMoves[i],i === remoteMoves.length - 1,i === remoteMoves.length - 1);
     }
-
-
-    const canvas =
-      document.getElementById("wheelCanvas");
-
-    const context =
-      canvas.getContext("2d");
-
-    const itemInput =
-      document.getElementById("itemInput");
-
-    const addButton =
-      document.getElementById("addButton");
-
-    const spinButton =
-      document.getElementById("spinButton");
-
-    const clearButton =
-      document.getElementById("clearButton");
-
-    const itemList =
-      document.getElementById("itemList");
-
-    const itemCount =
-      document.getElementById("itemCount");
-
-    const emptyList =
-      document.getElementById("emptyList");
-
-    const listContainer =
-      document.getElementById("listContainer");
-
-    const resultBox =
-      document.getElementById("resultBox");
-
-    const decorativeLights =
-      document.getElementById("decorativeLights");
-
-    const wheelPointer =
-      document.getElementById("wheelPointer");
-
-    const resultModal =
-      document.getElementById("resultModal");
-
-    const modalResultValue =
-      document.getElementById("modalResultValue");
-
-    const resultModalCard =
-      resultModal.querySelector(
-        ".result-modal-card"
-      );
-
-    const resultModalButton =
-      document.getElementById("resultModalButton");
-
-    const resultModalDelete =
-      document.getElementById("resultModalDelete");
-
-    const resultModalClose =
-      document.getElementById("resultModalClose");
-
-    const resultModalBackdrop =
-      resultModal.querySelector(
-        ".result-modal-backdrop"
-      );
-
-    const wheelColors = [
-      ["#8b5cf6", "#5b21b6"],
-      ["#fb7185", "#be123c"],
-      ["#38bdf8", "#0369a1"],
-      ["#fbbf24", "#d97706"],
-      ["#34d399", "#047857"],
-      ["#f472b6", "#be185d"],
-      ["#818cf8", "#4338ca"],
-      ["#fb923c", "#c2410c"],
-      ["#2dd4bf", "#0f766e"],
-      ["#c084fc", "#7e22ce"],
-      ["#f87171", "#b91c1c"],
-      ["#60a5fa", "#1d4ed8"]
-    ];
-
-    const defaultItems = [
-      "Giải nhất",
-      "Giải nhì",
-      "Giải ba",
-      "Chúc bạn may mắn"
-    ];
-
-    let items = loadItems();
-    let rotation = 0;
-    let isSpinning = false;
-    let latestResultIndex = null;
-
-    function loadItems() {
-      try {
-        const storedItems =
-          localStorage.getItem(
-            "luckyWheelItems"
-          );
-
-        if (!storedItems) {
-          return [...defaultItems];
-        }
-
-        const parsedItems =
-          JSON.parse(storedItems);
-
-        if (!Array.isArray(parsedItems)) {
-          return [...defaultItems];
-        }
-
-        return parsedItems;
-      } catch (error) {
-        return [...defaultItems];
-      }
+    if(remoteMoves.length && remoteMoves.length === localMoves.length){
+      const last = remoteMoves[remoteMoves.length - 1];
+      const lastCell = boardEl.children[last.row * SIZE + last.col];
+      if(lastCell) setLastMoveCell(lastCell);
     }
+    moves = remoteMoves;
+  }else{
+    moves = remoteMoves;
+    rebuildFromMoves();
+  }
 
-    function saveItems() {
-      try {
-        localStorage.setItem(
-          "luckyWheelItems",
-          JSON.stringify(items)
-        );
-      } catch (error) {
-        console.warn(
-          "Không thể lưu danh sách.",
-          error
-        );
-      }
+  applyPlayerUI();
+  updateScores();
+  updateTurn();
+  if(active){
+    if(previousPiece !== currentPiece || previousActive !== active) startTimer();
+  }else{
+    stopTimer();
+  }
+  return true;
+}
+
+async function pollRoomState(){
+  if(gameMode !== 'online' || onlineRole === 'host' || !currentOnlineRoomCode || roomStateSyncBusy) return;
+  roomStateSyncBusy = true;
+  try{
+    const rawRoom = await fetchJsonResponse(getRoomCloudUrl(currentOnlineRoomCode) + '?t=' + Date.now());
+    if(rawRoom && rawRoom.gameSnapshot) applyRoomSnapshot(rawRoom.gameSnapshot);
+  }catch(_){
+  }finally{
+    roomStateSyncBusy = false;
+  }
+}
+
+function isCloudTransport(){
+  return Boolean(connection && connection._transport === 'cloud');
+}
+
+function startRoomStateSync(force = false){
+  stopRoomStateSync();
+  if(gameMode !== 'online' || onlineRole === 'host' || !currentOnlineRoomCode) return;
+  void pollRoomState();
+  if(force || isCloudTransport()){
+    roomStatePollTimer = setInterval(() => void pollRoomState(), ROOM_STATE_POLL_MS);
+  }
+}
+
+function stopRoomStateSync(){
+  clearInterval(roomStatePollTimer);
+  roomStatePollTimer = null;
+  roomStateSyncBusy = false;
+}
+
+function setCurrentRoomState(status, playerCount){
+  currentRoomStatus = ['waiting','full','playing'].includes(status) ? status : 'waiting';
+  currentRoomPlayerCount = Math.min(Math.max(Number(playerCount) || 1,1),2);
+  if(onlineRole === 'host' && currentOnlineRoomCode) void publishCurrentRoom();
+}
+
+async function startRoomHeartbeat(){
+  stopRoomHeartbeat();
+  const published = await publishCurrentRoom();
+  roomHeartbeatTimer = setInterval(() => void publishCurrentRoom(),10000);
+  return published;
+}
+
+function stopRoomHeartbeat(){
+  clearInterval(roomHeartbeatTimer);
+  roomHeartbeatTimer = null;
+}
+
+async function removePublishedRoom(code = currentOnlineRoomCode){
+  const normalized = normalizeRoomCode(code);
+  if(!normalized) return false;
+  globalOpenRooms = globalOpenRooms.filter(room => room.code !== normalized);
+  renderOpenRooms();
+  return deleteCloudRoom(normalized,true);
+}
+
+async function joinListedRoom(code){
+  const normalized = normalizeRoomCode(code);
+  let room = getActiveRooms().find(item => item.code === normalized);
+  if(!room){
+    await requestGlobalRooms(true);
+    room = getActiveRooms().find(item => item.code === normalized);
+  }
+  if(!room){
+    showToast('Không tìm thấy phòng hoặc chủ phòng đã mất kết nối.','warn');
+    renderOpenRooms();
+    return;
+  }
+  const roomInfo = getRoomStatusInfo(room);
+  if(roomInfo.status === 'playing'){
+    showToast('Phòng ' + normalized + ' đã bắt đầu trận. Vui lòng chọn phòng khác.','warn');
+    renderOpenRooms();
+    return;
+  }
+  if(roomInfo.status === 'full' || room.playerCount >= 2){
+    showToast('Phòng ' + normalized + ' đã đủ 2 người chơi. Vui lòng chọn phòng khác.','warn');
+    renderOpenRooms();
+    return;
+  }
+
+  const playerName = $('name1Input').value.trim();
+  if(!playerName){
+    showToast('Vui lòng nhập tên người chơi 1 trước khi tham gia phòng.','warn');
+    $('name1Input').focus();
+    return;
+  }
+
+  gameMode = 'online';
+  document.querySelectorAll('.choice').forEach(item => item.classList.toggle('selected', item.dataset.mode === 'online'));
+  $('roomType').value = 'join';
+  $('joinRoomCodeInput').value = normalized;
+  updateOnlineRoomFields();
+  updateOnlineRoleControls();
+  updateStartButtonLabel();
+
+  // Sau khi chọn phòng, chuyển sang bước xác nhận quân cờ và luật chơi.
+  // Người tham gia sẽ bấm “Vào phòng” ở bước này để kết nối thật sự.
+  showStep(3);
+  showToast('Đã chọn phòng ' + normalized + '. Kiểm tra thông tin rồi nhấn “Vào phòng”.','success');
+}
+
+function setupSourceProtection(){
+  document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    showToast('Chức năng xem mã nguồn đã bị chặn.');
+  });
+  document.addEventListener('keydown', e => {
+    const key = (e.key || '').toLowerCase();
+    const block = key === 'f12' || (e.ctrlKey && key === 'u') || (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(key));
+    if(block){
+      e.preventDefault();
+      e.stopPropagation();
+      showToast('Xem mã nguồn / công cụ phát triển đã bị chặn trên giao diện này.');
     }
-
-    function createDecorativeLights() {
-      decorativeLights.innerHTML = "";
-
-      const totalLights = 26;
-      const radiusPercent = 46.5;
-
-      for (
-        let index = 0;
-        index < totalLights;
-        index++
-      ) {
-        const light =
-          document.createElement("span");
-
-        const angle =
-          (
-            index /
-            totalLights
-          ) *
-          Math.PI *
-          2 -
-          Math.PI / 2;
-
-        const left =
-          50 +
-          Math.cos(angle) *
-          radiusPercent;
-
-        const top =
-          50 +
-          Math.sin(angle) *
-          radiusPercent;
-
-        light.className =
-          "wheel-light";
-
-        light.style.left =
-          `${left}%`;
-
-        light.style.top =
-          `${top}%`;
-
-        light.style.setProperty(
-          "--delay",
-          `${(index % 5) * 0.14}s`
-        );
-
-        decorativeLights.appendChild(
-          light
-        );
-      }
+  });
+  setInterval(() => {
+    const devtoolsOpen = (window.outerWidth - window.innerWidth > 160) || (window.outerHeight - window.innerHeight > 160);
+    if(devtoolsOpen && !devtoolsWarningShown){
+      devtoolsWarningShown = true;
+      showToast('Phát hiện công cụ phát triển đang mở. Một số thao tác đã bị hạn chế.');
     }
-
-    function normalizeAngle(angle) {
-      const fullCircle =
-        Math.PI * 2;
-
-      return (
-        (
-          angle %
-          fullCircle
-        ) +
-        fullCircle
-      ) % fullCircle;
+    if(!devtoolsOpen){
+      devtoolsWarningShown = false;
     }
+  }, 1200);
+}
 
-    function getTopRotation(index) {
-      if (items.length === 0) {
-        return 0;
-      }
+function buildBoard(){
+  board = Array.from({length:SIZE}, ()=> Array(SIZE).fill(null));
+  moves = [];
+  lastMoveCell = null;
+  const fragment = document.createDocumentFragment();
+  for(let i=0;i<SIZE*SIZE;i++){
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.dataset.index = String(i);
+    fragment.appendChild(cell);
+  }
+  boardEl.replaceChildren(fragment);
+}
 
-      const sliceAngle =
-        (Math.PI * 2) /
-        items.length;
+function openSetup(){
+  stopTimer();
+  active = false;
+  $('setupModal').classList.add('show');
+  showStep(1);
+}
+function closeSetup(){ $('setupModal').classList.remove('show'); }
+function closeResult(){ $('resultModal').classList.remove('show'); }
+function openGuide(){ $('guideModal').classList.add('show'); }
+function closeGuide(){ $('guideModal').classList.remove('show'); }
+function exitMatch(){
+  closeResult();
+  openSetup();
+  message.textContent = 'Đã thoát khỏi trận đấu. Bạn có thể thiết lập trận mới.';
+}
 
-      return (
-        -Math.PI / 2 -
-        index * sliceAngle -
-        sliceAngle / 2
-      );
+function showStep(n){
+  wizardStep = n;
+  document.querySelectorAll('.wizard-page').forEach(p=>p.classList.toggle('active', Number(p.dataset.page) === n));
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active', i < n));
+  const subtitles = {
+    1: 'Chọn cách bạn muốn chơi.',
+    2: gameMode === 'computer' ? 'Nhập thông tin người chơi và chọn độ khó của máy.' : 'Nhập thông tin hai người chơi.',
+    3: 'Chọn quân cờ và luật của trận đấu.'
+  };
+  $('stepSubtitle').textContent = subtitles[n];
+  if(n === 2) syncModeUI();
+  if(n === 3){
+    $('pieceName1').textContent = $('name1Input').value.trim() || 'Chưa nhập tên';
+    $('pieceName2').textContent = gameMode === 'computer' ? ($('computerNameInput').value.trim() || 'Máy') : gameMode === 'online' ? ($('roomType').value === 'create' ? 'Người tham gia' : 'Chủ phòng') : ($('name2Input').value.trim() || 'Chưa nhập tên');
+    updatePiecePreview();
+    updateOnlineRoleControls();
+    updateStartButtonLabel();
+  }
+}
+
+function nextStep(){
+  if(wizardStep === 1 && !gameMode){
+    alert('Vui lòng chọn chế độ chơi.');
+    return;
+  }
+  if(wizardStep === 2){
+    if(!$('name1Input').value.trim()){
+      alert('Vui lòng nhập tên của bạn.');
+      return;
     }
-
-    function truncateText(
-      text,
-      maximumLength
-    ) {
-      if (
-        text.length <=
-        maximumLength
-      ) {
-        return text;
-      }
-
-      return (
-        text.substring(
-          0,
-          maximumLength
-        ) +
-        "..."
-      );
+    if(gameMode === 'offline' && !$('name2Input').value.trim()){
+      alert('Vui lòng nhập tên người chơi 2.');
+      return;
     }
-
-    function drawEmptyWheel(
-      centerX,
-      centerY,
-      radius
-    ) {
-      const gradient =
-        context.createRadialGradient(
-          centerX - 80,
-          centerY - 100,
-          20,
-          centerX,
-          centerY,
-          radius
-        );
-
-      gradient.addColorStop(
-        0,
-        "#ffffff"
-      );
-
-      gradient.addColorStop(
-        0.55,
-        "#ede9fe"
-      );
-
-      gradient.addColorStop(
-        1,
-        "#c4b5fd"
-      );
-
-      context.beginPath();
-
-      context.arc(
-        centerX,
-        centerY,
-        radius,
-        0,
-        Math.PI * 2
-      );
-
-      context.fillStyle =
-        gradient;
-
-      context.fill();
-
-      context.strokeStyle =
-        "#ffffff";
-
-      context.lineWidth = 12;
-      context.stroke();
-
-      context.fillStyle =
-        "#6d28d9";
-
-      context.textAlign =
-        "center";
-
-      context.textBaseline =
-        "middle";
-
-      context.font =
-        "900 34px Arial";
-
-      context.fillText(
-        "Chưa có nội dung",
-        centerX,
-        centerY - 75
-      );
-
-      context.fillStyle =
-        "#8b5cf6";
-
-      context.font =
-        "600 20px Arial";
-
-      context.fillText(
-        "Hãy thêm nội dung để bắt đầu",
-        centerX,
-        centerY - 30
-      );
-    }
-
-    function drawWheel() {
-      const centerX =
-        canvas.width / 2;
-
-      const centerY =
-        canvas.height / 2;
-
-      const radius =
-        canvas.width / 2 - 12;
-
-      context.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      if (items.length === 0) {
-        drawEmptyWheel(
-          centerX,
-          centerY,
-          radius
-        );
-
+    if(gameMode === 'online'){
+      const codeValue = $('roomType').value === 'create' ? $('roomCodeInput').value.trim() : $('joinRoomCodeInput').value.trim();
+      if(!codeValue){
+        alert('Vui lòng nhập mã phòng.');
         return;
       }
-
-      const sliceAngle =
-        (Math.PI * 2) /
-        items.length;
-
-      items.forEach(
-        (item, index) => {
-          const startAngle =
-            rotation +
-            index * sliceAngle;
-
-          const endAngle =
-            startAngle +
-            sliceAngle;
-
-          const middleAngle =
-            startAngle +
-            sliceAngle / 2;
-
-          const color =
-            wheelColors[
-              index %
-              wheelColors.length
-            ];
-
-          const gradient =
-            context.createLinearGradient(
-              centerX - radius,
-              centerY - radius,
-              centerX + radius,
-              centerY + radius
-            );
-
-          gradient.addColorStop(
-            0,
-            color[0]
-          );
-
-          gradient.addColorStop(
-            0.5,
-            color[1]
-          );
-
-          gradient.addColorStop(
-            1,
-            color[0]
-          );
-
-          context.beginPath();
-
-          context.moveTo(
-            centerX,
-            centerY
-          );
-
-          context.arc(
-            centerX,
-            centerY,
-            radius,
-            startAngle,
-            endAngle
-          );
-
-          context.closePath();
-
-          context.fillStyle =
-            gradient;
-
-          context.fill();
-
-          context.strokeStyle =
-            "rgba(255,255,255,0.92)";
-
-          context.lineWidth = 5;
-          context.stroke();
-
-          const shineGradient =
-            context.createRadialGradient(
-              centerX -
-                radius * 0.38,
-              centerY -
-                radius * 0.45,
-              10,
-              centerX,
-              centerY,
-              radius
-            );
-
-          shineGradient.addColorStop(
-            0,
-            "rgba(255,255,255,0.3)"
-          );
-
-          shineGradient.addColorStop(
-            0.55,
-            "rgba(255,255,255,0.04)"
-          );
-
-          shineGradient.addColorStop(
-            1,
-            "rgba(0,0,0,0.15)"
-          );
-
-          context.beginPath();
-
-          context.moveTo(
-            centerX,
-            centerY
-          );
-
-          context.arc(
-            centerX,
-            centerY,
-            radius - 3,
-            startAngle,
-            endAngle
-          );
-
-          context.closePath();
-
-          context.fillStyle =
-            shineGradient;
-
-          context.fill();
-
-          drawItemText(
-            item,
-            middleAngle,
-            centerX,
-            centerY,
-            radius
-          );
-        }
-      );
-
-      context.beginPath();
-
-      context.arc(
-        centerX,
-        centerY,
-        radius,
-        0,
-        Math.PI * 2
-      );
-
-      context.strokeStyle =
-        "rgba(255,255,255,0.97)";
-
-      context.lineWidth = 12;
-      context.stroke();
-
-      context.beginPath();
-
-      context.arc(
-        centerX,
-        centerY,
-        radius - 14,
-        0,
-        Math.PI * 2
-      );
-
-      context.strokeStyle =
-        "rgba(255,255,255,0.27)";
-
-      context.lineWidth = 4;
-      context.stroke();
-
-      drawCenterDecoration(
-        centerX,
-        centerY
-      );
     }
+  }
+  showStep(Math.min(3, wizardStep + 1));
+}
+function prevStep(){ showStep(Math.max(1, wizardStep - 1)); }
 
-    function drawItemText(
-      item,
-      middleAngle,
-      centerX,
-      centerY,
-      radius
-    ) {
-      context.save();
+function selectMode(mode, el){
+  gameMode = mode;
+  document.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));
+  if(el) el.classList.add('selected');
+  syncModeUI();
+}
 
-      context.translate(
-        centerX,
-        centerY
-      );
+function syncModeUI(){
+  const isComputer = gameMode === 'computer';
+  const isOnline = gameMode === 'online';
+  const isOffline = gameMode === 'offline';
 
-      context.rotate(
-        middleAngle
-      );
+  $('computerBox').classList.toggle('show', isComputer);
+  $('roomBox').classList.toggle('show', isOnline);
+  $('name2Field').style.display = isOffline ? '' : 'none';
+  $('name2Input').disabled = !isOffline;
+  $('name2Label').textContent = 'TÊN NGƯỜI CHƠI 2';
+  $('onlineRoomHelp').textContent = isOnline
+    ? 'Người tạo phòng chọn “Tạo phòng mới”. Người tham gia nhập tên, nhấn “Tham gia phòng” trong danh sách, sau đó kiểm tra thông tin và nhấn “Vào phòng”.'
+    : '';
 
-      const fontSize =
-        items.length > 18
-          ? 14
-          : items.length > 14
-            ? 16
-            : items.length > 10
-              ? 18
-              : items.length > 7
-                ? 21
-                : 24;
+  if(isOnline && !$('roomCodeInput').value){
+    generateRoomCode();
+  }
+  if(isOnline){
+    renderOpenRooms();
+    void requestGlobalRooms(false);
+  }
 
-      const maximumLength =
-        items.length > 16
-          ? 9
-          : items.length > 12
-            ? 11
-            : items.length > 8
-              ? 14
-              : 19;
+  const win6Option = $('win6Option');
+  if(win6Option){
+    win6Option.hidden = isComputer;
+    if(isComputer && $('winLengthSelect').value === '6') $('winLengthSelect').value = '5';
+  }
 
-      const displayText =
-        truncateText(
-          item,
-          maximumLength
-        );
+  updateOnlineRoomFields();
+  updateOnlineRoleControls();
+  updateStartButtonLabel();
+}
 
-      context.font =
-        `900 ${fontSize}px Arial`;
+function swapPieces(){
+  [p1Piece, p2Piece] = [p2Piece, p1Piece];
+  updatePiecePreview();
+}
 
-      context.textBaseline =
-        "middle";
+function updatePiecePreview(){
+  $('bigPiece1').textContent = p1Piece;
+  $('bigPiece2').textContent = p2Piece;
+  $('bigPiece1').className = 'big-piece ' + p1Piece.toLowerCase();
+  $('bigPiece2').className = 'big-piece ' + p2Piece.toLowerCase();
+  $('pieceHint1').textContent = p1Piece === 'X' ? 'Đi trước' : 'Đi sau';
+  $('pieceHint2').textContent = p2Piece === 'X' ? 'Đi trước' : 'Đi sau';
+}
 
-      let textPosition =
-        radius - 40;
+function startMatch(){
+  if(gameMode === 'online'){
+    startOnlineMatch();
+    return;
+  }
 
-      const normalizedMiddle =
-        normalizeAngle(
-          middleAngle
-        );
+  closeExistingPeer();
+  p1Name = $('name1Input').value.trim();
+  difficultyLevel = $('difficultySelect').value;
+  if(gameMode === 'computer'){
+    p2Name = $('computerNameInput').value.trim() || 'Máy';
+    p2Piece = p1Piece === 'X' ? 'O' : 'X';
+  }else{
+    p2Name = $('name2Input').value.trim();
+  }
 
-      const isLeftSide =
-        normalizedMiddle >
-          Math.PI / 2 &&
-        normalizedMiddle <
-          Math.PI * 1.5;
+  winLength = +$('winLengthSelect').value;
+  turnTime = +$('turnTimeSelect').value;
+  applyPlayerUI();
 
-      if (isLeftSide) {
-        context.rotate(
-          Math.PI
-        );
+  if(gameMode === 'computer'){
+    $('modeTitle').textContent = 'Chơi với máy';
+    $('networkStatus').textContent = 'Máy đã sẵn sàng thi đấu';
+    $('roomText').textContent = 'Độ khó: ' + ({easy:'Dễ', medium:'Trung bình', hard:'Khó'}[difficultyLevel]);
+  }else{
+    $('modeTitle').textContent = 'Chơi với người - Offline';
+    $('networkStatus').textContent = 'Hai người chơi cùng thiết bị';
+    $('roomText').textContent = 'Offline • Cùng thiết bị';
+  }
 
-        context.textAlign =
-          "left";
+  closeSetup();
+  closeResult();
+  scores = {p1:0,p2:0}; wins = {p1:0,p2:0}; updateScores();
+  resetRound();
+}
 
-        textPosition =
-          -radius + 40;
-      } else {
-        context.textAlign =
-          "right";
+function applyPlayerUI(){
+  $('p1Name').textContent = p1Name;
+  $('p2Name').textContent = p2Name;
+  $('p1Avatar').textContent = p1Piece;
+  $('p2Avatar').textContent = p2Piece;
+  $('p1PieceBadge').textContent = p1Piece;
+  $('p2PieceBadge').textContent = p2Piece;
+  $('player1Card').className = 'player-card ' + p1Piece.toLowerCase();
+  $('player2Card').className = 'player-card ' + p2Piece.toLowerCase();
+  $('p1Label').textContent = gameMode === 'computer' ? 'BẠN' : gameMode === 'online' ? (onlineRole === 'host' ? 'BẠN • CHỦ PHÒNG' : 'CHỦ PHÒNG') : 'PLAYER 1';
+  $('p2Label').textContent = gameMode === 'computer' ? 'MÁY' : gameMode === 'online' ? (onlineRole === 'guest' ? 'BẠN • NGƯỜI THAM GIA' : 'NGƯỜI THAM GIA') : 'PLAYER 2';
+  updateChatUI();
+}
+
+async function startOnlineMatch(){
+  const code = normalizeRoomCode($('roomType').value === 'create' ? $('roomCodeInput').value : $('joinRoomCodeInput').value);
+  if(!code){
+    showToast('Vui lòng nhập hoặc chọn mã phòng.','warn');
+    return;
+  }
+
+  const requestedRole = $('roomType').value === 'create' ? 'host' : 'guest';
+  if(requestedRole === 'guest'){
+    const startButton = $('startMatchBtn');
+    const originalButtonHtml = startButton ? startButton.innerHTML : '';
+    if(startButton){
+      startButton.disabled = true;
+      startButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang kiểm tra phòng';
+    }
+    try{
+      let directoryRoom = null;
+      try{
+        const rawRoom = await fetchJsonResponse(getRoomCloudUrl(code) + '?t=' + Date.now());
+        directoryRoom = sanitizeDirectoryRoom(rawRoom);
+      }catch(_){
+        directoryRoom = getActiveRooms().find(item => item.code === code) || null;
       }
-
-      context.shadowColor =
-        "rgba(31,10,63,0.55)";
-
-      context.shadowBlur = 7;
-      context.shadowOffsetY = 3;
-
-      context.lineWidth = 5;
-
-      context.strokeStyle =
-        "rgba(37,14,68,0.3)";
-
-      context.strokeText(
-        displayText,
-        textPosition,
-        0
-      );
-
-      context.fillStyle =
-        "#ffffff";
-
-      context.fillText(
-        displayText,
-        textPosition,
-        0
-      );
-
-      context.restore();
-    }
-
-    function drawCenterDecoration(
-      centerX,
-      centerY
-    ) {
-      const centerRadius = 92;
-
-      const centerGradient =
-        context.createRadialGradient(
-          centerX - 30,
-          centerY - 35,
-          5,
-          centerX,
-          centerY,
-          centerRadius
-        );
-
-      centerGradient.addColorStop(
-        0,
-        "rgba(255,255,255,0.58)"
-      );
-
-      centerGradient.addColorStop(
-        0.35,
-        "rgba(236,72,153,0.4)"
-      );
-
-      centerGradient.addColorStop(
-        1,
-        "rgba(76,29,149,0.85)"
-      );
-
-      context.beginPath();
-
-      context.arc(
-        centerX,
-        centerY,
-        centerRadius,
-        0,
-        Math.PI * 2
-      );
-
-      context.fillStyle =
-        centerGradient;
-
-      context.fill();
-
-      context.strokeStyle =
-        "rgba(255,248,199,0.96)";
-
-      context.lineWidth = 9;
-      context.stroke();
-    }
-
-    function updateList() {
-      itemList.innerHTML = "";
-
-      itemCount.textContent =
-        items.length;
-
-      emptyList.style.display =
-        items.length === 0
-          ? "block"
-          : "none";
-
-      clearButton.style.visibility =
-        items.length === 0
-          ? "hidden"
-          : "visible";
-
-      items.forEach(
-        (item, index) => {
-          const listItem =
-            document.createElement(
-              "li"
-            );
-
-          listItem.className =
-            "list-item";
-
-          const number =
-            document.createElement(
-              "span"
-            );
-
-          number.className =
-            "item-number";
-
-          number.textContent =
-            index + 1;
-
-          const name =
-            document.createElement(
-              "span"
-            );
-
-          name.className =
-            "item-name";
-
-          name.textContent =
-            item;
-
-          name.title =
-            item;
-
-          listItem.appendChild(
-            number
-          );
-
-          listItem.appendChild(
-            name
-          );
-
-          if (index === 0) {
-            const topBadge =
-              document.createElement(
-                "span"
-              );
-
-            topBadge.className =
-              "top-badge";
-
-            topBadge.textContent =
-              "Trên cùng";
-
-            listItem.appendChild(
-              topBadge
-            );
-          }
-
-          const deleteButton =
-            document.createElement(
-              "button"
-            );
-
-          deleteButton.type =
-            "button";
-
-          deleteButton.className =
-            "delete-button";
-
-          deleteButton.setAttribute(
-            "aria-label",
-            `Xóa ${item}`
-          );
-
-          deleteButton.innerHTML = `
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4h8v2"></path>
-              <path d="M19 6l-1 14H6L5 6"></path>
-              <path d="M10 11v5M14 11v5"></path>
-            </svg>
-          `;
-
-          deleteButton.addEventListener(
-            "click",
-            () => {
-              removeItem(index);
-            }
-          );
-
-          listItem.appendChild(
-            deleteButton
-          );
-
-          itemList.appendChild(
-            listItem
-          );
-        }
-      );
-    }
-
-    function scrollListToTop() {
-      requestAnimationFrame(
-        () => {
-          listContainer.scrollTo({
-            top: 0,
-            behavior: "smooth"
-          });
-        }
-      );
-    }
-
-    function resetResult() {
-      resultBox.innerHTML = `
-        <span class="result-placeholder">
-          Kết quả sẽ xuất hiện tại đây
-        </span>
-      `;
-    }
-
-    function showResult(
-      value,
-      selectedIndex
-    ) {
-      latestResultIndex =
-        selectedIndex;
-
-      resultBox.innerHTML = `
-        <div class="result-content">
-          <span class="result-label">
-            Kết quả
-          </span>
-
-          <strong class="result-value"></strong>
-        </div>
-      `;
-
-      resultBox.querySelector(
-        ".result-value"
-      ).textContent = value;
-
-      modalResultValue.textContent =
-        value;
-
-      const resultColor =
-        wheelColors[
-          selectedIndex %
-          wheelColors.length
-        ];
-
-      resultModalCard.style.setProperty(
-        "--result-accent",
-        resultColor[0]
-      );
-
-      resultModalCard.style.setProperty(
-        "--result-accent-dark",
-        resultColor[1]
-      );
-
-      resultModal.classList.add(
-        "is-visible"
-      );
-
-      resultModal.setAttribute(
-        "aria-hidden",
-        "false"
-      );
-
-      document.body.classList.add(
-        "modal-open"
-      );
-
-      setTimeout(() => {
-        resultModalButton.focus();
-      }, 100);
-    }
-
-    function closeResultModal() {
-      resultModal.classList.remove(
-        "is-visible"
-      );
-
-      resultModal.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
-      document.body.classList.remove(
-        "modal-open"
-      );
-    }
-
-    function deleteLatestResult() {
-      if (
-        latestResultIndex === null ||
-        latestResultIndex < 0 ||
-        latestResultIndex >= items.length
-      ) {
-        closeResultModal();
-        return;
-      }
-
-      items.splice(
-        latestResultIndex,
-        1
-      );
-
-      rotation =
-        items.length > 0
-          ? getTopRotation(0)
-          : 0;
-
-      latestResultIndex = null;
-
-      saveItems();
-      resetResult();
-      updateList();
-      drawWheel();
-      closeResultModal();
-    }
-
-    function showConfetti() {
-      const colors = [
-        "#f43f5e",
-        "#fbbf24",
-        "#22c55e",
-        "#3b82f6",
-        "#8b5cf6",
-        "#ec4899",
-        "#06b6d4"
-      ];
-
-      for (
-        let index = 0;
-        index < 90;
-        index++
-      ) {
-        const confetti =
-          document.createElement(
-            "span"
-          );
-
-        confetti.className =
-          "confetti";
-
-        confetti.style.left =
-          `${Math.random() * 100}vw`;
-
-        confetti.style.background =
-          colors[
-            Math.floor(
-              Math.random() *
-              colors.length
-            )
-          ];
-
-        confetti.style.animationDuration =
-          `${
-            2.5 +
-            Math.random() * 2.5
-          }s`;
-
-        confetti.style.animationDelay =
-          `${
-            Math.random() * 0.5
-          }s`;
-
-        document.body.appendChild(
-          confetti
-        );
-
-        setTimeout(
-          () => {
-            confetti.remove();
-          },
-          5500
-        );
-      }
-    }
-
-    function showInputError() {
-      itemInput.focus();
-
-      itemInput.style.borderColor =
-        "#ef4444";
-
-      itemInput.style.boxShadow =
-        "0 0 0 4px rgba(239,68,68,0.12)";
-
-      setTimeout(
-        () => {
-          itemInput.style.borderColor =
-            "";
-
-          itemInput.style.boxShadow =
-            "";
-        },
-        900
-      );
-    }
-
-    function addItem() {
-      if (isSpinning) {
-        return;
-      }
-
-      const value =
-        itemInput.value.trim();
-
-      if (!value) {
-        showInputError();
-        return;
-      }
-
-      items.unshift(value);
-
-      rotation =
-        getTopRotation(0);
-
-      itemInput.value = "";
-
-      saveItems();
-      resetResult();
-      updateList();
-      drawWheel();
-      scrollListToTop();
-
-      itemInput.focus();
-    }
-
-    function removeItem(index) {
-      if (isSpinning) {
-        return;
-      }
-
-      items.splice(index, 1);
-
-      rotation =
-        items.length > 0
-          ? getTopRotation(0)
-          : 0;
-
-      saveItems();
-      resetResult();
-      updateList();
-      drawWheel();
-
-      listContainer.scrollTop =
-        0;
-    }
-
-    function clearItems() {
-      if (
-        isSpinning ||
-        items.length === 0
-      ) {
-        return;
-      }
-
-      const shouldClear =
-        window.confirm(
-          "Bạn có chắc muốn xóa toàn bộ danh sách không?"
-        );
-
-      if (!shouldClear) {
-        return;
-      }
-
-      items = [];
-      rotation = 0;
-
-      saveItems();
-      resetResult();
-      updateList();
-      drawWheel();
-
-      listContainer.scrollTop =
-        0;
-    }
-
-    function setSpinButtonLoading() {
-      spinButton.innerHTML = `
-        <span class="spin-button-small">
-          ĐANG
-        </span>
-
-        <span class="spin-button-main">
-          QUAY...
-        </span>
-      `;
-    }
-
-    function resetSpinButton() {
-      spinButton.innerHTML = `
-        <span class="spin-button-small">
-          NHẤN ĐỂ
-        </span>
-
-        <span class="spin-button-main">
-          QUAY
-        </span>
-      `;
-    }
-
-    function spinWheel() {
-      if (isSpinning) {
-        return;
-      }
-
-      if (items.length < 2) {
-        window.alert(
-          "Vui lòng thêm ít nhất 2 nội dung để quay."
-        );
-
-        return;
-      }
-
-      closeResultModal();
-
-      isSpinning = true;
-      spinButton.disabled = true;
-
-      wheelPointer.classList.add(
-        "is-spinning"
-      );
-
-      setSpinButtonLoading();
-      resetResult();
-
-      const selectedIndex =
-        Math.floor(
-          Math.random() *
-          items.length
-        );
-
-      const sliceAngle =
-        (Math.PI * 2) /
-        items.length;
-
-      const currentRotation =
-        normalizeAngle(
-          rotation
-        );
-
-      const targetNormalized =
-        normalizeAngle(
-          -Math.PI / 2 -
-          selectedIndex *
-            sliceAngle -
-          sliceAngle / 2
-        );
-
-      let additionalRotation =
-        targetNormalized -
-        currentRotation;
-
-      if (
-        additionalRotation <
-        0
-      ) {
-        additionalRotation +=
-          Math.PI * 2;
-      }
-
-      const extraTurns =
-        (
-          6 +
-          Math.floor(
-            Math.random() * 3
-          )
-        ) *
-        Math.PI *
-        2;
-
-      const startRotation =
-        rotation;
-
-      const targetRotation =
-        rotation +
-        extraTurns +
-        additionalRotation;
-
-      const duration =
-        5000;
-
-      const startTime =
-        performance.now();
-
-      function animate(
-        currentTime
-      ) {
-        const elapsed =
-          currentTime -
-          startTime;
-
-        const progress =
-          Math.min(
-            elapsed / duration,
-            1
-          );
-
-        const easedProgress =
-          1 -
-          Math.pow(
-            1 - progress,
-            4
-          );
-
-        rotation =
-          startRotation +
-          (
-            targetRotation -
-            startRotation
-          ) *
-          easedProgress;
-
-        drawWheel();
-
-        if (progress < 1) {
-          requestAnimationFrame(
-            animate
-          );
-
+      if(directoryRoom){
+        const roomInfo = getRoomStatusInfo(directoryRoom);
+        if(roomInfo.status === 'playing'){
+          const blockedMessage = 'Phòng ' + code + ' đã bắt đầu trận. Bạn không thể vào lúc này.';
+          showToast(blockedMessage,'warn');
+          $('pieceHelperText').textContent = blockedMessage + ' Vui lòng quay lại và chọn phòng khác.';
           return;
         }
-
-        rotation =
-          normalizeAngle(
-            targetRotation
-          );
-
-        drawWheel();
-
-        wheelPointer.classList.remove(
-          "is-spinning"
-        );
-
-        spinButton.disabled =
-          false;
-
-        resetSpinButton();
-
-        isSpinning =
-          false;
-
-        showResult(
-          items[selectedIndex],
-          selectedIndex
-        );
-
-        showConfetti();
+        if(roomInfo.status === 'full' || directoryRoom.playerCount >= 2){
+          const blockedMessage = 'Phòng ' + code + ' đã đủ 2 người chơi. Vui lòng chọn phòng khác.';
+          showToast(blockedMessage,'warn');
+          $('pieceHelperText').textContent = blockedMessage;
+          return;
+        }
+        winLength = directoryRoom.winLength;
+        turnTime = directoryRoom.turnTime;
+        $('winLengthSelect').value = String(winLength);
+        $('turnTimeSelect').value = String(turnTime);
       }
-
-      requestAnimationFrame(
-        animate
-      );
+    }finally{
+      if(startButton){
+        startButton.disabled = false;
+        startButton.innerHTML = originalButtonHtml;
+      }
     }
+  }
 
-    addButton.addEventListener(
-      "click",
-      addItem
-    );
+  closeExistingPeer();
+  onlineRole = requestedRole;
+  gameMode = 'online';
+  currentOnlineRoomCode = code;
+  roomSnapshotVersion = 0;
+  lastAppliedSnapshotVersion = 0;
+  latestGameSnapshot = null;
+  currentRoomStatus = 'waiting';
+  currentRoomPlayerCount = 1;
+  cloudRelayJoinFallbackStarted = false;
+  resetMiniChat();
+  updateOnlineActionButtons();
+  updateChatUI();
+  if(onlineRole === 'host') $('roomCodeInput').value = code;
+  else $('joinRoomCodeInput').value = code;
+  onlineConnected = false;
+  active = false;
+  winLength = +$('winLengthSelect').value;
+  turnTime = +$('turnTimeSelect').value;
+  const localName = $('name1Input').value.trim();
 
-    spinButton.addEventListener(
-      "click",
-      spinWheel
-    );
+  if(!localName){
+    showToast('Vui lòng nhập tên người chơi.','warn');
+    returnToOnlineSetup('',requestedRole === 'host' ? 'create' : 'join');
+    $('name1Input').focus();
+    return;
+  }
 
-    clearButton.addEventListener(
-      "click",
-      clearItems
-    );
+  if(onlineRole === 'host'){
+    p1Name = localName;
+    p2Name = 'Đang chờ người chơi...';
+    p2Piece = p1Piece === 'X' ? 'O' : 'X';
+    myOnlinePiece = p1Piece;
+  }else{
+    p1Name = 'Chủ phòng';
+    p2Name = localName;
+    myOnlinePiece = null;
+  }
 
-    itemInput.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key ===
-          "Enter"
-        ) {
-          addItem();
+  applyPlayerUI();
+  $('modeTitle').textContent = 'Chơi với người - Online';
+  $('roomText').textContent = 'Mã phòng: ' + code;
+  $('networkStatus').textContent = onlineRole === 'host' ? 'Đang tạo phòng...' : 'Đang vào phòng...';
+  message.textContent = onlineRole === 'host' ? 'Đang tạo phòng và chờ người chơi thứ hai...' : 'Đang kết nối tới chủ phòng...';
+  closeSetup();
+  buildBoard();
+
+  const hostPeerId = 'caro-arena-' + code.toLowerCase();
+  if(onlineRole === 'host'){
+    // Luôn mở kênh HTTP dự phòng để Firefox, Chrome, Edge hoặc mạng chặn WebRTC vẫn chơi được.
+    ensureCloudHostRelay();
+    const peerLoaded = await ensurePeerJsLoaded();
+    if(!peerLoaded){
+      const published = await startRoomHeartbeat();
+      $('networkStatus').textContent = published ? 'Phòng đã tạo • Chế độ tương thích' : 'Phòng đã tạo • Chưa đăng được danh sách';
+      message.textContent = 'Phòng ' + code + ' đang dùng chế độ tương thích giữa các trình duyệt. Đang chờ người chơi.';
+      return;
+    }
+    try{
+      peer = createConfiguredPeer(hostPeerId);
+      peer.on('open', async () => {
+        const published = await startRoomHeartbeat();
+        $('networkStatus').textContent = published ? 'Phòng đã tạo • Đang chờ người chơi' : 'Phòng đã tạo • Chế độ tương thích';
+        message.textContent = published
+          ? 'Phòng ' + code + ' đã xuất hiện trong danh sách. Đang chờ người chơi thứ hai.'
+          : 'Phòng ' + code + ' đang hoạt động bằng chế độ tương thích.';
+        void requestGlobalRooms(false);
+      });
+      peer.on('connection', conn => {
+        if(connection && connection.open){
+          const rejectionReason = currentRoomStatus === 'playing' ? 'playing' : 'full';
+          conn.on('open', () => {
+            try{ conn.send({type:'join_rejected',reason:rejectionReason,code:currentOnlineRoomCode}); }catch(_){ }
+            setTimeout(() => { try{ conn.close(); }catch(_){ } },180);
+          });
+          return;
         }
+        setupOnlineConnection(conn);
+      });
+      peer.on('error', error => handlePeerError(error));
+      peer.on('disconnected', () => {
+        if(!onlineConnected){
+          ensureCloudHostRelay();
+          $('networkStatus').textContent = 'Phòng đang dùng chế độ tương thích';
+        }
+      });
+    }catch(_){
+      peer = null;
+      ensureCloudHostRelay();
+      await startRoomHeartbeat();
+      $('networkStatus').textContent = 'Phòng đã tạo • Chế độ tương thích';
+      message.textContent = 'Kết nối trực tiếp không khả dụng. Phòng vẫn hoạt động trên các trình duyệt bằng chế độ tương thích.';
+    }
+  }else{
+    const peerLoaded = await ensurePeerJsLoaded();
+    if(!peerLoaded){
+      startCloudGuestJoin(code,'Không tải được kết nối trực tiếp. Đang dùng chế độ tương thích trình duyệt...');
+      return;
+    }
+    try{
+      peer = createConfiguredPeer();
+      joinAttemptTimer = setTimeout(() => {
+        if(!onlineConnected && !cloudRelayJoinFallbackStarted){
+          startCloudGuestJoin(code,'Kết nối trực tiếp chậm. Đang chuyển sang chế độ tương thích trình duyệt...');
+        }
+      },7000);
+      peer.on('open', () => {
+        if(cloudRelayJoinFallbackStarted) return;
+        $('networkStatus').textContent = 'Đang mở phòng ' + code;
+        connection = peer.connect(hostPeerId,{reliable:true,serialization:'json'});
+        setupOnlineConnection(connection);
+      });
+      peer.on('error', error => {
+        if(!onlineConnected && !cloudRelayJoinFallbackStarted){
+          startCloudGuestJoin(code,'Kết nối trực tiếp bị trình duyệt hoặc mạng chặn. Đang chuyển sang chế độ tương thích...');
+        }else{
+          handlePeerError(error);
+        }
+      });
+      peer.on('disconnected', () => {
+        if(!onlineConnected && !cloudRelayJoinFallbackStarted){
+          startCloudGuestJoin(code,'Mạng không ổn định. Đang chuyển sang chế độ tương thích...');
+        }
+      });
+    }catch(_){
+      startCloudGuestJoin(code,'Không thể khởi tạo WebRTC. Đang dùng chế độ tương thích trình duyệt...');
+    }
+  }
+}
+
+function normalizeRoomCode(value){ return value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8); }
+function generateRoomCode(){
+  const previousCode = currentOnlineRoomCode;
+  if(onlineRole === 'host' && previousCode) void removePublishedRoom(previousCode);
+  $('roomCodeInput').value = 'CARO' + Math.floor(1000 + Math.random()*9000);
+}
+
+function updateOnlineRoomFields(){
+  const isJoin = gameMode === 'online' && $('roomType').value === 'join';
+  const isCreate = gameMode === 'online' && $('roomType').value === 'create';
+  $('createRoomField').style.display = isCreate ? '' : 'none';
+  $('joinRoomField').style.display = isJoin ? '' : 'none';
+  if(isCreate && !$('roomCodeInput').value) generateRoomCode();
+  if(isJoin) $('joinRoomCodeInput').focus();
+}
+
+function updateOnlineRoleControls(){
+  const isJoin = gameMode === 'online' && $('roomType').value === 'join';
+  const swapBtn = document.querySelector('.swap-btn');
+  if(swapBtn) swapBtn.disabled = isJoin;
+  $('winLengthSelect').disabled = isJoin;
+  $('turnTimeSelect').disabled = isJoin;
+  $('pieceHelperText').textContent = gameMode === 'computer'
+    ? 'Bạn chọn quân cho mình. Máy sẽ tự động nhận quân còn lại. X luôn đi trước.'
+    : gameMode === 'online'
+      ? (isJoin
+          ? 'Bạn là người tham gia. Hãy nhập đúng mã phòng rồi nhấn vào phòng để vào chung trận. Quân cờ và luật chơi sẽ lấy từ chủ phòng.'
+          : 'Bạn là chủ phòng. Hãy chọn quân cờ và luật chơi, sau đó chia sẻ mã phòng cho người còn lại.')
+      : 'Bạn có thể chọn X hoặc O. Quân X luôn là quân đi trước.';
+}
+
+function updateStartButtonLabel(){
+  const btn = $('startMatchBtn');
+  if(!btn) return;
+  if(gameMode === 'online'){
+    if($('roomType').value === 'create'){
+      btn.innerHTML = '<i class="fa-solid fa-plus"></i> Tạo phòng';
+    }else{
+      btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Vào phòng';
+    }
+  }else{
+    btn.innerHTML = '<i class="fa-solid fa-play"></i> Bắt đầu trận';
+  }
+}
+
+function updateOnlineActionButtons(){
+  const leaveButton = $('leaveMatchButton');
+  const dissolveButton = $('dissolveRoomButton');
+  const hasOnlineRoom = gameMode === 'online' && Boolean(currentOnlineRoomCode);
+  if(leaveButton) leaveButton.classList.toggle('hidden', !(hasOnlineRoom && onlineRole === 'guest'));
+  if(dissolveButton) dissolveButton.classList.toggle('hidden', !(hasOnlineRoom && onlineRole === 'host'));
+  updateChatUI();
+}
+
+function returnToOnlineSetup(statusText, roomTypeValue){
+  active = false;
+  stopTimer();
+  closeResult();
+  gameMode = 'online';
+  document.querySelectorAll('.choice').forEach(item => item.classList.toggle('selected', item.dataset.mode === 'online'));
+  if(roomTypeValue) $('roomType').value = roomTypeValue;
+  updateOnlineRoomFields();
+  updateOnlineRoleControls();
+  updateStartButtonLabel();
+  updateOnlineActionButtons();
+  $('setupModal').classList.add('show');
+  showStep(2);
+  renderOpenRooms();
+  void requestGlobalRooms(false);
+  if(statusText) showToast(statusText,'success');
+}
+
+function leaveOnlineMatch(){
+  if(gameMode !== 'online' || onlineRole !== 'guest' || !currentOnlineRoomCode) return;
+  const roomCode = currentOnlineRoomCode;
+  if(connection && connection.open){
+    try{ connection.send({type:'participant_left', name:p2Name || $('name1Input').value.trim()}); }catch(_){ }
+  }
+  intentionalOnlineExit = 'guest-left';
+  closeExistingPeer(false);
+  onlineRole = null;
+  myOnlinePiece = null;
+  $('joinRoomCodeInput').value = '';
+  $('networkStatus').textContent = 'Bạn đã rời trận';
+  message.textContent = 'Bạn đã rời phòng ' + roomCode + '.';
+  returnToOnlineSetup('Bạn đã rời phòng ' + roomCode + '.','join');
+}
+
+async function dissolveOnlineRoom(){
+  if(gameMode !== 'online' || onlineRole !== 'host' || !currentOnlineRoomCode) return;
+  const roomCode = currentOnlineRoomCode;
+  if(!window.confirm('Giải tán phòng ' + roomCode + '?')) return;
+  if(connection && connection.open){
+    try{ connection.send({type:'room_dissolved', code:roomCode}); }catch(_){ }
+  }
+  await removePublishedRoom(roomCode);
+  intentionalOnlineExit = 'host-dissolved';
+  closeExistingPeer(false);
+  onlineRole = null;
+  myOnlinePiece = null;
+  generateRoomCode();
+  $('networkStatus').textContent = 'Phòng đã được giải tán';
+  message.textContent = 'Chủ phòng đã giải tán phòng ' + roomCode + '.';
+  returnToOnlineSetup('Đã giải tán phòng ' + roomCode + '.','create');
+}
+function closeExistingPeer(removeRoom = true){
+  const oldCode = currentOnlineRoomCode;
+  const wasHost = onlineRole === 'host';
+  stopRoomHeartbeat();
+  stopRoomStateSync();
+  clearJoinAttempt();
+  stopCloudRelay(true,false);
+  cloudRelayJoinFallbackStarted = false;
+  try{ if(connection) connection.close(); }catch(_){ }
+  try{ if(peer) peer.destroy(); }catch(_){ }
+  connection = null;
+  peer = null;
+  onlineConnected = false;
+  if(removeRoom && wasHost && oldCode) void removePublishedRoom(oldCode);
+  currentOnlineRoomCode = '';
+  roomSnapshotVersion = 0;
+  lastAppliedSnapshotVersion = 0;
+  latestGameSnapshot = null;
+  boardRevision = 0;
+  lastAppliedBoardRevision = 0;
+  lastMoveCell = null;
+  updateOnlineActionButtons();
+  updateChatUI();
+}
+
+function setupOnlineConnection(conn){
+  if(!conn) return;
+  if(!connection || !connection.open) connection = conn;
+
+  conn.on('open', () => {
+    if(connection && connection !== conn && connection.open){
+      try{ conn.close(); }catch(_){ }
+      return;
+    }
+    connection = conn;
+    if(!connection._transport) connection._transport = 'peer';
+    clearJoinAttempt();
+    onlineConnected = true;
+    updateChatUI();
+    appendChatSystem('Đã kết nối. Bạn có thể bắt đầu trò chuyện.');
+    if(cloudRelaySession && cloudRelaySession.conn !== conn) stopCloudRelay(true,false);
+    if(onlineRole === 'host') setCurrentRoomState('full',2);
+    $('networkStatus').textContent = 'Đã kết nối cùng phòng';
+    message.textContent = 'Đã kết nối. Trận đấu đang được đồng bộ giữa hai trình duyệt.';
+    updateOnlineActionButtons();
+    if(onlineRole === 'guest'){
+      if(isCloudTransport()) startRoomStateSync(true);
+      else { stopRoomStateSync(); void pollRoomState(); }
+      sendOnline({type:'hello',name:$('name1Input').value.trim()});
+    }
+  });
+
+  conn.on('data', handleOnlineData);
+  conn.on('close', () => {
+    if(connection !== conn) return;
+    connection = null;
+    onlineConnected = false;
+    active = false;
+    stopTimer();
+    updateChatUI();
+    appendChatSystem('Kết nối chat đã bị ngắt.');
+    if(intentionalOnlineExit){
+      intentionalOnlineExit = '';
+      updateOnlineActionButtons();
+      return;
+    }
+    if(onlineRole === 'host' && currentOnlineRoomCode){
+      p2Name = 'Đang chờ người chơi...';
+      applyPlayerUI();
+      setCurrentRoomState('waiting',1);
+      void startRoomHeartbeat();
+      ensureCloudHostRelay();
+      $('networkStatus').textContent = 'Phòng đang mở lại';
+      message.textContent = 'Người chơi còn lại đã rời. Phòng tiếp tục chờ người mới.';
+    }else if(onlineRole === 'guest' && currentOnlineRoomCode && !cloudRelayJoinFallbackStarted){
+      startCloudGuestJoin(currentOnlineRoomCode,'Kết nối trực tiếp bị ngắt. Đang thử lại bằng chế độ tương thích...');
+      return;
+    }else{
+      $('networkStatus').textContent = 'Đã mất kết nối';
+      message.textContent = 'Chủ phòng đã rời hoặc mất kết nối.';
+    }
+    updateOnlineActionButtons();
+  });
+
+  conn.on('error', () => {
+    if(connection !== conn) return;
+    if(onlineRole === 'guest' && !onlineConnected && currentOnlineRoomCode && !cloudRelayJoinFallbackStarted){
+      startCloudGuestJoin(currentOnlineRoomCode,'Kết nối bị lỗi. Đang chuyển sang chế độ tương thích trình duyệt...');
+      return;
+    }
+    $('networkStatus').textContent = 'Lỗi kết nối';
+    message.textContent = 'Không thể đồng bộ trận đấu.';
+    updateChatUI();
+  });
+}
+
+function handleOnlineData(data){
+  if(!data || !data.type) return;
+  if(data.type === 'hello' && onlineRole === 'host'){
+    p2Name = data.name || 'Người tham gia';
+    applyPlayerUI();
+    sendOnline({type:'init', hostName:p1Name, guestName:p2Name, hostPiece:p1Piece, guestPiece:p2Piece, winLength, turnTime});
+    $('networkStatus').textContent = 'Đã kết nối cùng phòng';
+    scores = {p1:0,p2:0}; wins = {p1:0,p2:0}; updateScores();
+    resetRound(false);
+  }else if(data.type === 'init' && onlineRole === 'guest'){
+    p1Name = data.hostName; p2Name = data.guestName;
+    p1Piece = data.hostPiece; p2Piece = data.guestPiece;
+    winLength = data.winLength; turnTime = data.turnTime;
+    myOnlinePiece = p2Piece;
+    applyPlayerUI();
+    scores = {p1:0,p2:0}; wins = {p1:0,p2:0}; updateScores();
+    resetRound(true);
+  }else if(data.type === 'chat'){
+    receiveChatMessage(data);
+  }else if(data.type === 'move'){
+    applyRemoteMove(data);
+  }else if(data.type === 'reset'){
+    resetRound(true);
+  }else if(data.type === 'undo'){
+    undoMove(true);
+  }else if(data.type === 'timeout'){
+    stopTimer();
+    currentPiece = currentPiece === 'X' ? 'O' : 'X';
+    startTurnFlow();
+    if(onlineRole === 'host') void publishOnlineSnapshot();
+  }else if(data.type === 'participant_left' && onlineRole === 'host'){
+    onlineConnected = false;
+    active = false;
+    stopTimer();
+    appendChatSystem((data.name || 'Người tham gia') + ' đã rời phòng.');
+    updateChatUI();
+    p2Name = 'Đang chờ người chơi...';
+    applyPlayerUI();
+    setCurrentRoomState('waiting',1);
+    void startRoomHeartbeat();
+    $('networkStatus').textContent = 'Phòng đang mở lại';
+    message.textContent = (data.name || 'Người tham gia') + ' đã rời trận. Phòng đang chờ người chơi mới.';
+    try{ if(connection) connection.close(); }catch(_){ }
+    connection = null;
+    updateOnlineActionButtons();
+  }else if(data.type === 'join_rejected' && onlineRole === 'guest'){
+    const roomCode = currentOnlineRoomCode || data.code || '';
+    const rejectedMessage = data.reason === 'playing'
+      ? 'Phòng ' + roomCode + ' đã bắt đầu trận. Bạn không thể tham gia lúc này.'
+      : 'Phòng ' + roomCode + ' đã đủ 2 người chơi. Vui lòng chọn phòng khác.';
+    intentionalOnlineExit = 'join-rejected';
+    closeExistingPeer(false);
+    onlineRole = null;
+    myOnlinePiece = null;
+    $('networkStatus').textContent = 'Không thể vào phòng';
+    message.textContent = rejectedMessage;
+    returnToOnlineSetup('', 'join');
+    showToast(rejectedMessage,'warn');
+    alert(rejectedMessage);
+  }else if(data.type === 'room_dissolved' && onlineRole === 'guest'){
+    const roomCode = currentOnlineRoomCode || data.code || '';
+    intentionalOnlineExit = 'room-dissolved';
+    closeExistingPeer(false);
+    onlineRole = null;
+    myOnlinePiece = null;
+    $('joinRoomCodeInput').value = '';
+    $('networkStatus').textContent = 'Chủ phòng đã giải tán phòng';
+    message.textContent = 'Phòng ' + roomCode + ' đã được giải tán.';
+    returnToOnlineSetup('Chủ phòng đã giải tán phòng ' + roomCode + '.','join');
+  }
+}
+
+function sendOnline(data){ if(connection && connection.open) connection.send(data); }
+function handlePeerError(error){
+  const errorType = error && error.type ? error.type : '';
+  if(onlineRole === 'guest' && !onlineConnected && currentOnlineRoomCode && !cloudRelayJoinFallbackStarted){
+    startCloudGuestJoin(currentOnlineRoomCode,'Kết nối trực tiếp không khả dụng (' + (errorType || 'lỗi mạng') + '). Đang dùng chế độ tương thích...');
+    return;
+  }
+  if(onlineRole === 'host' && currentOnlineRoomCode){
+    ensureCloudHostRelay();
+    void startRoomHeartbeat();
+    $('networkStatus').textContent = 'Phòng đang dùng chế độ tương thích';
+    message.textContent = errorType === 'unavailable-id'
+      ? 'Mã phòng đang được sử dụng. Hãy tạo mã mới.'
+      : 'Kết nối trực tiếp không khả dụng. Phòng vẫn hoạt động bằng chế độ tương thích trình duyệt.';
+    showToast(message.textContent,errorType === 'unavailable-id' ? 'warn' : 'info');
+    return;
+  }
+  const messageText = errorType === 'unavailable-id'
+    ? 'Mã phòng này đã được tạo. Hãy chọn “Tham gia phòng” hoặc dùng mã khác.'
+    : 'Không thể kết nối phòng. Kiểm tra mã phòng và kết nối Internet.';
+  $('networkStatus').textContent = 'Kết nối thất bại';
+  message.textContent = messageText;
+  showToast(messageText,'warn');
+}
+
+function resetRound(fromNetwork = false){
+  boardRevision += 1;
+  if(gameMode === 'online' && !fromNetwork && onlineConnected) sendOnline({type:'reset'});
+  if(gameMode === 'online' && onlineRole === 'host' && onlineConnected) setCurrentRoomState('full',2);
+  buildBoard();
+  closeResult();
+  currentPiece = 'X';
+  active = true;
+  updateTurn();
+
+  if(gameMode === 'computer' && currentPiece === p2Piece){
+    message.textContent = p2Name + ' đi trước vì đang cầm quân X.';
+    showAITimer();
+    setTimeout(computerMove, 500);
+  } else {
+    message.textContent = 'Trận đấu bắt đầu! Quân X đi trước.';
+    startTurnFlow();
+  }
+  if(gameMode === 'online') void publishOnlineSnapshot();
+}
+
+function startTurnFlow(){
+  updateTurn();
+  if(gameMode === 'computer' && currentPiece === p2Piece){
+    showAITimer();
+    setTimeout(computerMove, 450);
+  } else {
+    startTimer();
+  }
+}
+
+function playCell(index){
+  if(!active) return;
+  const row = Math.floor(index / SIZE), col = index % SIZE;
+  if(board[row][col]) return;
+  if(gameMode === 'computer' && currentPiece === p2Piece) return;
+  if(gameMode === 'online' && (!onlineConnected || currentPiece !== myOnlinePiece)) return;
+
+  const playedPiece = currentPiece;
+  placePiece(row, col, playedPiece);
+  if(gameMode === 'online') sendOnline({type:'move', row, col, piece:playedPiece});
+  completeTurnAfterMove(row, col, playedPiece);
+}
+
+function applyRemoteMove(data){
+  if(!active || data.piece !== currentPiece) return;
+  if(board[data.row][data.col]) return;
+  placePiece(data.row, data.col, data.piece);
+  completeTurnAfterMove(data.row, data.col, data.piece);
+}
+
+function completeTurnAfterMove(row, col, piece){
+  if(gameMode === 'online' && onlineRole === 'host') setCurrentRoomState('playing',2);
+  if(checkFinish(row, col, piece)){
+    if(gameMode === 'online') void publishOnlineSnapshot();
+    return;
+  }
+  currentPiece = currentPiece === 'X' ? 'O' : 'X';
+  startTurnFlow();
+  if(gameMode === 'online') void publishOnlineSnapshot();
+}
+
+function placePiece(row, col, piece){
+  board[row][col] = piece;
+  const cell = boardEl.children[row * SIZE + col];
+  if(!cell) return;
+  cell.className = 'cell ' + piece;
+  cell.textContent = piece;
+  setLastMoveCell(cell);
+  animatePlacedCell(cell);
+  moves.push({row, col, piece});
+  playTone(piece === 'X' ? 430 : 350, 0.045);
+}
+
+function getWinningLine(r, c, piece){
+  for(const [dr,dc] of [[0,1],[1,0],[1,1],[1,-1]]){
+    const line = [{r,c}];
+    for(const sign of [-1,1]){
+      for(let k=1;k<SIZE;k++){
+        const nr = r + dr * k * sign, nc = c + dc * k * sign;
+        if(nr<0||nr>=SIZE||nc<0||nc>=SIZE||board[nr][nc] !== piece) break;
+        if(!line.some(item => item.r === nr && item.c === nc)) line.push({r:nr,c:nc});
       }
-    );
+    }
+    if(line.length >= winLength) return line;
+  }
+  return null;
+}
 
-    resultModalButton.addEventListener(
-      "click",
-      closeResultModal
-    );
+function checkFinish(row, col, piece){
+  const line = getWinningLine(row, col, piece);
+  if(line){
+    line.forEach(({r,c}) => boardEl.children[r*SIZE + c].classList.add('win'));
+    finishGame(piece);
+    return true;
+  }
+  if(moves.length === SIZE * SIZE){
+    finishGame(null);
+    return true;
+  }
+  return false;
+}
 
-    resultModalClose.addEventListener(
-      "click",
-      closeResultModal
-    );
+function finishGame(piece){
+  active = false;
+  if(gameMode === 'online' && onlineRole === 'host' && onlineConnected) setCurrentRoomState('full',2);
+  stopTimer();
+  if(!piece){
+    $('resultTitle').textContent = 'Hòa nhau!';
+    $('resultText').textContent = 'Không ai tạo được ' + winLength + ' ô liên tiếp.';
+    playTone(260, .2);
+  }else{
+    const isP1 = piece === p1Piece;
+    const winnerName = isP1 ? p1Name : p2Name;
+    if(isP1){ scores.p1 += 100; wins.p1++; }
+    else { scores.p2 += 100; wins.p2++; }
+    updateScores();
+    $('resultTitle').textContent = winnerName + ' chiến thắng!';
+    $('resultText').textContent = 'Quân ' + piece + ' đã tạo thành ' + winLength + ' ô liên tiếp.';
+    playWinSound();
+  }
+  if(gameMode === 'online') void publishOnlineSnapshot();
+  setTimeout(()=>$('resultModal').classList.add('show'), 650);
+}
 
-    resultModalDelete.addEventListener(
-      "click",
-      deleteLatestResult
-    );
+function updateTurn(){
+  const isP1Turn = currentPiece === p1Piece;
+  const currentName = isP1Turn ? p1Name : p2Name;
+  $('turnName').textContent = currentName;
+  $('player1Card').classList.toggle('active', isP1Turn);
+  $('player2Card').classList.toggle('active', !isP1Turn);
+  if(gameMode === 'computer' && currentPiece === p2Piece){
+    message.textContent = p2Name + ' đang suy nghĩ...';
+  }else{
+    message.textContent = 'Đến lượt ' + currentName + ' (' + currentPiece + ')';
+  }
+}
 
-    resultModalBackdrop.addEventListener(
-      "click",
-      closeResultModal
-    );
+function startTimer(){
+  stopTimer();
+  if(gameMode === 'online' && currentPiece !== myOnlinePiece){
+    $('timeText').textContent = turnTime || '∞';
+    $('timerFill').style.height = '100%';
+    $('timer').classList.remove('warning');
+    return;
+  }
+  if(!turnTime){
+    $('timeText').textContent = '∞';
+    $('timerFill').style.height = '100%';
+    $('timer').classList.remove('warning');
+    return;
+  }
+  timeLeft = turnTime;
+  lastWarningSecond = null;
+  renderTimer();
+  timerId = setInterval(()=>{
+    timeLeft--;
+    renderTimer();
+    if(timeLeft <= 0){
+      handleTimeout();
+    }
+  },1000);
+}
 
-    document.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key === "Escape" &&
-          resultModal.classList.contains(
-            "is-visible"
-          )
-        ) {
-          closeResultModal();
-        }
+function showAITimer(){
+  stopTimer();
+  $('timeText').textContent = 'AI';
+  $('timerFill').style.height = '100%';
+  $('timer').classList.remove('warning');
+}
+
+function handleTimeout(){
+  stopTimer();
+  if(gameMode === 'computer'){
+    message.textContent = 'Hết thời gian! Bạn mất lượt.';
+    currentPiece = p2Piece;
+    startTurnFlow();
+  }else if(gameMode === 'online'){
+    message.textContent = 'Hết thời gian! Chuyển lượt.';
+    sendOnline({type:'timeout'});
+    currentPiece = currentPiece === 'X' ? 'O' : 'X';
+    startTurnFlow();
+    void publishOnlineSnapshot();
+  }else{
+    message.textContent = 'Hết thời gian! Chuyển lượt.';
+    currentPiece = currentPiece === 'X' ? 'O' : 'X';
+    startTurnFlow();
+  }
+}
+
+function renderTimer(){
+  $('timeText').textContent = timeLeft;
+  $('timerFill').style.height = (timeLeft / turnTime * 100) + '%';
+  const isWarning = timeLeft <= 5 && timeLeft > 0;
+  $('timer').classList.toggle('warning', isWarning);
+  if(isWarning && lastWarningSecond !== timeLeft){
+    lastWarningSecond = timeLeft;
+    playCountdownSound(timeLeft);
+  }
+}
+function stopTimer(){ clearInterval(timerId); timerId = null; }
+
+function undoMove(fromNetwork = false){
+  boardRevision += 1;
+  if(!moves.length) return;
+  if(gameMode === 'online' && !fromNetwork){
+    if(!onlineConnected) return;
+    sendOnline({type:'undo'});
+  }
+  stopTimer();
+  const removeCount = gameMode === 'computer' ? Math.min(2, moves.length) : 1;
+  for(let i=0;i<removeCount;i++) moves.pop();
+  rebuildFromMoves();
+  active = true;
+  if(gameMode === 'computer') currentPiece = p1Piece;
+  else currentPiece = moves.length ? (moves[moves.length - 1].piece === 'X' ? 'O' : 'X') : 'X';
+  startTurnFlow();
+  if(gameMode === 'online') void publishOnlineSnapshot();
+}
+
+function rebuildFromMoves(){
+  board = Array.from({length:SIZE}, ()=> Array(SIZE).fill(null));
+  lastMoveCell = null;
+  const children = boardEl.children;
+  for(let i=0;i<children.length;i++){
+    children[i].className = 'cell';
+    children[i].textContent = '';
+  }
+  moves.forEach((m, idx)=>{
+    board[m.row][m.col] = m.piece;
+    const cell = children[m.row * SIZE + m.col];
+    if(!cell) return;
+    cell.className = 'cell ' + m.piece;
+    cell.textContent = m.piece;
+    if(idx === moves.length - 1) setLastMoveCell(cell);
+  });
+}
+
+function computerMove(){
+  if(!active || gameMode !== 'computer' || currentPiece !== p2Piece) return;
+  const move = getComputerMove();
+  if(!move) return finishGame(null);
+  placePiece(move.row, move.col, p2Piece);
+  if(checkFinish(move.row, move.col, p2Piece)) return;
+  currentPiece = p1Piece;
+  startTurnFlow();
+}
+
+function getComputerMove(){
+  if(difficultyLevel === 'easy') return randomMove(getCandidateMoves());
+  const win = findWinningMove(p2Piece);
+  if(win) return win;
+  const block = findWinningMove(p1Piece);
+  if(block) return block;
+  if(difficultyLevel === 'hard'){
+    const strategic = bestStrategicMove();
+    if(strategic) return strategic;
+  }
+  const center = Math.floor(SIZE/2);
+  if(!board[center][center]) return {row:center,col:center};
+  return randomMove(getCandidateMoves());
+}
+
+function getCandidateMoves(){
+  if(moves.length === 0){
+    const center = Math.floor(SIZE/2);
+    return [{row:center,col:center}];
+  }
+  const set = new Map();
+  moves.forEach(({row,col})=>{
+    for(let r=Math.max(0,row-1); r<=Math.min(SIZE-1,row+1); r++){
+      for(let c=Math.max(0,col-1); c<=Math.min(SIZE-1,col+1); c++){
+        if(!board[r][c]) set.set(r + '-' + c, {row:r,col:c});
       }
-    );
+    }
+  });
+  return [...set.values()];
+}
 
-    window.addEventListener(
-      "resize",
-      createDecorativeLights
-    );
+function randomMove(arr){ return arr[Math.floor(Math.random() * arr.length)] || null; }
 
-    createDecorativeLights();
+function findWinningMove(piece){
+  const candidates = getCandidateMoves();
+  for(const move of candidates){
+    board[move.row][move.col] = piece;
+    const line = getWinningLine(move.row, move.col, piece);
+    board[move.row][move.col] = null;
+    if(line) return move;
+  }
+  return null;
+}
 
-    rotation =
-      items.length > 0
-        ? getTopRotation(0)
-        : 0;
+function bestStrategicMove(){
+  const candidates = getCandidateMoves();
+  let best = null, bestScore = -Infinity;
+  for(const move of candidates){
+    const attack = evaluateMove(move.row, move.col, p2Piece);
+    const defend = evaluateMove(move.row, move.col, p1Piece);
+    const score = attack * 2 + defend * 1.6 + proximityScore(move.row, move.col);
+    if(score > bestScore){
+      bestScore = score;
+      best = move;
+    }
+  }
+  return best;
+}
 
-    updateList();
-    drawWheel();
-
-    /*
-      Hạn chế các thao tác phổ biến dùng để mở mã nguồn/DevTools.
-      Ctrl+C / Cmd+C không bị chặn nên người dùng vẫn sao chép văn bản được.
-      Lưu ý: mã chạy phía trình duyệt không thể được bảo vệ tuyệt đối.
-    */
-    document.addEventListener(
-      "contextmenu",
-      event => {
-        event.preventDefault();
-      },
-      true
-    );
-
-    document.addEventListener(
-      "keydown",
-      event => {
-        const key = event.key.toLowerCase();
-
-        const isViewSourceShortcut =
-          (event.ctrlKey || event.metaKey) &&
-          !event.shiftKey &&
-          !event.altKey &&
-          key === "u";
-
-        const isWindowsDevToolsShortcut =
-          event.ctrlKey &&
-          event.shiftKey &&
-          ["i", "j", "c", "k"].includes(key);
-
-        const isMacDevToolsShortcut =
-          event.metaKey &&
-          event.altKey &&
-          ["i", "j", "c", "k"].includes(key);
-
-        if (
-          event.key === "F12" ||
-          isViewSourceShortcut ||
-          isWindowsDevToolsShortcut ||
-          isMacDevToolsShortcut
-        ) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
+function evaluateMove(row, col, piece){
+  let total = 0;
+  for(const [dr,dc] of [[0,1],[1,0],[1,1],[1,-1]]){
+    let count = 1;
+    let openEnds = 0;
+    for(const sign of [-1,1]){
+      let step = 1;
+      while(true){
+        const nr = row + dr * step * sign, nc = col + dc * step * sign;
+        if(nr<0||nr>=SIZE||nc<0||nc>=SIZE) break;
+        if(board[nr][nc] === piece) count++;
+        else {
+          if(board[nr][nc] === null) openEnds++;
+          break;
         }
-      },
-      true
-    );
-  </script>
+        step++;
+      }
+    }
+    total += count * count + openEnds;
+  }
+  return total;
+}
+
+function proximityScore(row, col){
+  const center = Math.floor(SIZE/2);
+  return SIZE - (Math.abs(center-row) + Math.abs(center-col));
+}
+
+function updateScores(){
+  $('p1Score').textContent = scores.p1;
+  $('p2Score').textContent = scores.p2;
+  $('p1Wins').textContent = wins.p1;
+  $('p2Wins').textContent = wins.p2;
+}
+
+function getSharedAudioContext(){
+  if(sharedAudioContext) return sharedAudioContext;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if(!AudioCtx) return null;
+  sharedAudioContext = new AudioCtx();
+  return sharedAudioContext;
+}
+
+function playTone(freq,duration){
+  if(!soundOn) return;
+  const ac = getSharedAudioContext();
+  if(!ac) return;
+  if(ac.state === 'suspended') void ac.resume();
+  const osc = ac.createOscillator();
+  const gain = ac.createGain();
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(.065, ac.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.001, ac.currentTime + duration);
+  osc.connect(gain); gain.connect(ac.destination);
+  osc.start(); osc.stop(ac.currentTime + duration);
+}
+function playCountdownSound(second){
+  const frequency = second <= 2 ? 980 : 720;
+  playTone(frequency, second <= 2 ? .12 : .08);
+}
+function playWinSound(){ [440,554,659,880].forEach((f,i)=>setTimeout(()=>playTone(f,.18),i*120)); }
+
+$('chatInput').addEventListener('keydown', event => {
+  if(event.key === 'Enter' && !event.shiftKey){
+    event.preventDefault();
+    sendChatMessage();
+  }
+});
+
+$('soundBtn').onclick = () => {
+  soundOn = !soundOn;
+  $('soundBtn').innerHTML = '<i class="fa-solid ' + (soundOn ? 'fa-volume-high' : 'fa-volume-xmark') + '"></i>';
+};
+$('computerNameInput').addEventListener('input', ()=>{ if(gameMode==='computer') $('name2Input').value = $('computerNameInput').value || 'Máy'; });
+$('roomType').addEventListener('change', ()=>{
+  if(gameMode === 'online'){
+    updateOnlineRoomFields();
+    updateOnlineRoleControls();
+    updateStartButtonLabel();
+    $('onlineRoomHelp').textContent = $('roomType').value === 'create'
+      ? 'Phòng mới đã có mã. Hãy gửi mã này cho người chơi còn lại.'
+      : 'Nhập tên trước, sau đó nhấn “Tham gia phòng” trong danh sách để sang bước xác nhận, rồi nhấn “Vào phòng”.';
+  }
+});
+
+setupSourceProtection();
+initRoomDirectory();
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && gameMode === 'online' && onlineRole === 'guest' && currentOnlineRoomCode){
+    void pollRoomState();
+  }
+});
+window.addEventListener('pageshow', () => {
+  if(gameMode === 'online' && onlineRole === 'guest' && currentOnlineRoomCode) void pollRoomState();
+});
+
+window.addEventListener('beforeunload', () => {
+  stopRoomHeartbeat();
+  stopCloudRelay(true,false);
+  stopRoomDirectory();
+  // Không xóa phòng ngay khi đóng trang; phòng sẽ tự hết hạn sau 45 giây.
+});
+buildBoard();
+selectMode('computer', document.querySelector('[data-mode="computer"]'));
+updatePiecePreview();
+updateOnlineActionButtons();
+updateChatUI();
+showStep(1);
+openGuide();
+</script>
 </body>
 </html>
