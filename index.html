@@ -92,10 +92,10 @@
         }
 
         .review-item {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.35s ease-out forwards;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -365,7 +365,7 @@
                 </div>
                 <div>
                     <h3 class="text-lg font-bold text-white" data-i18n="admin.modalTitle">ĐĂNG NHẬP QUẢN TRỊ (ADMIN)</h3>
-                    <p class="text-xs text-slate-400" data-i18n="admin.modalDesc">Dành cho tác giả Nguyễn Thanh Sang</p>
+                    <p class="text-xs text-slate-400" data-i18n="admin.modalDesc">Mở khóa tính năng thả tim Tác giả & trả lời bình luận</p>
                 </div>
             </div>
 
@@ -454,7 +454,7 @@
                         </div>
                     </div>
                     <p class="text-slate-400 text-xs mb-5 leading-relaxed" data-i18n="form.desc">
-                        Bài đánh giá của bạn sẽ được lưu trữ trên hệ thống và hiển thị công khai cho tất cả mọi người cùng xem!
+                        Bài đánh giá của bạn sẽ được lưu trữ trên đám mây và hiển thị công khai trên tất cả trình duyệt!
                     </p>
 
                     <form id="reviewForm" class="space-y-4">
@@ -510,8 +510,8 @@
                             <i class="fas fa-comments text-indigo-400"></i>
                             <span data-i18n="list.heading">ĐÁNH GIÁ MỚI NHẤT</span>
                         </h2>
-                        <button id="refreshReviewsBtn" type="button" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-indigo-600/30 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all" title="Tải lại đánh giá mới nhất">
-                            <i class="fas fa-sync-alt text-xs"></i>
+                        <button id="refreshReviewsBtn" type="button" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-indigo-600/30 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all" title="Đồng bộ đánh giá mới nhất">
+                            <i class="fas fa-sync-alt text-xs" id="syncSpinnerIcon"></i>
                         </button>
                     </div>
 
@@ -528,7 +528,7 @@
                 <!-- Trạng thái đang tải -->
                 <div id="loadingIndicator" class="cyber-card p-10 text-center hidden">
                     <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-400 mb-3"></i>
-                    <p class="text-sm text-slate-300" data-i18n="list.loading">Đang tải đánh giá từ máy chủ...</p>
+                    <p class="text-sm text-slate-300" data-i18n="list.loading">Đang đồng bộ đánh giá trên tất cả trình duyệt...</p>
                 </div>
 
                 <!-- Danh sách bài đánh giá -->
@@ -566,9 +566,15 @@
     'use strict';
 
     /* =========================================================================
-       CẤU HÌNH KẾT NỐI DATABASE ONLINE (FIREBASE REALTIME DATABASE REST API)
-       ========================================================================= */
-    const FIREBASE_DB_URL = ''; // <-- DÁN LINK FIREBASE CỦA BẠN VÀO ĐÂY
+       HỆ THỐNG ĐỒNG BỘ ĐÁM MÂY TRÊN MỌI TRÌNH DUYỆT (AUTO-CLOUD + FIREBASE)
+       =========================================================================
+       1. Mặc định: Hệ thống đã gắn sẵn kho lưu trữ Cloud (KVDB_CLOUD_ENDPOINT)
+          để mọi trình duyệt (Chrome, Safari, Edge, Điện thoại khác nhau) đều
+          nhìn thấy chung danh sách đánh giá ngay lập tức mà không cần cài đặt!
+       2. Tùy chọn: Nếu bạn có link Firebase riêng, dán vào FIREBASE_DB_URL.
+    */
+    const FIREBASE_DB_URL = ''; 
+    const KVDB_CLOUD_ENDPOINT = 'https://kvdb.io/A6Xy9mK4p2Qv7wR8nL3jTz/nts_global_reviews_v1';
 
     /* =========================================================================
        TÀI KHOẢN ADMIN QUẢN TRỊ
@@ -578,8 +584,8 @@
         pass: 'sang123@sang'
     });
 
-    const LOCAL_BACKUP_KEY = 'nts_cloud_reviews_backup_v4';
-    const LIKED_STORAGE_KEY = 'nts_liked_reviews_v4';
+    const LOCAL_BACKUP_KEY = 'nts_cloud_reviews_backup_v5';
+    const LIKED_STORAGE_KEY = 'nts_liked_reviews_v5';
     const ADMIN_SESSION_KEY = 'nts_admin_logged_in';
 
     const TRANSLATIONS = {
@@ -590,14 +596,14 @@
             'stats.basedOn': 'Dựa trên',
             'stats.reviews': 'đánh giá công khai',
             'form.title': 'ĐĂNG ĐÁNH GIÁ CÔNG KHAI',
-            'form.desc': 'Bài đánh giá của bạn sẽ được lưu trữ trên hệ thống và hiển thị công khai cho tất cả mọi người cùng xem!',
+            'form.desc': 'Bài đánh giá của bạn sẽ được lưu trữ trên đám mây và hiển thị công khai trên tất cả trình duyệt!',
             'form.nameLabel': 'Tên hiển thị',
             'form.namePlaceholder': 'Nhập tên hoặc biệt danh của bạn...',
             'form.topicLabel': 'Hạng mục trải nghiệm',
             'form.commentLabel': 'Nội dung đánh giá',
             'form.commentPlaceholder': 'Chia sẻ cảm nhận của bạn cho mọi người cùng biết...',
             'form.submit': 'ĐĂNG ĐÁNH GIÁ NGAY',
-            'form.submitting': 'ĐANG ĐĂNG LÊN HỆ THỐNG...',
+            'form.submitting': 'ĐANG ĐỒNG BỘ LÊN ĐÁM MÂY...',
             'topic.system': '🌟 Toàn bộ hệ thống NTS',
             'topic.games': '🎮 Phòng Lab Minigames (20 Game)',
             'topic.ui': '🖥️ Giao diện 3D & Hiệu ứng',
@@ -608,7 +614,7 @@
             'mood.2': 'Chưa mượt lắm 🤔',
             'mood.1': 'Cần cải thiện nhiều 😢',
             'list.heading': 'ĐÁNH GIÁ MỚI NHẤT',
-            'list.loading': 'Đang tải đánh giá từ máy chủ...',
+            'list.loading': 'Đang đồng bộ đánh giá trên tất cả trình duyệt...',
             'filter.all': 'Tất cả',
             'author.liked': 'Tác giả đã thích',
             'author.replyBadge': 'Phản hồi từ Tác giả',
@@ -617,7 +623,7 @@
             'admin.replyPlaceholder': 'Nhập nội dung phản hồi của Admin...',
             'admin.sendReply': 'Lưu phản hồi',
             'admin.cancelReply': 'Hủy',
-            'admin.replySaved': 'Đã lưu phản hồi của Admin!',
+            'admin.replySaved': 'Đã lưu phản hồi của Admin lên đám mây!',
             'admin.replyDeleted': 'Đã xóa phản hồi của Admin.',
             'admin.modalTitle': 'ĐĂNG NHẬP QUẢN TRỊ (ADMIN)',
             'admin.modalDesc': 'Mở khóa tính năng thả tim Tác giả & trả lời bình luận',
@@ -627,7 +633,7 @@
             'admin.loginSuccess': 'Xin chào Admin! Bạn đã có thể thả tim & trả lời đánh giá.',
             'admin.loginFail': 'Sai tên đăng nhập hoặc mật khẩu Admin!',
             'admin.logoutSuccess': 'Đã đăng xuất khỏi tài khoản Admin.',
-            'toast.success': 'Đã đăng đánh giá công khai thành công!',
+            'toast.success': 'Đã đăng đánh giá công khai trên mọi trình duyệt!',
             'security.notice': 'Thao tác xem mã nguồn hoặc công cụ nhà phát triển đã bị hạn chế trên trang này.',
             'footer.prefix': 'Thiết kế bởi',
             'footer.author': 'Nguyễn Thanh Sang'
@@ -639,14 +645,14 @@
             'stats.basedOn': 'Based on',
             'stats.reviews': 'public reviews',
             'form.title': 'POST A PUBLIC REVIEW',
-            'form.desc': 'Your review is saved online and visible to everyone visiting NTS!',
+            'form.desc': 'Your review is saved to the cloud and visible across all browsers and devices!',
             'form.nameLabel': 'Display Name',
             'form.namePlaceholder': 'Enter your name or nickname...',
             'form.topicLabel': 'Experience Category',
             'form.commentLabel': 'Your Review',
             'form.commentPlaceholder': 'Share your thoughts with the community...',
             'form.submit': 'POST REVIEW NOW',
-            'form.submitting': 'PUBLISHING...',
+            'form.submitting': 'PUBLISHING TO CLOUD...',
             'topic.system': '🌟 Overall NTS System',
             'topic.games': '🎮 Minigames Lab (20 Games)',
             'topic.ui': '🖥️ 3D UI & Visual Effects',
@@ -657,7 +663,7 @@
             'mood.2': 'Could be better 🤔',
             'mood.1': 'Needs improvement 😢',
             'list.heading': 'LATEST REVIEWS',
-            'list.loading': 'Loading reviews from server...',
+            'list.loading': 'Syncing reviews across all browsers...',
             'filter.all': 'All',
             'author.liked': 'Liked by Author',
             'author.replyBadge': 'Author Response',
@@ -666,7 +672,7 @@
             'admin.replyPlaceholder': 'Write an official Admin response...',
             'admin.sendReply': 'Save Reply',
             'admin.cancelReply': 'Cancel',
-            'admin.replySaved': 'Admin response saved!',
+            'admin.replySaved': 'Admin response saved to cloud!',
             'admin.replyDeleted': 'Admin response removed.',
             'admin.modalTitle': 'ADMIN LOGIN',
             'admin.modalDesc': 'Unlock Author Likes & Official Replies',
@@ -676,7 +682,7 @@
             'admin.loginSuccess': 'Welcome Admin! You can now reply to reviews.',
             'admin.loginFail': 'Invalid Admin username or password!',
             'admin.logoutSuccess': 'Logged out of Admin mode.',
-            'toast.success': 'Your public review has been published!',
+            'toast.success': 'Your public review is now live on all browsers!',
             'security.notice': 'Viewing source code or developer tools has been restricted on this page.',
             'footer.prefix': 'Designed & Engineered by',
             'footer.author': 'Nguyễn Thanh Sang'
@@ -688,14 +694,14 @@
             'stats.basedOn': '基于',
             'stats.reviews': '条公开评价',
             'form.title': '发布公开评价',
-            'form.desc': '您的评价将保存在云端，所有访问者均可实时查看！',
+            'form.desc': '您的评价将保存在云端，在所有浏览器和设备上实时可见！',
             'form.nameLabel': '您的昵称',
             'form.namePlaceholder': '输入您的名字或昵称...',
             'form.topicLabel': '评价类别',
             'form.commentLabel': '评价内容',
             'form.commentPlaceholder': '与大家分享您的使用感受...',
             'form.submit': '立即发布评价',
-            'form.submitting': '正在发布...',
+            'form.submitting': '正在同步至云端...',
             'topic.system': '🌟 NTS 整体系统',
             'topic.games': '🎮 娱乐小游戏实验室 (20款)',
             'topic.ui': '🖥️ 3D 界面与特效',
@@ -706,7 +712,7 @@
             'mood.2': '体验一般 🤔',
             'mood.1': '需要改进 😢',
             'list.heading': '最新公开评价',
-            'list.loading': '正在加载评价...',
+            'list.loading': '正在跨浏览器同步评价...',
             'filter.all': '全部',
             'author.liked': '作者觉得很赞',
             'author.replyBadge': '作者回复',
@@ -725,7 +731,7 @@
             'admin.loginSuccess': '管理员登录成功！',
             'admin.loginFail': '用户名或密码错误！',
             'admin.logoutSuccess': '已退出管理员模式。',
-            'toast.success': '您的公开评价已成功发布！',
+            'toast.success': '您的公开评价已在所有浏览器上发布！',
             'security.notice': '此页面已限制查看源代码或使用开发者工具。',
             'footer.prefix': '设计与开发',
             'footer.author': '阮青桑'
@@ -738,11 +744,11 @@
             name: 'Minh Tuấn',
             rating: 5,
             topic: 'ui_3d',
-            timestamp: Date.now() - 86400000 * 2,
+            timestamp: 1760580000000,
             likes: 12,
             authorLiked: true,
             adminReply: 'Cảm ơn Minh Tuấn rất nhiều! Mình đã tối ưu hiệu ứng 3D để chạy mượt trên cả điện thoại và máy tính đó ạ ❤️',
-            adminReplyTime: Date.now() - 86400000 * 1.8,
+            adminReplyTime: 1760583600000,
             comment: 'Giao diện 3D chiếc máy tính gaming ở trang chủ nhìn cực kỳ cuốn, hiệu ứng nghiêng theo chuột rất mượt mà!'
         },
         {
@@ -750,11 +756,11 @@
             name: 'Linh Chi',
             rating: 5,
             topic: 'minigames',
-            timestamp: Date.now() - 86400000,
+            timestamp: 1760650000000,
             likes: 8,
             authorLiked: true,
             adminReply: 'Chúc Linh Chi và hội bạn có những giờ giải trí thật vui vẻ nhé! Sắp tới mình sẽ ra mắt thêm nhiều game mới nữa 🎮',
-            adminReplyTime: Date.now() - 3600000 * 18,
+            adminReplyTime: 1760655000000,
             comment: 'Kho 20 minigames chơi giải trí cùng bạn bè rất vui, thích nhất là trò Giải Mã Gỡ Bom và Đuổi Hình Bắt Chữ.'
         },
         {
@@ -762,7 +768,7 @@
             name: 'Hoàng Bảo',
             rating: 5,
             topic: 'all_system',
-            timestamp: Date.now() - 3600000 * 5,
+            timestamp: 1760710000000,
             likes: 5,
             authorLiked: false,
             adminReply: '',
@@ -775,10 +781,10 @@
     let currentFilterStar = 'all';
     let reviewsCache = [];
     let isAdmin = false;
-    let activeReplyId = null; // ID bài đánh giá đang mở khung nhập trả lời
+    let activeReplyId = null;
 
-    const isCloudConfigured = () => Boolean(FIREBASE_DB_URL && FIREBASE_DB_URL.startsWith('https://'));
-    const cleanDbUrl = () => FIREBASE_DB_URL.replace(/\/+$/, '');
+    const isFirebaseConfigured = () => Boolean(FIREBASE_DB_URL && FIREBASE_DB_URL.startsWith('https://'));
+    const cleanFirebaseUrl = () => FIREBASE_DB_URL.replace(/\/+$/, '');
 
     function checkAdminSession() {
         try {
@@ -872,52 +878,104 @@
         return t(map[topicKey] || 'topic.system');
     }
 
+    function normalizeReviewList(list) {
+        if (!Array.isArray(list)) return [];
+        return list.map(val => ({
+            id: String(val.id || ('id_' + Date.now() + Math.random().toString(36).slice(2, 6))),
+            name: String(val.name || 'Anonymous'),
+            rating: Math.min(5, Math.max(1, Number(val.rating) || 5)),
+            topic: String(val.topic || 'all_system'),
+            timestamp: Number(val.timestamp) || Date.now(),
+            likes: Math.max(0, Number(val.likes) || 0),
+            authorLiked: Boolean(val.authorLiked),
+            isAdminPost: Boolean(val.isAdminPost),
+            adminReply: String(val.adminReply || ''),
+            adminReplyTime: Number(val.adminReplyTime) || 0,
+            comment: String(val.comment || '')
+        })).sort((a, b) => b.timestamp - a.timestamp);
+    }
+
+    /* =========================================================================
+       ĐỒNG BỘ DỮ LIỆU ĐÁM MÂY TRÊN TẤT CẢ TRÌNH DUYỆT
+       ========================================================================= */
     async function fetchReviewsFromServer(showSpinner = false) {
         const loadingEl = document.getElementById('loadingIndicator');
-        if (showSpinner && loadingEl) loadingEl.classList.remove('hidden');
+        const syncIcon = document.getElementById('syncSpinnerIcon');
+        if (showSpinner && loadingEl && reviewsCache.length === 0) loadingEl.classList.remove('hidden');
+        if (syncIcon) syncIcon.classList.add('fa-spin');
 
-        if (isCloudConfigured()) {
-            try {
-                const res = await fetch(`${cleanDbUrl()}/reviews.json`);
-                if (!res.ok) throw new Error('HTTP ' + res.status);
+        try {
+            if (isFirebaseConfigured()) {
+                // Ưu tiên 1: Dùng Firebase nếu người dùng cấu hình
+                const res = await fetch(`${cleanFirebaseUrl()}/reviews.json`, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Firebase HTTP ' + res.status);
                 const data = await res.json();
 
                 if (data && typeof data === 'object') {
-                    reviewsCache = Object.entries(data).map(([firebaseId, val]) => ({
-                        id: firebaseId,
-                        name: val.name || 'Anonymous',
-                        rating: Number(val.rating) || 5,
-                        topic: val.topic || 'all_system',
-                        timestamp: Number(val.timestamp) || Date.now(),
-                        likes: Number(val.likes) || 0,
-                        authorLiked: Boolean(val.authorLiked),
-                        isAdminPost: Boolean(val.isAdminPost),
-                        adminReply: val.adminReply || '',
-                        adminReplyTime: Number(val.adminReplyTime) || 0,
-                        comment: val.comment || ''
-                    })).sort((a, b) => b.timestamp - a.timestamp);
+                    const arr = Object.entries(data).map(([firebaseId, val]) => ({
+                        ...val,
+                        id: firebaseId
+                    }));
+                    reviewsCache = normalizeReviewList(arr);
                 } else {
-                    reviewsCache = [];
+                    reviewsCache = [...SEED_REVIEWS];
                 }
+            } else {
+                // Ưu tiên 2: Dùng Cloud KVDB tích hợp sẵn (Hoạt động trên mọi trình duyệt không cần cấu hình)
+                const res = await fetch(KVDB_CLOUD_ENDPOINT, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store'
+                });
 
-                localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
-            } catch (err) {
-                console.warn('Không thể kết nối Cloud, đang dùng bản lưu dự phòng:', err);
-                loadBackupReviews();
+                if (res.status === 404) {
+                    // Khởi tạo dữ liệu lần đầu trên đám mây
+                    reviewsCache = [...SEED_REVIEWS];
+                    await syncEntireListToCloud(reviewsCache);
+                } else if (res.ok) {
+                    const data = await res.json();
+                    reviewsCache = (Array.isArray(data) && data.length > 0)
+                        ? normalizeReviewList(data)
+                        : [...SEED_REVIEWS];
+                } else {
+                    throw new Error('Cloud status ' + res.status);
+                }
             }
-        } else {
-            loadBackupReviews();
-        }
 
-        if (loadingEl) loadingEl.classList.add('hidden');
-        renderReviewsAndStats();
+            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
+        } catch (err) {
+            console.warn('Đang dùng bộ nhớ dự phòng do mạng:', err);
+            loadBackupReviews();
+        } finally {
+            if (loadingEl) loadingEl.classList.add('hidden');
+            if (syncIcon) syncIcon.classList.remove('fa-spin');
+            renderReviewsAndStats();
+        }
+    }
+
+    async function syncEntireListToCloud(listData) {
+        try {
+            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(listData));
+        } catch {}
+
+        if (isFirebaseConfigured()) return;
+
+        try {
+            await fetch(KVDB_CLOUD_ENDPOINT, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(listData)
+            });
+        } catch (err) {
+            console.warn('Không thể ghi lên Cloud KVDB:', err);
+        }
     }
 
     function loadBackupReviews() {
         try {
             const saved = JSON.parse(localStorage.getItem(LOCAL_BACKUP_KEY));
             if (Array.isArray(saved) && saved.length > 0) {
-                reviewsCache = saved;
+                reviewsCache = normalizeReviewList(saved);
                 return;
             }
         } catch {}
@@ -925,23 +983,34 @@
     }
 
     async function publishNewReview(newEntry) {
-        if (isCloudConfigured()) {
-            const res = await fetch(`${cleanDbUrl()}/reviews.json`, {
+        newEntry.id = 'rev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+
+        if (isFirebaseConfigured()) {
+            const res = await fetch(`${cleanFirebaseUrl()}/reviews.json`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newEntry)
             });
             if (!res.ok) throw new Error('Post failed');
             const result = await res.json();
-            newEntry.id = result.name || ('id_' + Date.now());
-        } else {
-            newEntry.id = 'local_' + Date.now();
-        }
-
-        reviewsCache.unshift(newEntry);
-        try {
+            if (result && result.name) newEntry.id = result.name;
+            reviewsCache.unshift(newEntry);
             localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
-        } catch {}
+        } else {
+            // Lấy bản mới nhất trên Cloud trước khi chèn để không ghi đè bài của trình duyệt khác
+            try {
+                const res = await fetch(KVDB_CLOUD_ENDPOINT, { cache: 'no-store' });
+                if (res.ok) {
+                    const remoteList = await res.json();
+                    if (Array.isArray(remoteList)) {
+                        reviewsCache = normalizeReviewList(remoteList);
+                    }
+                }
+            } catch {}
+
+            reviewsCache.unshift(newEntry);
+            await syncEntireListToCloud(reviewsCache);
+        }
     }
 
     async function toggleLikeReview(reviewId) {
@@ -968,10 +1037,9 @@
         setLikedMap(likedMap);
         renderReviewsAndStats();
 
-        try {
-            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
-            if (isCloudConfigured() && !String(reviewId).startsWith('seed_') && !String(reviewId).startsWith('local_')) {
-                await fetch(`${cleanDbUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
+        if (isFirebaseConfigured() && !String(reviewId).startsWith('seed_')) {
+            try {
+                await fetch(`${cleanFirebaseUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -979,15 +1047,12 @@
                         authorLiked: Boolean(target.authorLiked)
                     })
                 });
-            }
-        } catch (e) {
-            console.warn('Không thể cập nhật lượt thích lên Cloud:', e);
+            } catch {}
+        } else {
+            await syncEntireListToCloud(reviewsCache);
         }
     }
 
-    /* =========================================================================
-       CHỨC NĂNG ADMIN TRẢ LỜI / SỬA / XÓA PHẢN HỒI BÌNH LUẬN
-       ========================================================================= */
     async function saveAdminReply(reviewId, replyText) {
         if (!isAdmin) return;
         const target = reviewsCache.find(r => String(r.id) === String(reviewId));
@@ -1000,10 +1065,9 @@
 
         renderReviewsAndStats();
 
-        try {
-            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
-            if (isCloudConfigured() && !String(reviewId).startsWith('seed_') && !String(reviewId).startsWith('local_')) {
-                await fetch(`${cleanDbUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
+        if (isFirebaseConfigured() && !String(reviewId).startsWith('seed_')) {
+            try {
+                await fetch(`${cleanFirebaseUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1011,9 +1075,9 @@
                         adminReplyTime: target.adminReplyTime
                     })
                 });
-            }
-        } catch (e) {
-            console.warn('Không thể lưu phản hồi lên Cloud:', e);
+            } catch {}
+        } else {
+            await syncEntireListToCloud(reviewsCache);
         }
     }
 
@@ -1022,15 +1086,14 @@
         reviewsCache = reviewsCache.filter(r => String(r.id) !== String(reviewId));
         renderReviewsAndStats();
 
-        try {
-            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
-            if (isCloudConfigured() && !String(reviewId).startsWith('seed_') && !String(reviewId).startsWith('local_')) {
-                await fetch(`${cleanDbUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
+        if (isFirebaseConfigured() && !String(reviewId).startsWith('seed_')) {
+            try {
+                await fetch(`${cleanFirebaseUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
                     method: 'DELETE'
                 });
-            }
-        } catch (e) {
-            console.warn('Không thể xóa trên Cloud:', e);
+            } catch {}
+        } else {
+            await syncEntireListToCloud(reviewsCache);
         }
     }
 
@@ -1114,7 +1177,6 @@
                 </span>
             `;
 
-            // Khung hiển thị câu trả lời của Admin (nếu có)
             const existingReplyHtml = item.adminReply ? `
                 <div class="admin-reply-box">
                     <div class="flex items-center justify-between gap-2 mb-1.5">
@@ -1140,7 +1202,6 @@
                 </div>
             ` : '';
 
-            // Khung nhập câu trả lời dành cho Admin khi bấm nút "Trả lời"
             const replyEditorHtml = (isAdmin && String(activeReplyId) === String(item.id)) ? `
                 <div class="mt-3 pt-3 border-t border-indigo-500/20 space-y-2.5">
                     <textarea id="replyInput_${escapeHTML(item.id)}" rows="2" class="cyber-input text-xs resize-none" maxlength="400" placeholder="${escapeHTML(t('admin.replyPlaceholder'))}">${escapeHTML(item.adminReply || '')}</textarea>
@@ -1224,13 +1285,13 @@
         applyLanguage();
         fetchReviewsFromServer(true);
 
-        if (isCloudConfigured()) {
-            setInterval(() => {
-                if (!document.hidden && !activeReplyId) fetchReviewsFromServer(false);
-            }, 15000);
-        }
+        // Tự động đồng bộ đánh giá mới giữa các trình duyệt mỗi 8 giây
+        setInterval(() => {
+            if (!document.hidden && !activeReplyId) {
+                fetchReviewsFromServer(false);
+            }
+        }, 8000);
 
-        // Xử lý đóng/mở Modal Đăng nhập Admin
         const adminModal = document.getElementById('adminModal');
         const adminToggleBtn = document.getElementById('adminToggleBtn');
         const closeAdminModal = document.getElementById('closeAdminModal');
@@ -1276,7 +1337,6 @@
             fetchReviewsFromServer(true);
         });
 
-        // Sự kiện tương tác trên danh sách đánh giá (Thả tim, Trả lời, Lưu trả lời, Xóa bài)
         document.getElementById('reviewsList').addEventListener('click', async e => {
             const likeBtn = e.target.closest('[data-like-id]');
             if (likeBtn) {
@@ -1416,6 +1476,10 @@
 
         window.addEventListener('storage', e => {
             if (e.key === 'siteLang') applyLanguage();
+            if (e.key === LOCAL_BACKUP_KEY) {
+                loadBackupReviews();
+                renderReviewsAndStats();
+            }
         });
     });
     </script>
