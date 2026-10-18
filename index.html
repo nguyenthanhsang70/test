@@ -1,2679 +1,1423 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
-  <meta name="theme-color" content="#ad768f">
-
-  <title>Khoảnh Khắc</title>
-
-  <style>
-    /* =========================================
-       RESET
-    ========================================= */
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --pink: #ff477e;
-      --pink-light: #ff8faf;
-      --white: #ffffff;
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      width: 100%;
-
-      min-height: 100vh;
-      min-height: 100dvh;
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      padding:
-        calc(18px + env(safe-area-inset-top))
-        calc(12px + env(safe-area-inset-right))
-        calc(18px + env(safe-area-inset-bottom))
-        calc(12px + env(safe-area-inset-left));
-
-      color: #fff;
-
-      background:
-        radial-gradient(
-          circle at 15% 12%,
-          rgba(255, 192, 214, 0.8),
-          transparent 34%
-        ),
-        radial-gradient(
-          circle at 90% 85%,
-          rgba(183, 157, 255, 0.62),
-          transparent 38%
-        ),
-        linear-gradient(
-          135deg,
-          #896272 0%,
-          #c487a1 48%,
-          #76658c 100%
-        );
-
-      overflow-x: hidden;
-
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button,
-    img {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button {
-      font-family: inherit;
-    }
-
-
-    /* =========================================
-       BACKGROUND DECORATION
-    ========================================= */
-
-    .background-decoration {
-      position: fixed;
-      inset: 0;
-
-      z-index: -1;
-
-      overflow: hidden;
-
-      pointer-events: none;
-    }
-
-    .blob {
-      position: absolute;
-
-      border-radius: 50%;
-
-      filter: blur(50px);
-
-      opacity: 0.4;
-
-      animation:
-        blobMove
-        10s
-        ease-in-out
-        infinite
-        alternate;
-    }
-
-    .blob-1 {
-      width: 260px;
-      height: 260px;
-
-      top: -90px;
-      left: -80px;
-
-      background: #ff9fbd;
-    }
-
-    .blob-2 {
-      width: 320px;
-      height: 320px;
-
-      right: -140px;
-      bottom: -110px;
-
-      background: #b59cff;
-
-      animation-delay: -4s;
-    }
-
-    .blob-3 {
-      width: 180px;
-      height: 180px;
-
-      top: 35%;
-      left: 40%;
-
-      background: #ffd1df;
-
-      opacity: 0.17;
-
-      animation-delay: -7s;
-    }
-
-    @keyframes blobMove {
-      from {
-        transform:
-          translate(0, 0)
-          scale(1);
-      }
-
-      to {
-        transform:
-          translate(30px, 25px)
-          scale(1.1);
-      }
-    }
-
-
-    /* =========================================
-       APP
-    ========================================= */
-
-    .app {
-      width: min(400px, 100%);
-    }
-
-
-    /* =========================================
-       HEADER
-    ========================================= */
-
-    .header {
-      margin-bottom: 15px;
-
-      text-align: center;
-    }
-
-    .header-heart {
-      width: 46px;
-      height: 46px;
-
-      margin:
-        0
-        auto
-        8px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 50%;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.35);
-
-      background:
-        rgba(255, 255, 255, 0.16);
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      font-size: 22px;
-
-      box-shadow:
-        0 8px 20px
-        rgba(50, 20, 40, 0.12);
-    }
-
-    .header h1 {
-      font-size: 24px;
-      font-weight: 700;
-
-      letter-spacing: -0.5px;
-
-      text-shadow:
-        0 2px 10px
-        rgba(0, 0, 0, 0.12);
-    }
-
-    .header p {
-      margin-top: 5px;
-
-      font-size: 12px;
-
-      color:
-        rgba(255, 255, 255, 0.7);
-    }
-
-
-    /* =========================================
-       GALLERY CARD
-    ========================================= */
-
-    .gallery-card {
-      width: 100%;
-
-      padding: 8px;
-
-      border-radius: 24px;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.42);
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.28),
-          rgba(255, 255, 255, 0.10)
-        );
-
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-
-      box-shadow:
-        0 20px 50px
-        rgba(50, 20, 40, 0.2);
-    }
-
-
-    /* =========================================
-       GALLERY
-    ========================================= */
-
-    .gallery {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
-      gap: 6px;
-
-      max-height:
-        min(
-          500px,
-          69dvh
-        );
-
-      overflow-y: auto;
-
-      padding-right: 1px;
-
-      -webkit-overflow-scrolling: touch;
-
-      overscroll-behavior: contain;
-    }
-
-    .gallery::-webkit-scrollbar {
-      width: 3px;
-    }
-
-    .gallery::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .gallery::-webkit-scrollbar-thumb {
-      border-radius: 20px;
-
-      background:
-        rgba(255, 255, 255, 0.45);
-    }
-
-
-    /* =========================================
-       GALLERY ITEM
-    ========================================= */
-
-    .gallery-item {
-      position: relative;
-
-      aspect-ratio: 0.87;
-
-      overflow: hidden;
-
-      border-radius: 12px;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.5);
-
-      background:
-        rgba(255, 255, 255, 0.12);
-
-      cursor: pointer;
-
-      transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease;
-    }
-
-    .gallery-item img {
-      display: block;
-
-      width: 100%;
-      height: 100%;
-
-      object-fit: cover;
-
-      user-select: none;
-      -webkit-user-select: none;
-
-      -webkit-touch-callout: none;
-
-      transition:
-        transform 0.32s ease,
-        filter 0.32s ease;
-    }
-
-    .gallery-item::after {
-      content: "";
-
-      position: absolute;
-
-      inset: 0;
-
-      pointer-events: none;
-
-      background:
-        linear-gradient(
-          to top,
-          rgba(80, 30, 55, 0.13),
-          transparent 50%
-        );
-    }
-
-    @media (hover: hover) {
-
-      .gallery-item:hover {
-        transform:
-          translateY(-3px)
-          scale(1.01);
-
-        box-shadow:
-          0 10px 22px
-          rgba(50, 20, 40, 0.18);
-      }
-
-      .gallery-item:hover img {
-        transform: scale(1.07);
-
-        filter: brightness(1.05);
-      }
-
-    }
-
-    .gallery-item:active {
-      transform: scale(0.95);
-    }
-
-
-    /* =========================================
-       FOOTER
-    ========================================= */
-
-    .gallery-footer {
-      padding-top: 9px;
-
-      text-align: center;
-
-      font-size: 11px;
-
-      color:
-        rgba(255, 255, 255, 0.66);
-    }
-
-    .gallery-footer span {
-      color: #ffd1df;
-    }
-
-
-    /* =========================================
-       LIGHTBOX
-    ========================================= */
-
-    .lightbox {
-      position: fixed;
-
-      inset: 0;
-
-      z-index: 9999;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      padding:
-        calc(20px + env(safe-area-inset-top))
-        calc(10px + env(safe-area-inset-right))
-        calc(20px + env(safe-area-inset-bottom))
-        calc(10px + env(safe-area-inset-left));
-
-      background:
-        rgba(29, 16, 26, 0.8);
-
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-
-      opacity: 0;
-      visibility: hidden;
-
-      transition:
-        opacity 0.25s ease,
-        visibility 0.25s ease;
-    }
-
-    .lightbox.active {
-      opacity: 1;
-
-      visibility: visible;
-    }
-
-
-    /* =========================================
-       LIGHTBOX CARD
-    ========================================= */
-
-    .lightbox-card {
-      position: relative;
-
-      width:
-        min(
-          410px,
-          76vw
-        );
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      transform:
-        translateY(15px)
-        scale(0.94);
-
-      transition:
-        transform
-        0.3s
-        cubic-bezier(.2, .8, .2, 1);
-    }
-
-    .lightbox.active
-    .lightbox-card {
-      transform:
-        translateY(0)
-        scale(1);
-    }
-
-
-    /* =========================================
-       PHOTO AREA
-    ========================================= */
-
-    .photo-area {
-      position: relative;
-
-      width: 100%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      overflow: visible;
-    }
-
-
-    /* =========================================
-       PHOTO BOX
-    ========================================= */
-
-    .photo-box {
-      position: relative;
-
-      width: 100%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      padding: 5px;
-
-      border-radius: 19px;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.4);
-
-      background:
-        rgba(255, 255, 255, 0.17);
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      box-shadow:
-        0 22px 55px
-        rgba(0, 0, 0, 0.35);
-
-      overflow: visible;
-    }
-
-
-    /* =========================================
-       MAIN PHOTO
-    ========================================= */
-
-    .main-photo {
-      display: block;
-
-      width: auto;
-
-      max-width: 100%;
-      max-height: 70dvh;
-
-      object-fit: contain;
-
-      border-radius: 15px;
-
-      user-select: none;
-      -webkit-user-select: none;
-
-      -webkit-touch-callout: none;
-
-      transition:
-        opacity 0.14s ease,
-        transform 0.14s ease;
-    }
-
-    .main-photo.changing {
-      opacity: 0.35;
-
-      transform: scale(0.98);
-    }
-
-
-    /* =========================================
-       COUNTER
-    ========================================= */
-
-    .counter {
-      position: absolute;
-
-      top: 12px;
-      left: 12px;
-
-      z-index: 40;
-
-      padding:
-        5px
-        10px;
-
-      border-radius: 20px;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.2);
-
-      background:
-        rgba(20, 15, 20, 0.42);
-
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-
-      color: #fff;
-
-      font-size: 11px;
-
-      pointer-events: none;
-    }
-
-
-    /* =========================================
-       BUTTON RESET
-    ========================================= */
-
-    .nav,
-    .close-btn {
-      padding: 0;
-      margin: 0;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 50%;
-
-      color: #ffffff;
-
-      cursor: pointer;
-
-      appearance: none;
-      -webkit-appearance: none;
-
-      user-select: none;
-      -webkit-user-select: none;
-
-      -webkit-tap-highlight-color: transparent;
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      transition:
-        transform 0.18s ease,
-        background 0.18s ease,
-        box-shadow 0.18s ease;
-    }
-
-
-    /* SVG GIÚP ICON LUÔN THẲNG */
-
-    .nav svg,
-    .close-btn svg {
-      display: block;
-
-      width: 20px;
-      height: 20px;
-
-      fill: none;
-
-      stroke: currentColor;
-
-      stroke-width: 2.3;
-
-      stroke-linecap: round;
-      stroke-linejoin: round;
-
-      pointer-events: none;
-    }
-
-
-    /* =========================================
-       NÚT < >
-    ========================================= */
-
-    .nav {
-      position: absolute;
-
-      top: 50%;
-
-      z-index: 150;
-
-      width: 42px;
-      height: 42px;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.5);
-
-      background:
-        rgba(35, 25, 32, 0.62);
-
-      box-shadow:
-        0 7px 20px
-        rgba(0, 0, 0, 0.25);
-
-      transform:
-        translateY(-50%);
-    }
-
-    .prev {
-      left: -21px;
-    }
-
-    .next {
-      right: -21px;
-    }
-
-    @media (hover: hover) {
-
-      .nav:hover {
-        background:
-          rgba(255, 255, 255, 0.27);
-
-        box-shadow:
-          0 8px 24px
-          rgba(0, 0, 0, 0.28);
-      }
-
-    }
-
-    .nav:active {
-      transform:
-        translateY(-50%)
-        scale(0.86);
-    }
-
-
-    /* =========================================
-       CLOSE X
-    ========================================= */
-
-    .close-btn {
-      position: absolute;
-
-      top: 10px;
-      right: 10px;
-
-      z-index: 200;
-
-      width: 38px;
-      height: 38px;
-
-      border:
-        1.5px solid
-        rgba(255, 255, 255, 0.8);
-
-      background:
-        linear-gradient(
-          135deg,
-          #ff356d,
-          #ed4b7c
-        );
-
-      box-shadow:
-        0 6px 18px
-        rgba(80, 15, 40, 0.28);
-    }
-
-    .close-btn svg {
-      width: 18px;
-      height: 18px;
-
-      stroke-width: 2.5;
-    }
-
-    @media (hover: hover) {
-
-      .close-btn:hover {
-        background: #ff3f76;
-
-        box-shadow:
-          0 8px 22px
-          rgba(90, 15, 45, 0.35);
-      }
-
-    }
-
-    .close-btn:active {
-      transform: scale(0.86);
-    }
-
-
-    /* =========================================
-       ACTION
-    ========================================= */
-
-    .actions {
-      position: relative;
-
-      width: 100%;
-
-      height: 60px;
-
-      margin-top: 14px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      overflow: visible;
-    }
-
-
-    /* =========================================
-       HEART ZONE
-    ========================================= */
-
-    .heart-zone {
-      position: relative;
-
-      width: 54px;
-      height: 54px;
-
-      overflow: visible;
-    }
-
-
-    /* =========================================
-       HEART BUTTON
-    ========================================= */
-
-    .heart-btn {
-      position: relative;
-
-      z-index: 120;
-
-      width: 54px;
-      height: 54px;
-
-      padding: 0;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 50%;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.48);
-
-      background:
-        rgba(255, 255, 255, 0.16);
-
-      color: #ffffff;
-
-      font-size: 28px;
-
-      cursor: pointer;
-
-      appearance: none;
-      -webkit-appearance: none;
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      box-shadow:
-        0 7px 22px
-        rgba(0, 0, 0, 0.16);
-
-      transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-    }
-
-    .heart-btn.liked {
-      background:
-        linear-gradient(
-          135deg,
-          #ff356d,
-          #ff759c
-        );
-
-      border-color:
-        rgba(255, 255, 255, 0.78);
-
-      box-shadow:
-        0 9px 30px
-        rgba(255, 50, 105, 0.42);
-    }
-
-
-    /* =========================================
-       HEART POP
-    ========================================= */
-
-    .heart-btn.pop {
-      animation:
-        heartButtonPop
-        0.65s
-        ease;
-    }
-
-    @keyframes heartButtonPop {
-
-      0% {
-        transform: scale(1);
-      }
-
-      18% {
-        transform: scale(0.68);
-      }
-
-      40% {
-        transform:
-          scale(1.48)
-          rotate(-8deg);
-      }
-
-      58% {
-        transform:
-          scale(0.92)
-          rotate(6deg);
-      }
-
-      76% {
-        transform: scale(1.15);
-      }
-
-      100% {
-        transform: scale(1);
-      }
-
-    }
-
-
-    /* =========================================
-       FLYING HEARTS
-    ========================================= */
-
-    .flying-heart {
-      position: absolute;
-
-      left: 50%;
-      top: 50%;
-
-      z-index: 80;
-
-      pointer-events: none;
-
-      opacity: 0;
-
-      color:
-        var(
-          --particle-color,
-          #ff4f83
-        );
-
-      font-size:
-        var(
-          --size,
-          18px
-        );
-
-      text-shadow:
-        0 2px 6px
-        rgba(100, 20, 50, 0.22);
-
-      animation:
-        flyingHeart
-        var(--duration, 1300ms)
-        cubic-bezier(.15, .75, .25, 1)
-        forwards;
-
-      animation-delay:
-        var(--delay, 0ms);
-    }
-
-    @keyframes flyingHeart {
-
-      0% {
-        opacity: 0;
-
-        transform:
-          translate(-50%, -50%)
-          scale(0.2)
-          rotate(0deg);
-      }
-
-      10% {
-        opacity: 1;
-      }
-
-      35% {
-        opacity: 1;
-
-        transform:
-          translate(
-            calc(-50% + var(--x1)),
-            calc(-50% + var(--y1))
-          )
-          scale(1.15)
-          rotate(var(--r1));
-      }
-
-      70% {
-        opacity: 0.95;
-
-        transform:
-          translate(
-            calc(-50% + var(--x2)),
-            calc(-50% + var(--y2))
-          )
-          scale(1)
-          rotate(var(--r2));
-      }
-
-      100% {
-        opacity: 0;
-
-        transform:
-          translate(
-            calc(-50% + var(--x3)),
-            calc(-50% + var(--y3))
-          )
-          scale(0.7)
-          rotate(var(--r3));
-      }
-
-    }
-
-
-    /* =========================================
-       BIG HEART DOUBLE TAP
-    ========================================= */
-
-    .big-heart {
-      position: absolute;
-
-      left: 50%;
-      top: 50%;
-
-      z-index: 180;
-
-      pointer-events: none;
-
-      color: #ff477e;
-
-      font-size: 100px;
-
-      opacity: 0;
-
-      filter:
-        drop-shadow(
-          0 5px 12px
-          rgba(100, 20, 50, 0.3)
-        );
-
-      animation:
-        bigHeartAnimation
-        0.9s
-        ease
-        forwards;
-    }
-
-    @keyframes bigHeartAnimation {
-
-      0% {
-        opacity: 0;
-
-        transform:
-          translate(-50%, -50%)
-          scale(0);
-      }
-
-      20% {
-        opacity: 1;
-
-        transform:
-          translate(-50%, -50%)
-          scale(1.25);
-      }
-
-      42% {
-        transform:
-          translate(-50%, -50%)
-          scale(0.92);
-      }
-
-      60% {
-        transform:
-          translate(-50%, -50%)
-          scale(1.08);
-      }
-
-      75% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-
-        transform:
-          translate(-50%, -70%)
-          scale(1.18);
-      }
-
-    }
-
-
-    /* =========================================
-       SWIPE
-    ========================================= */
-
-    .swipe-text {
-      margin-top: 7px;
-
-      color:
-        rgba(255, 255, 255, 0.56);
-
-      font-size: 10px;
-
-      letter-spacing: 0.3px;
-    }
-
-
-    /* =========================================
-       MOBILE
-    ========================================= */
-
-    @media (max-width: 600px) {
-
-      .app {
-        width:
-          min(
-            390px,
-            100%
-          );
-      }
-
-      .gallery-card {
-        padding: 7px;
-      }
-
-      .gallery {
-        gap: 5px;
-      }
-
-      .lightbox-card {
-        width: 73vw;
-
-        max-width: 360px;
-      }
-
-      .main-photo {
-        max-height: 68dvh;
-      }
-
-      .nav {
-        width: 38px;
-        height: 38px;
-      }
-
-      .nav svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .prev {
-        left: -19px;
-      }
-
-      .next {
-        right: -19px;
-      }
-
-      .close-btn {
-        width: 35px;
-        height: 35px;
-
-        top: 8px;
-        right: 8px;
-      }
-
-      .close-btn svg {
-        width: 17px;
-        height: 17px;
-      }
-
-      .heart-zone,
-      .heart-btn {
-        width: 50px;
-        height: 50px;
-      }
-
-      .heart-btn {
-        font-size: 26px;
-      }
-
-    }
-
-
-    /* =========================================
-       SMALL MOBILE
-    ========================================= */
-
-    @media (max-width: 360px) {
-
-      .header h1 {
-        font-size: 21px;
-      }
-
-      .lightbox-card {
-        width: 70vw;
-      }
-
-      .nav {
-        width: 34px;
-        height: 34px;
-      }
-
-      .nav svg {
-        width: 17px;
-        height: 17px;
-      }
-
-      .prev {
-        left: -17px;
-      }
-
-      .next {
-        right: -17px;
-      }
-
-      .close-btn {
-        width: 33px;
-        height: 33px;
-
-        top: 7px;
-        right: 7px;
-      }
-
-    }
-
-
-    /* =========================================
-       LANDSCAPE
-    ========================================= */
-
-    @media
-    (orientation: landscape)
-    and
-    (max-height: 520px) {
-
-      .header {
-        display: none;
-      }
-
-      .gallery {
-        max-height: 82dvh;
-      }
-
-      .main-photo {
-        max-height: 64dvh;
-      }
-
-      .actions {
-        height: 43px;
-
-        margin-top: 5px;
-      }
-
-      .heart-zone,
-      .heart-btn {
-        width: 40px;
-        height: 40px;
-      }
-
-      .heart-btn {
-        font-size: 21px;
-      }
-
-      .swipe-text {
-        display: none;
-      }
-
-    }
-
-
-    /* =========================================
-       REDUCE MOTION
-    ========================================= */
-
-    @media (prefers-reduced-motion: reduce) {
-
-      *,
-      *::before,
-      *::after {
-        animation-duration:
-          0.01ms !important;
-
-        transition-duration:
-          0.01ms !important;
-      }
-
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh Giá Cộng Đồng - NTS</title>
+    <!-- Tự động đồng bộ ngôn ngữ từ localStorage.siteLang của trang chủ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="logos3.png">
+    <style>
+        :root {
+            --bg-dark: #060913;
+            --card-bg: rgba(15, 23, 42, 0.68);
+            --card-border: rgba(148, 163, 184, 0.14);
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .font-gaming {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        /* Nền không gian & Lưới đồng bộ với game.html */
+        .bg-animated {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 15%, rgba(79, 70, 229, 0.16) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(236, 72, 153, 0.14) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, #0b1120 0%, #050811 100%);
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(ellipse at center, black 35%, transparent 85%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 85%);
+            pointer-events: none;
+        }
+
+        .blob {
+            position: fixed;
+            filter: blur(85px);
+            border-radius: 50%;
+            animation: moveBlob 14s infinite alternate ease-in-out;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .blob-1 { top: 8%; left: 8%; width: 340px; height: 340px; background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+        .blob-2 { bottom: 12%; right: 8%; width: 420px; height: 420px; animation-duration: 18s; background: linear-gradient(135deg, #db2777, #7e22ce); }
+        @keyframes moveBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(35px, -30px) scale(1.12); }
+        }
+
+        .site-header {
+            background: rgba(6, 9, 19, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .cyber-card {
+            position: relative;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .review-item {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .review-item:hover {
+            transform: translateY(-4px);
+            border-color: rgba(167, 139, 250, 0.4);
+            box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.6), 0 0 24px rgba(139, 92, 246, 0.18);
+        }
+
+        /* Chọn sao 5 sao */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 0.65rem;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            font-size: 2.35rem;
+            color: rgba(148, 163, 184, 0.25);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .star-rating label:hover { transform: scale(1.2) rotate(-5deg); }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #fbbf24;
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.65));
+        }
+
+        /* Input */
+        .cyber-input {
+            width: 100%;
+            padding: 0.85rem 1.1rem;
+            border-radius: 1rem;
+            background: rgba(2, 6, 23, 0.82);
+            border: 1px solid rgba(129, 140, 248, 0.22);
+            color: #f8fafc;
+            font-size: 0.92rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+        .cyber-input::placeholder { color: #64748b; }
+        .cyber-input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Nút gửi */
+        .submit-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: 100%;
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+            color: #ffffff;
+            padding: 0.9rem 1.5rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            cursor: pointer;
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+        }
+        .submit-btn:hover:not(:disabled)::after { left: 140%; }
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(147, 51, 234, 0.6);
+        }
+
+        /* Filter Pills */
+        .filter-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.95rem;
+            border-radius: 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .filter-pill:hover {
+            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(167, 139, 250, 0.3);
+        }
+        .filter-pill.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.85), rgba(147, 51, 234, 0.85));
+            border-color: rgba(192, 132, 252, 0.6);
+            box-shadow: 0 6px 18px rgba(124, 58, 237, 0.32);
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.07);
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+            transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Nút Thả Tim & Trả lời */
+        .like-btn, .reply-trigger-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .like-btn:hover, .like-btn.liked {
+            color: #f43f5e;
+            background: rgba(244, 63, 94, 0.12);
+            border-color: rgba(244, 63, 94, 0.35);
+        }
+        .reply-trigger-btn:hover {
+            color: #c4b5fd;
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(167, 139, 250, 0.4);
+        }
+
+        /* Huy hiệu Tác giả đã thích */
+        .author-liked-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fda4af;
+            background: linear-gradient(135deg, rgba(225, 29, 72, 0.18), rgba(147, 51, 234, 0.18));
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            box-shadow: 0 0 14px rgba(244, 63, 94, 0.2);
+            animation: pulseBadge 2.5s infinite ease-in-out;
+        }
+        @keyframes pulseBadge {
+            0%, 100% { box-shadow: 0 0 12px rgba(244, 63, 94, 0.18); }
+            50% { box-shadow: 0 0 20px rgba(244, 63, 94, 0.38); }
+        }
+
+        /* Khung phản hồi của Admin */
+        .admin-reply-box {
+            position: relative;
+            margin-top: 0.85rem;
+            padding: 0.9rem 1rem;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.65), rgba(15, 23, 42, 0.8));
+            border-left: 3px solid #f59e0b;
+            border-top: 1px solid rgba(251, 191, 36, 0.18);
+            border-right: 1px solid rgba(167, 139, 250, 0.15);
+            border-bottom: 1px solid rgba(167, 139, 250, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* Modal Đăng nhập Admin */
+        .admin-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(2, 6, 23, 0.78);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .admin-modal-backdrop.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Toast */
+        .source-guard-toast {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            z-index: 99999;
+            width: min(680px, calc(100% - 24px));
+            transform: translate(-50%, calc(-100% - 16px));
+            opacity: 0;
+            pointer-events: none;
+            transition: transform .32s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+        }
+        .source-guard-toast.is-visible {
+            transform: translate(-50%, 14px);
+            opacity: 1;
+        }
+        .source-guard-toast__message {
+            padding: 13px 20px;
+            text-align: center;
+            color: #f8fafc;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.94);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 38px rgba(0,0,0,.55);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #060913; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #818cf8; }
+    </style>
 </head>
-
 <body>
 
-
-  <!-- ========================================
-       BACKGROUND
-  ========================================= -->
-
-  <div class="background-decoration">
-
-    <div class="blob blob-1"></div>
-
-    <div class="blob blob-2"></div>
-
-    <div class="blob blob-3"></div>
-
-  </div>
-
-
-  <!-- ========================================
-       APP
-  ========================================= -->
-
-  <main class="app">
-
-
-    <!-- HEADER -->
-
-    <header class="header">
-
-      <div class="header-heart">
-        ♡
-      </div>
-
-      <h1>
-        Khoảnh Khắc
-      </h1>
-
-      <p>
-        Những điều nhỏ bé nhưng đáng nhớ
-      </p>
-
-    </header>
-
-
-    <!-- ========================================
-         GALLERY
-    ========================================= -->
-
-    <section class="gallery-card">
-
-      <div
-        class="gallery"
-        id="gallery"
-      >
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac1.jpg"
-            alt="Khoảnh khắc 1"
-          >
-
+    <div id="sourceGuardToast" class="source-guard-toast" role="alert" aria-live="assertive">
+        <div class="source-guard-toast__message" data-i18n="security.notice">
+            Thao tác xem mã nguồn hoặc công cụ nhà phát triển đã bị hạn chế trên trang này.
         </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac2.jpg"
-            alt="Khoảnh khắc 2"
-          >
-
-        </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac3.jpg"
-            alt="Khoảnh khắc 3"
-          >
-
-        </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac4.jpg"
-            alt="Khoảnh khắc 4"
-            loading="lazy"
-          >
-
-        </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac5.jpg"
-            alt="Khoảnh khắc 5"
-            loading="lazy"
-          >
-
-        </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac6.jpg"
-            alt="Khoảnh khắc 6"
-            loading="lazy"
-          >
-
-        </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac7.jpg"
-            alt="Khoảnh khắc 7"
-            loading="lazy"
-          >
-
-        </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac8.jpg"
-            alt="Khoảnh khắc 8"
-            loading="lazy"
-          >
-
-        </div>
-
-
-        <div class="gallery-item">
-
-          <img
-            src="khoankhac9.jpg"
-            alt="Khoảnh khắc 9"
-            loading="lazy"
-          >
-
-        </div>
-
-
-      </div>
-
-
-      <div class="gallery-footer">
-
-        <span>♥</span>
-
-        Chạm vào ảnh để xem
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- ========================================
-       LIGHTBOX
-  ========================================= -->
-
-  <div
-    class="lightbox"
-    id="lightbox"
-  >
-
-
-    <div
-      class="lightbox-card"
-      id="lightboxCard"
-    >
-
-
-      <!-- ====================================
-           PHOTO AREA
-      ===================================== -->
-
-      <div class="photo-area">
-
-
-        <!-- NÚT TRÁI -->
-
-        <button
-          class="nav prev"
-          id="prev"
-          type="button"
-          aria-label="Ảnh trước"
-        >
-
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-
-            <path
-              d="M15 18L9 12L15 6"
-            />
-
-          </svg>
-
-        </button>
-
-
-        <!-- ==================================
-             PHOTO BOX
-        =================================== -->
-
-        <div
-          class="photo-box"
-          id="photoBox"
-        >
-
-
-          <!-- COUNTER -->
-
-          <div
-            class="counter"
-            id="counter"
-          >
-            1 / 9
-          </div>
-
-
-          <!-- NÚT X -->
-
-          <button
-            class="close-btn"
-            id="close"
-            type="button"
-            aria-label="Đóng"
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-
-              <path
-                d="
-                  M6 6L18 18
-                  M18 6L6 18
-                "
-              />
-
-            </svg>
-
-          </button>
-
-
-          <!-- ẢNH LỚN -->
-
-          <img
-            class="main-photo"
-            id="mainPhoto"
-            src=""
-            alt="Ảnh đang xem"
-          >
-
-
-        </div>
-
-
-        <!-- NÚT PHẢI -->
-
-        <button
-          class="nav next"
-          id="next"
-          type="button"
-          aria-label="Ảnh tiếp theo"
-        >
-
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-
-            <path
-              d="M9 6L15 12L9 18"
-            />
-
-          </svg>
-
-        </button>
-
-
-      </div>
-
-
-      <!-- ====================================
-           HEART
-      ===================================== -->
-
-      <div class="actions">
-
-        <div
-          class="heart-zone"
-          id="heartZone"
-        >
-
-          <button
-            class="heart-btn"
-            id="heart"
-            type="button"
-            aria-label="Yêu thích"
-          >
-            ♥
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div class="swipe-text">
-
-        Vuốt trái / phải để chuyển ảnh
-
-      </div>
-
-
     </div>
 
-  </div>
+    <!-- Modal Đăng Nhập Admin -->
+    <div id="adminModal" class="admin-modal-backdrop" aria-hidden="true">
+        <div class="cyber-card w-full max-w-md p-6 md:p-7 relative border border-indigo-500/30">
+            <button type="button" id="closeAdminModal" class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 flex items-center justify-center transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
 
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg shadow-lg">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white" data-i18n="admin.modalTitle">ĐĂNG NHẬP QUẢN TRỊ (ADMIN)</h3>
+                    <p class="text-xs text-slate-400" data-i18n="admin.modalDesc">Dành cho tác giả Nguyễn Thanh Sang</p>
+                </div>
+            </div>
 
-  <script>
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" data-i18n="admin.userLabel">Tên đăng nhập</label>
+                    <input type="text" id="adminUsername" class="cyber-input" autocomplete="username" placeholder="Nhập tên đăng nhập..." required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" data-i18n="admin.passLabel">Mật khẩu</label>
+                    <input type="password" id="adminPassword" class="cyber-input" autocomplete="current-password" placeholder="Nhập mật khẩu..." required>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-key"></i>
+                    <span data-i18n="admin.loginBtn">XÁC NHẬN ĐĂNG NHẬP</span>
+                </button>
+            </form>
+        </div>
+    </div>
 
-    /* =========================================
-       ELEMENTS
-    ========================================= */
+    <div class="bg-animated"></div>
+    <div class="bg-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
 
-    const images =
-      [
-        ...document.querySelectorAll(
-          ".gallery-item img"
-        )
-      ];
+    <!-- Header -->
+    <header class="site-header fixed top-0 w-full z-50">
+        <div class="container mx-auto px-4 py-3.5 flex justify-between items-center">
+            <a href="index.html" class="bg-white/5 hover:bg-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/10 hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/30 group" aria-label="Trang chủ">
+                <i class="fas fa-arrow-left group-hover:-translate-x-0.5 transition-transform"></i>
+            </a>
 
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:inline-flex w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_#34d399]"></span>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-wider text-center bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400" data-i18n="page.heading">
+                    ĐÁNH GIÁ TRỰC TUYẾN
+                </h1>
+            </div>
 
-    const lightbox =
-      document.getElementById(
-        "lightbox"
-      );
+            <div class="flex items-center gap-2">
+                <!-- Nút Đăng nhập / Trạng thái Admin -->
+                <button type="button" id="adminToggleBtn" class="h-10 px-3 rounded-xl bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-400 flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-all" title="Chế độ Quản trị viên">
+                    <i class="fas fa-user-shield text-indigo-400" id="adminBtnIcon"></i>
+                    <span id="adminBtnLabel" class="hidden sm:inline">Admin</span>
+                </button>
 
+                <a href="game.html" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-purple-600/40 border border-white/10 hover:border-purple-400 flex items-center justify-center text-indigo-400 hover:text-white transition-all" title="Danh sách Game">
+                    <i class="fas fa-gamepad"></i>
+                </a>
+            </div>
+        </div>
+    </header>
 
-    const lightboxCard =
-      document.getElementById(
-        "lightboxCard"
-      );
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 pt-24 pb-16 mt-2 max-w-6xl">
 
+        <!-- Thống kê Tổng quan -->
+        <section class="cyber-card p-6 md:p-8 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                <div class="md:col-span-4 text-center md:border-r md:border-white/10 md:pr-6">
+                    <p class="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2" data-i18n="stats.subtitle">ĐIỂM TRUNG BÌNH</p>
+                    <div class="text-5xl md:text-6xl font-bold font-gaming text-white tracking-tight mb-2" id="avgScoreText">5.0</div>
+                    <div class="flex justify-center gap-1 text-amber-400 text-lg mb-2" id="avgStarsDisplay">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-slate-400 text-xs">
+                        <span data-i18n="stats.basedOn">Dựa trên</span> 
+                        <strong class="text-white" id="totalReviewsCount">0</strong> 
+                        <span data-i18n="stats.reviews">đánh giá công khai</span>
+                    </p>
+                </div>
 
-    const photoBox =
-      document.getElementById(
-        "photoBox"
-      );
+                <div class="md:col-span-8 space-y-2.5" id="ratingBarsContainer"></div>
+            </div>
+        </section>
 
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Cột Trái: Form Gửi Đánh Giá -->
+            <div class="lg:col-span-5">
+                <div class="cyber-card p-6 md:p-7 sticky top-24">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fas fa-globe text-indigo-400"></i>
+                            <h2 class="text-xl font-bold text-white tracking-wide" data-i18n="form.title">ĐĂNG ĐÁNH GIÁ CÔNG KHAI</h2>
+                        </div>
+                    </div>
+                    <p class="text-slate-400 text-xs mb-5 leading-relaxed" data-i18n="form.desc">
+                        Bài đánh giá của bạn sẽ được lưu trữ trên hệ thống và hiển thị công khai cho tất cả mọi người cùng xem!
+                    </p>
 
-    const mainPhoto =
-      document.getElementById(
-        "mainPhoto"
-      );
+                    <form id="reviewForm" class="space-y-4">
+                        <div class="p-4 rounded-2xl bg-slate-950/60 border border-white/5 text-center">
+                            <div class="star-rating mb-2">
+                                <input type="radio" id="star5" name="rating" value="5" checked />
+                                <label for="star5" title="5 sao"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="star4" name="rating" value="4" />
+                                <label for="star4" title="4 sao"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="star3" name="rating" value="3" />
+                                <label for="star3" title="3 sao"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="star2" name="rating" value="2" />
+                                <label for="star2" title="2 sao"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="star1" name="rating" value="1" />
+                                <label for="star1" title="1 sao"><i class="fas fa-star"></i></label>
+                            </div>
+                            <span id="ratingMoodText" class="text-xs font-semibold text-amber-400 tracking-wide" data-i18n="mood.5">Tuyệt vời quá đỉnh! 🔥</span>
+                        </div>
 
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" data-i18n="form.nameLabel">Tên hiển thị</label>
+                            <input type="text" id="reviewerName" class="cyber-input" maxlength="35" required data-i18n-placeholder="form.namePlaceholder" placeholder="Nhập tên hoặc biệt danh của bạn...">
+                        </div>
 
-    const counter =
-      document.getElementById(
-        "counter"
-      );
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" data-i18n="form.topicLabel">Hạng mục trải nghiệm</label>
+                            <select id="reviewTopic" class="cyber-input cursor-pointer">
+                                <option value="all_system" data-i18n="topic.system">🌟 Toàn bộ hệ thống NTS</option>
+                                <option value="minigames" data-i18n="topic.games">🎮 Phòng Lab Minigames (20 Game)</option>
+                                <option value="ui_3d" data-i18n="topic.ui">🖥️ Giao diện 3D & Hiệu ứng</option>
+                                <option value="utilities" data-i18n="topic.utils">⚡ Tiện ích (Tạo QR, Thiệp, Bể cá, Vũ trụ)</option>
+                            </select>
+                        </div>
 
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" data-i18n="form.commentLabel">Nội dung đánh giá</label>
+                            <textarea id="reviewComment" rows="4" class="cyber-input resize-none" maxlength="500" required data-i18n-placeholder="form.commentPlaceholder" placeholder="Chia sẻ cảm nhận của bạn cho mọi người cùng biết..."></textarea>
+                        </div>
 
-    const closeBtn =
-      document.getElementById(
-        "close"
-      );
+                        <button type="submit" id="submitReviewBtn" class="submit-btn">
+                            <i class="fas fa-paper-plane" id="submitBtnIcon"></i>
+                            <span id="submitBtnText" data-i18n="form.submit">ĐĂNG ĐÁNH GIÁ NGAY</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
 
+            <!-- Cột Phải: Danh Sách Đánh Giá Real-time -->
+            <div class="lg:col-span-7 flex flex-col">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-comments text-indigo-400"></i>
+                            <span data-i18n="list.heading">ĐÁNH GIÁ MỚI NHẤT</span>
+                        </h2>
+                        <button id="refreshReviewsBtn" type="button" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-indigo-600/30 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all" title="Tải lại đánh giá mới nhất">
+                            <i class="fas fa-sync-alt text-xs"></i>
+                        </button>
+                    </div>
 
-    const prevBtn =
-      document.getElementById(
-        "prev"
-      );
+                    <div class="flex flex-wrap gap-1.5" id="starFilterTabs">
+                        <button type="button" class="filter-pill active" data-star="all" data-i18n="filter.all">Tất cả</button>
+                        <button type="button" class="filter-pill" data-star="5">5 <i class="fas fa-star text-amber-400 text-[11px]"></i></button>
+                        <button type="button" class="filter-pill" data-star="4">4 <i class="fas fa-star text-amber-400 text-[11px]"></i></button>
+                        <button type="button" class="filter-pill" data-star="3">3 <i class="fas fa-star text-amber-400 text-[11px]"></i></button>
+                        <button type="button" class="filter-pill" data-star="2">2 <i class="fas fa-star text-amber-400 text-[11px]"></i></button>
+                        <button type="button" class="filter-pill" data-star="1">1 <i class="fas fa-star text-amber-400 text-[11px]"></i></button>
+                    </div>
+                </div>
 
+                <!-- Trạng thái đang tải -->
+                <div id="loadingIndicator" class="cyber-card p-10 text-center hidden">
+                    <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-400 mb-3"></i>
+                    <p class="text-sm text-slate-300" data-i18n="list.loading">Đang tải đánh giá từ máy chủ...</p>
+                </div>
 
-    const nextBtn =
-      document.getElementById(
-        "next"
-      );
+                <!-- Danh sách bài đánh giá -->
+                <div id="reviewsList" class="space-y-4"></div>
+            </div>
 
+        </div>
+    </main>
 
-    const heart =
-      document.getElementById(
-        "heart"
-      );
+    <!-- Footer -->
+    <footer class="bg-slate-950/80 backdrop-blur-md border-t border-white/10 text-white py-10 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center space-x-5 mb-6">
+                <a href="https://www.facebook.com/nguyenthanhsang70" target="_blank" rel="noopener noreferrer" class="w-11 h-11 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-blue-600 hover:border-blue-400 hover:text-white transition-all duration-300 transform hover:-translate-y-1">
+                    <i class="fab fa-facebook-f text-lg"></i>
+                </a>
+                <a href="https://www.instagram.com/ngth.sang70/" target="_blank" rel="noopener noreferrer" class="w-11 h-11 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-pink-600 hover:border-pink-400 hover:text-white transition-all duration-300 transform hover:-translate-y-1">
+                    <i class="fab fa-instagram text-lg"></i>
+                </a>
+                <a href="https://www.tiktok.com/@thanh.sang70" target="_blank" rel="noopener noreferrer" class="w-11 h-11 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-slate-800 hover:border-white/60 hover:text-white transition-all duration-300 transform hover:-translate-y-1">
+                    <i class="fab fa-tiktok text-lg"></i>
+                </a>
+            </div>
+            <div class="text-center">
+                <p class="text-slate-400 text-sm mb-1.5">© 2026 <span class="text-purple-400 font-bold tracking-wide">Novaris</span></p>
+                <p class="text-slate-500 text-xs">
+                    <span data-i18n="footer.prefix">Thiết kế bởi</span>
+                    <a href="profile.html" class="text-indigo-400 hover:text-indigo-300 font-medium transition-colors" data-i18n="footer.author">Nguyễn Thanh Sang</a>.
+                </p>
+            </div>
+        </div>
+    </footer>
 
+    <script>
+    'use strict';
 
-    const heartZone =
-      document.getElementById(
-        "heartZone"
-      );
+    /* =========================================================================
+       CẤU HÌNH KẾT NỐI DATABASE ONLINE (FIREBASE REALTIME DATABASE REST API)
+       ========================================================================= */
+    const FIREBASE_DB_URL = ''; // <-- DÁN LINK FIREBASE CỦA BẠN VÀO ĐÂY
 
+    /* =========================================================================
+       TÀI KHOẢN ADMIN QUẢN TRỊ
+       ========================================================================= */
+    const ADMIN_ACCOUNT = Object.freeze({
+        user: 'admin',
+        pass: 'sang123@sang'
+    });
 
-    let currentIndex = 0;
+    const LOCAL_BACKUP_KEY = 'nts_cloud_reviews_backup_v4';
+    const LIKED_STORAGE_KEY = 'nts_liked_reviews_v4';
+    const ADMIN_SESSION_KEY = 'nts_admin_logged_in';
 
+    const TRANSLATIONS = {
+        vi: {
+            'page.title': 'Đánh Giá Trực Tuyến - NTS',
+            'page.heading': 'ĐÁNH GIÁ TRỰC TUYẾN',
+            'stats.subtitle': 'ĐIỂM TRUNG BÌNH',
+            'stats.basedOn': 'Dựa trên',
+            'stats.reviews': 'đánh giá công khai',
+            'form.title': 'ĐĂNG ĐÁNH GIÁ CÔNG KHAI',
+            'form.desc': 'Bài đánh giá của bạn sẽ được lưu trữ trên hệ thống và hiển thị công khai cho tất cả mọi người cùng xem!',
+            'form.nameLabel': 'Tên hiển thị',
+            'form.namePlaceholder': 'Nhập tên hoặc biệt danh của bạn...',
+            'form.topicLabel': 'Hạng mục trải nghiệm',
+            'form.commentLabel': 'Nội dung đánh giá',
+            'form.commentPlaceholder': 'Chia sẻ cảm nhận của bạn cho mọi người cùng biết...',
+            'form.submit': 'ĐĂNG ĐÁNH GIÁ NGAY',
+            'form.submitting': 'ĐANG ĐĂNG LÊN HỆ THỐNG...',
+            'topic.system': '🌟 Toàn bộ hệ thống NTS',
+            'topic.games': '🎮 Phòng Lab Minigames (20 Game)',
+            'topic.ui': '🖥️ Giao diện 3D & Hiệu ứng',
+            'topic.utils': '⚡ Tiện ích (Tạo QR, Thiệp, Bể cá, Vũ trụ)',
+            'mood.5': 'Tuyệt vời quá đỉnh! 🔥',
+            'mood.4': 'Rất tốt, hài lòng! 👍',
+            'mood.3': 'Tạm ổn, cần thêm tính năng 😊',
+            'mood.2': 'Chưa mượt lắm 🤔',
+            'mood.1': 'Cần cải thiện nhiều 😢',
+            'list.heading': 'ĐÁNH GIÁ MỚI NHẤT',
+            'list.loading': 'Đang tải đánh giá từ máy chủ...',
+            'filter.all': 'Tất cả',
+            'author.liked': 'Tác giả đã thích',
+            'author.replyBadge': 'Phản hồi từ Tác giả',
+            'admin.replyBtn': 'Trả lời',
+            'admin.editReplyBtn': 'Sửa phản hồi',
+            'admin.replyPlaceholder': 'Nhập nội dung phản hồi của Admin...',
+            'admin.sendReply': 'Lưu phản hồi',
+            'admin.cancelReply': 'Hủy',
+            'admin.replySaved': 'Đã lưu phản hồi của Admin!',
+            'admin.replyDeleted': 'Đã xóa phản hồi của Admin.',
+            'admin.modalTitle': 'ĐĂNG NHẬP QUẢN TRỊ (ADMIN)',
+            'admin.modalDesc': 'Mở khóa tính năng thả tim Tác giả & trả lời bình luận',
+            'admin.userLabel': 'Tên đăng nhập',
+            'admin.passLabel': 'Mật khẩu',
+            'admin.loginBtn': 'XÁC NHẬN ĐĂNG NHẬP',
+            'admin.loginSuccess': 'Xin chào Admin! Bạn đã có thể thả tim & trả lời đánh giá.',
+            'admin.loginFail': 'Sai tên đăng nhập hoặc mật khẩu Admin!',
+            'admin.logoutSuccess': 'Đã đăng xuất khỏi tài khoản Admin.',
+            'toast.success': 'Đã đăng đánh giá công khai thành công!',
+            'security.notice': 'Thao tác xem mã nguồn hoặc công cụ nhà phát triển đã bị hạn chế trên trang này.',
+            'footer.prefix': 'Thiết kế bởi',
+            'footer.author': 'Nguyễn Thanh Sang'
+        },
+        en: {
+            'page.title': 'Live Reviews - NTS',
+            'page.heading': 'LIVE COMMUNITY REVIEWS',
+            'stats.subtitle': 'AVERAGE RATING',
+            'stats.basedOn': 'Based on',
+            'stats.reviews': 'public reviews',
+            'form.title': 'POST A PUBLIC REVIEW',
+            'form.desc': 'Your review is saved online and visible to everyone visiting NTS!',
+            'form.nameLabel': 'Display Name',
+            'form.namePlaceholder': 'Enter your name or nickname...',
+            'form.topicLabel': 'Experience Category',
+            'form.commentLabel': 'Your Review',
+            'form.commentPlaceholder': 'Share your thoughts with the community...',
+            'form.submit': 'POST REVIEW NOW',
+            'form.submitting': 'PUBLISHING...',
+            'topic.system': '🌟 Overall NTS System',
+            'topic.games': '🎮 Minigames Lab (20 Games)',
+            'topic.ui': '🖥️ 3D UI & Visual Effects',
+            'topic.utils': '⚡ Utilities (QR, Birthday, Aquarium, Space)',
+            'mood.5': 'Absolutely Amazing! 🔥',
+            'mood.4': 'Very Good & Smooth! 👍',
+            'mood.3': 'Good, needs more features 😊',
+            'mood.2': 'Could be better 🤔',
+            'mood.1': 'Needs improvement 😢',
+            'list.heading': 'LATEST REVIEWS',
+            'list.loading': 'Loading reviews from server...',
+            'filter.all': 'All',
+            'author.liked': 'Liked by Author',
+            'author.replyBadge': 'Author Response',
+            'admin.replyBtn': 'Reply',
+            'admin.editReplyBtn': 'Edit Reply',
+            'admin.replyPlaceholder': 'Write an official Admin response...',
+            'admin.sendReply': 'Save Reply',
+            'admin.cancelReply': 'Cancel',
+            'admin.replySaved': 'Admin response saved!',
+            'admin.replyDeleted': 'Admin response removed.',
+            'admin.modalTitle': 'ADMIN LOGIN',
+            'admin.modalDesc': 'Unlock Author Likes & Official Replies',
+            'admin.userLabel': 'Username',
+            'admin.passLabel': 'Password',
+            'admin.loginBtn': 'SIGN IN AS ADMIN',
+            'admin.loginSuccess': 'Welcome Admin! You can now reply to reviews.',
+            'admin.loginFail': 'Invalid Admin username or password!',
+            'admin.logoutSuccess': 'Logged out of Admin mode.',
+            'toast.success': 'Your public review has been published!',
+            'security.notice': 'Viewing source code or developer tools has been restricted on this page.',
+            'footer.prefix': 'Designed & Engineered by',
+            'footer.author': 'Nguyễn Thanh Sang'
+        },
+        zh: {
+            'page.title': '在线评价 - NTS',
+            'page.heading': '在线社区评价',
+            'stats.subtitle': '平均评分',
+            'stats.basedOn': '基于',
+            'stats.reviews': '条公开评价',
+            'form.title': '发布公开评价',
+            'form.desc': '您的评价将保存在云端，所有访问者均可实时查看！',
+            'form.nameLabel': '您的昵称',
+            'form.namePlaceholder': '输入您的名字或昵称...',
+            'form.topicLabel': '评价类别',
+            'form.commentLabel': '评价内容',
+            'form.commentPlaceholder': '与大家分享您的使用感受...',
+            'form.submit': '立即发布评价',
+            'form.submitting': '正在发布...',
+            'topic.system': '🌟 NTS 整体系统',
+            'topic.games': '🎮 娱乐小游戏实验室 (20款)',
+            'topic.ui': '🖥️ 3D 界面与特效',
+            'topic.utils': '⚡ 实用工具 (二维码、贺卡、水族箱)',
+            'mood.5': '太棒了，超级惊艳！🔥',
+            'mood.4': '非常好，很满意！👍',
+            'mood.3': '还不错，期待更多功能 😊',
+            'mood.2': '体验一般 🤔',
+            'mood.1': '需要改进 😢',
+            'list.heading': '最新公开评价',
+            'list.loading': '正在加载评价...',
+            'filter.all': '全部',
+            'author.liked': '作者觉得很赞',
+            'author.replyBadge': '作者回复',
+            'admin.replyBtn': '回复',
+            'admin.editReplyBtn': '编辑回复',
+            'admin.replyPlaceholder': '输入管理员回复内容...',
+            'admin.sendReply': '保存回复',
+            'admin.cancelReply': '取消',
+            'admin.replySaved': '管理员回复已保存！',
+            'admin.replyDeleted': '管理员回复已删除。',
+            'admin.modalTitle': '管理员登录 (ADMIN)',
+            'admin.modalDesc': '解锁作者点赞与评论回复功能',
+            'admin.userLabel': '用户名',
+            'admin.passLabel': '密码',
+            'admin.loginBtn': '确认登录',
+            'admin.loginSuccess': '管理员登录成功！',
+            'admin.loginFail': '用户名或密码错误！',
+            'admin.logoutSuccess': '已退出管理员模式。',
+            'toast.success': '您的公开评价已成功发布！',
+            'security.notice': '此页面已限制查看源代码或使用开发者工具。',
+            'footer.prefix': '设计与开发',
+            'footer.author': '阮青桑'
+        }
+    };
 
-    const likedImages =
-      new Set();
+    const SEED_REVIEWS = [
+        {
+            id: 'seed_1',
+            name: 'Minh Tuấn',
+            rating: 5,
+            topic: 'ui_3d',
+            timestamp: Date.now() - 86400000 * 2,
+            likes: 12,
+            authorLiked: true,
+            adminReply: 'Cảm ơn Minh Tuấn rất nhiều! Mình đã tối ưu hiệu ứng 3D để chạy mượt trên cả điện thoại và máy tính đó ạ ❤️',
+            adminReplyTime: Date.now() - 86400000 * 1.8,
+            comment: 'Giao diện 3D chiếc máy tính gaming ở trang chủ nhìn cực kỳ cuốn, hiệu ứng nghiêng theo chuột rất mượt mà!'
+        },
+        {
+            id: 'seed_2',
+            name: 'Linh Chi',
+            rating: 5,
+            topic: 'minigames',
+            timestamp: Date.now() - 86400000,
+            likes: 8,
+            authorLiked: true,
+            adminReply: 'Chúc Linh Chi và hội bạn có những giờ giải trí thật vui vẻ nhé! Sắp tới mình sẽ ra mắt thêm nhiều game mới nữa 🎮',
+            adminReplyTime: Date.now() - 3600000 * 18,
+            comment: 'Kho 20 minigames chơi giải trí cùng bạn bè rất vui, thích nhất là trò Giải Mã Gỡ Bom và Đuổi Hình Bắt Chữ.'
+        },
+        {
+            id: 'seed_3',
+            name: 'Hoàng Bảo',
+            rating: 5,
+            topic: 'all_system',
+            timestamp: Date.now() - 3600000 * 5,
+            likes: 5,
+            authorLiked: false,
+            adminReply: '',
+            adminReplyTime: 0,
+            comment: 'Hệ thống chuyển đổi ngôn ngữ tự động giữa trang chủ và các trang con hoạt động rất thông minh. Tốc độ tải nhanh!'
+        }
+    ];
 
+    let currentLang = 'vi';
+    let currentFilterStar = 'all';
+    let reviewsCache = [];
+    let isAdmin = false;
+    let activeReplyId = null; // ID bài đánh giá đang mở khung nhập trả lời
 
-    /* =========================================
-       MỞ ẢNH
-    ========================================= */
+    const isCloudConfigured = () => Boolean(FIREBASE_DB_URL && FIREBASE_DB_URL.startsWith('https://'));
+    const cleanDbUrl = () => FIREBASE_DB_URL.replace(/\/+$/, '');
 
-    images.forEach(
-      (img, index) => {
+    function checkAdminSession() {
+        try {
+            return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true' || localStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+        } catch {
+            return false;
+        }
+    }
 
-        img.parentElement
-          .addEventListener(
-            "click",
-            () => {
-
-              currentIndex =
-                index;
-
-
-              updatePhoto(
-                false
-              );
-
-
-              lightbox
-                .classList
-                .add(
-                  "active"
-                );
-
-
-              document.body
-                .style
-                .overflow =
-                "hidden";
-
+    function setAdminSession(status) {
+        isAdmin = Boolean(status);
+        if (!isAdmin) activeReplyId = null;
+        try {
+            if (isAdmin) {
+                sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
+                localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+            } else {
+                sessionStorage.removeItem(ADMIN_SESSION_KEY);
+                localStorage.removeItem(ADMIN_SESSION_KEY);
             }
-          );
-
-      }
-    );
-
-
-    /* =========================================
-       UPDATE PHOTO
-    ========================================= */
-
-    function updatePhoto(
-      animate = true
-    ) {
-
-      if (animate) {
-
-        mainPhoto
-          .classList
-          .add(
-            "changing"
-          );
-
-      }
-
-
-      setTimeout(
-        () => {
-
-          mainPhoto.src =
-            images[
-              currentIndex
-            ].src;
-
-
-          mainPhoto.alt =
-            images[
-              currentIndex
-            ].alt;
-
-
-          counter.textContent =
-            `${
-              currentIndex + 1
-            } / ${images.length}`;
-
-
-          updateHeart();
-
-
-          mainPhoto
-            .classList
-            .remove(
-              "changing"
-            );
-
-        },
-
-        animate
-          ? 90
-          : 0
-      );
-
+        } catch {}
+        updateAdminHeaderUI();
+        renderReviewsAndStats();
     }
 
+    function updateAdminHeaderUI() {
+        const btn = document.getElementById('adminToggleBtn');
+        const icon = document.getElementById('adminBtnIcon');
+        const label = document.getElementById('adminBtnLabel');
+        if (!btn || !icon || !label) return;
 
-    /* =========================================
-       NEXT
-    ========================================= */
-
-    function nextPhoto() {
-
-      currentIndex =
-        (
-          currentIndex +
-          1
-        )
-        %
-        images.length;
-
-
-      updatePhoto();
-
+        if (isAdmin) {
+            btn.className = 'h-10 px-3.5 rounded-xl bg-emerald-500/20 hover:bg-rose-500/25 border border-emerald-400/50 hover:border-rose-400 flex items-center gap-2 text-xs font-bold text-emerald-300 hover:text-rose-300 transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)]';
+            icon.className = 'fas fa-crown text-amber-400';
+            label.textContent = 'Admin (Thoát)';
+        } else {
+            btn.className = 'h-10 px-3 rounded-xl bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-400 flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-all';
+            icon.className = 'fas fa-user-shield text-indigo-400';
+            label.textContent = 'Admin';
+        }
     }
 
-
-    /* =========================================
-       PREVIOUS
-    ========================================= */
-
-    function prevPhoto() {
-
-      currentIndex =
-        (
-          currentIndex -
-          1 +
-          images.length
-        )
-        %
-        images.length;
-
-
-      updatePhoto();
-
+    function getSavedLang() {
+        try {
+            const raw = localStorage.getItem('siteLang') || 'vi';
+            const base = raw.toLowerCase().split('-')[0];
+            return TRANSLATIONS[base] ? base : 'en';
+        } catch {
+            return 'vi';
+        }
     }
 
-
-    /* =========================================
-       BUTTON NEXT
-    ========================================= */
-
-    nextBtn.addEventListener(
-      "click",
-      (event) => {
-
-        event.stopPropagation();
-
-        nextPhoto();
-
-      }
-    );
-
-
-    /* =========================================
-       BUTTON PREVIOUS
-    ========================================= */
-
-    prevBtn.addEventListener(
-      "click",
-      (event) => {
-
-        event.stopPropagation();
-
-        prevPhoto();
-
-      }
-    );
-
-
-    /* =========================================
-       CLOSE LIGHTBOX
-    ========================================= */
-
-    function closeLightbox() {
-
-      lightbox
-        .classList
-        .remove(
-          "active"
-        );
-
-
-      document.body
-        .style
-        .overflow =
-        "";
-
+    function t(key) {
+        const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.vi;
+        return dict[key] || TRANSLATIONS.vi[key] || key;
     }
 
-
-    closeBtn.addEventListener(
-      "click",
-      (event) => {
-
-        event.stopPropagation();
-
-        closeLightbox();
-
-      }
-    );
-
-
-    /* =========================================
-       CLICK BACKGROUND TO CLOSE
-    ========================================= */
-
-    lightbox.addEventListener(
-      "click",
-      (event) => {
-
-        if (
-          event.target ===
-          lightbox
-        ) {
-
-          closeLightbox();
-
+    function getLikedMap() {
+        try {
+            return JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY) || '{}');
+        } catch {
+            return {};
         }
-
-      }
-    );
-
-
-    /* =========================================
-       HEART STATE
-    ========================================= */
-
-    function updateHeart() {
-
-      heart
-        .classList
-        .toggle(
-          "liked",
-          likedImages.has(
-            currentIndex
-          )
-        );
-
     }
 
-
-    /* =========================================
-       HEART CLICK
-    ========================================= */
-
-    heart.addEventListener(
-      "click",
-      (event) => {
-
-        event.stopPropagation();
-
-
-        if (
-          likedImages.has(
-            currentIndex
-          )
-        ) {
-
-          likedImages.delete(
-            currentIndex
-          );
-
-
-          heart
-            .classList
-            .remove(
-              "liked"
-            );
-
-        }
-
-        else {
-
-          likedImages.add(
-            currentIndex
-          );
-
-
-          heart
-            .classList
-            .add(
-              "liked"
-            );
-
-
-          createHeartExplosion();
-
-        }
-
-
-        animateHeartButton();
-
-      }
-    );
-
-
-    /* =========================================
-       HEART BUTTON ANIMATION
-    ========================================= */
-
-    function animateHeartButton() {
-
-      heart
-        .classList
-        .remove(
-          "pop"
-        );
-
-
-      void heart.offsetWidth;
-
-
-      heart
-        .classList
-        .add(
-          "pop"
-        );
-
+    function setLikedMap(map) {
+        try {
+            localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(map));
+        } catch {}
     }
 
-
-    /* =========================================
-       HEART EXPLOSION
-    ========================================= */
-
-    function createHeartExplosion() {
-
-      const amount = 28;
-
-
-      const colors = [
-
-        "#ff356d",
-
-        "#ff477e",
-
-        "#ff6090",
-
-        "#ff789f",
-
-        "#ff93b1",
-
-        "#ffb4c8",
-
-        "#ffd1dd"
-
-      ];
-
-
-      for (
-        let i = 0;
-        i < amount;
-        i++
-      ) {
-
-        const particle =
-          document.createElement(
-            "span"
-          );
-
-
-        particle.className =
-          "flying-heart";
-
-
-        /*
-          Tim đặc / rỗng
-        */
-
-        particle.textContent =
-          Math.random() > 0.18
-            ? "♥"
-            : "♡";
-
-
-        /*
-          Hướng trái hoặc phải
-        */
-
-        const direction =
-          Math.random() > 0.5
-            ? 1
-            : -1;
-
-
-        /*
-          Giai đoạn 1
-        */
-
-        const x1 =
-          direction *
-          (
-            5 +
-            Math.random() *
-            30
-          );
-
-
-        const y1 =
-          -(
-            15 +
-            Math.random() *
-            35
-          );
-
-
-        /*
-          Giai đoạn 2
-        */
-
-        const x2 =
-          direction *
-          (
-            25 +
-            Math.random() *
-            95
-          );
-
-
-        const y2 =
-          -(
-            80 +
-            Math.random() *
-            105
-          );
-
-
-        /*
-          Giai đoạn cuối
-        */
-
-        const x3 =
-          direction *
-          (
-            35 +
-            Math.random() *
-            150
-          );
-
-
-        const y3 =
-          -(
-            190 +
-            Math.random() *
-            230
-          );
-
-
-        const rotate1 =
-          Math.random() *
-          90 -
-          45;
-
-
-        const rotate2 =
-          Math.random() *
-          200 -
-          100;
-
-
-        const rotate3 =
-          Math.random() *
-          360 -
-          180;
-
-
-        const size =
-          11 +
-          Math.random() *
-          20;
-
-
-        const duration =
-          950 +
-          Math.random() *
-          850;
-
-
-        const delay =
-          Math.random() *
-          170;
-
-
-        particle.style
-          .setProperty(
-            "--x1",
-            `${x1}px`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--y1",
-            `${y1}px`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--x2",
-            `${x2}px`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--y2",
-            `${y2}px`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--x3",
-            `${x3}px`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--y3",
-            `${y3}px`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--r1",
-            `${rotate1}deg`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--r2",
-            `${rotate2}deg`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--r3",
-            `${rotate3}deg`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--size",
-            `${size}px`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--duration",
-            `${duration}ms`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--delay",
-            `${delay}ms`
-          );
-
-
-        particle.style
-          .setProperty(
-            "--particle-color",
-
-            colors[
-              Math.floor(
-                Math.random() *
-                colors.length
-              )
-            ]
-          );
-
-
-        heartZone.appendChild(
-          particle
-        );
-
-
-        setTimeout(
-          () => {
-
-            particle.remove();
-
-          },
-
-          duration +
-          delay +
-          150
-        );
-
-      }
-
+    function formatTime(ts) {
+        const d = new Date(Number(ts) || Date.now());
+        const pad = n => String(n).padStart(2, '0');
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
-
-    /* =========================================
-       BIG HEART
-    ========================================= */
-
-    function createBigHeart() {
-
-      const bigHeart =
-        document.createElement(
-          "div"
-        );
-
-
-      bigHeart.className =
-        "big-heart";
-
-
-      bigHeart.textContent =
-        "♥";
-
-
-      photoBox.appendChild(
-        bigHeart
-      );
-
-
-      setTimeout(
-        () => {
-
-          bigHeart.remove();
-
-        },
-
-        950
-      );
-
+    function escapeHTML(str) {
+        return String(str || '').replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[m]);
     }
 
+    function getTopicBadgeLabel(topicKey) {
+        const map = {
+            all_system: 'topic.system',
+            minigames: 'topic.games',
+            ui_3d: 'topic.ui',
+            utilities: 'topic.utils'
+        };
+        return t(map[topicKey] || 'topic.system');
+    }
 
-    /* =========================================
-       DOUBLE TAP MOBILE
-    ========================================= */
+    async function fetchReviewsFromServer(showSpinner = false) {
+        const loadingEl = document.getElementById('loadingIndicator');
+        if (showSpinner && loadingEl) loadingEl.classList.remove('hidden');
 
-    let lastTap = 0;
+        if (isCloudConfigured()) {
+            try {
+                const res = await fetch(`${cleanDbUrl()}/reviews.json`);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
 
+                if (data && typeof data === 'object') {
+                    reviewsCache = Object.entries(data).map(([firebaseId, val]) => ({
+                        id: firebaseId,
+                        name: val.name || 'Anonymous',
+                        rating: Number(val.rating) || 5,
+                        topic: val.topic || 'all_system',
+                        timestamp: Number(val.timestamp) || Date.now(),
+                        likes: Number(val.likes) || 0,
+                        authorLiked: Boolean(val.authorLiked),
+                        isAdminPost: Boolean(val.isAdminPost),
+                        adminReply: val.adminReply || '',
+                        adminReplyTime: Number(val.adminReplyTime) || 0,
+                        comment: val.comment || ''
+                    })).sort((a, b) => b.timestamp - a.timestamp);
+                } else {
+                    reviewsCache = [];
+                }
 
-    mainPhoto.addEventListener(
-      "touchend",
-      () => {
-
-        const now =
-          Date.now();
-
-
-        const difference =
-          now -
-          lastTap;
-
-
-        if (
-          difference > 0 &&
-          difference < 280
-        ) {
-
-          if (
-            !likedImages.has(
-              currentIndex
-            )
-          ) {
-
-            likedImages.add(
-              currentIndex
-            );
-
-
-            heart
-              .classList
-              .add(
-                "liked"
-              );
-
-
-            createHeartExplosion();
-
-          }
-
-
-          createBigHeart();
-
-
-          animateHeartButton();
-
+                localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
+            } catch (err) {
+                console.warn('Không thể kết nối Cloud, đang dùng bản lưu dự phòng:', err);
+                loadBackupReviews();
+            }
+        } else {
+            loadBackupReviews();
         }
 
+        if (loadingEl) loadingEl.classList.add('hidden');
+        renderReviewsAndStats();
+    }
 
-        lastTap =
-          now;
+    function loadBackupReviews() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(LOCAL_BACKUP_KEY));
+            if (Array.isArray(saved) && saved.length > 0) {
+                reviewsCache = saved;
+                return;
+            }
+        } catch {}
+        reviewsCache = [...SEED_REVIEWS];
+    }
 
-      },
-
-      {
-        passive: true
-      }
-    );
-
-
-    /* =========================================
-       DOUBLE CLICK PC
-    ========================================= */
-
-    mainPhoto.addEventListener(
-      "dblclick",
-      (event) => {
-
-        event.preventDefault();
-
-
-        if (
-          !likedImages.has(
-            currentIndex
-          )
-        ) {
-
-          likedImages.add(
-            currentIndex
-          );
-
-
-          heart
-            .classList
-            .add(
-              "liked"
-            );
-
-
-          createHeartExplosion();
-
+    async function publishNewReview(newEntry) {
+        if (isCloudConfigured()) {
+            const res = await fetch(`${cleanDbUrl()}/reviews.json`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newEntry)
+            });
+            if (!res.ok) throw new Error('Post failed');
+            const result = await res.json();
+            newEntry.id = result.name || ('id_' + Date.now());
+        } else {
+            newEntry.id = 'local_' + Date.now();
         }
 
+        reviewsCache.unshift(newEntry);
+        try {
+            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
+        } catch {}
+    }
 
-        createBigHeart();
+    async function toggleLikeReview(reviewId) {
+        const likedMap = getLikedMap();
+        const target = reviewsCache.find(r => String(r.id) === String(reviewId));
+        if (!target) return;
 
-
-        animateHeartButton();
-
-      }
-    );
-
-
-    /* =========================================
-       SWIPE IOS / ANDROID
-    ========================================= */
-
-    let touchStartX = 0;
-
-    let touchStartY = 0;
-
-
-    lightboxCard.addEventListener(
-      "touchstart",
-      (event) => {
-
-        touchStartX =
-          event
-            .changedTouches[0]
-            .clientX;
-
-
-        touchStartY =
-          event
-            .changedTouches[0]
-            .clientY;
-
-      },
-
-      {
-        passive: true
-      }
-    );
-
-
-    lightboxCard.addEventListener(
-      "touchend",
-      (event) => {
-
-        const touchEndX =
-          event
-            .changedTouches[0]
-            .clientX;
-
-
-        const touchEndY =
-          event
-            .changedTouches[0]
-            .clientY;
-
-
-        const diffX =
-          touchEndX -
-          touchStartX;
-
-
-        const diffY =
-          touchEndY -
-          touchStartY;
-
-
-        /*
-          Chỉ nhận swipe ngang
-        */
-
-        if (
-          Math.abs(diffX) >
-          Math.abs(diffY)
-          &&
-          Math.abs(diffX) >
-          45
-        ) {
-
-          /*
-            Vuốt trái
-          */
-
-          if (
-            diffX < 0
-          ) {
-
-            nextPhoto();
-
-          }
-
-          /*
-            Vuốt phải
-          */
-
-          else {
-
-            prevPhoto();
-
-          }
-
+        if (isAdmin) {
+            target.authorLiked = !target.authorLiked;
+            if (target.authorLiked && !likedMap[reviewId]) {
+                target.likes = (Number(target.likes) || 0) + 1;
+                likedMap[reviewId] = true;
+            } else if (!target.authorLiked && likedMap[reviewId]) {
+                target.likes = Math.max(0, (Number(target.likes) || 0) - 1);
+                delete likedMap[reviewId];
+            }
+        } else {
+            const isAlreadyLiked = Boolean(likedMap[reviewId]);
+            target.likes = Math.max(0, (Number(target.likes) || 0) + (isAlreadyLiked ? -1 : 1));
+            if (isAlreadyLiked) delete likedMap[reviewId];
+            else likedMap[reviewId] = true;
         }
 
-      },
+        setLikedMap(likedMap);
+        renderReviewsAndStats();
 
-      {
-        passive: true
-      }
-    );
+        try {
+            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
+            if (isCloudConfigured() && !String(reviewId).startsWith('seed_') && !String(reviewId).startsWith('local_')) {
+                await fetch(`${cleanDbUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        likes: target.likes,
+                        authorLiked: Boolean(target.authorLiked)
+                    })
+                });
+            }
+        } catch (e) {
+            console.warn('Không thể cập nhật lượt thích lên Cloud:', e);
+        }
+    }
 
+    /* =========================================================================
+       CHỨC NĂNG ADMIN TRẢ LỜI / SỬA / XÓA PHẢN HỒI BÌNH LUẬN
+       ========================================================================= */
+    async function saveAdminReply(reviewId, replyText) {
+        if (!isAdmin) return;
+        const target = reviewsCache.find(r => String(r.id) === String(reviewId));
+        if (!target) return;
 
-    /* =========================================
-       KEYBOARD
-    ========================================= */
+        const cleanedText = String(replyText || '').trim();
+        target.adminReply = cleanedText;
+        target.adminReplyTime = cleanedText ? Date.now() : 0;
+        activeReplyId = null;
 
-    document.addEventListener(
-      "keydown",
-      (event) => {
+        renderReviewsAndStats();
 
-        if (
-          !lightbox
-            .classList
-            .contains(
-              "active"
-            )
-        ) {
+        try {
+            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
+            if (isCloudConfigured() && !String(reviewId).startsWith('seed_') && !String(reviewId).startsWith('local_')) {
+                await fetch(`${cleanDbUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        adminReply: target.adminReply,
+                        adminReplyTime: target.adminReplyTime
+                    })
+                });
+            }
+        } catch (e) {
+            console.warn('Không thể lưu phản hồi lên Cloud:', e);
+        }
+    }
 
-          return;
+    async function deleteReviewByAdmin(reviewId) {
+        if (!isAdmin) return;
+        reviewsCache = reviewsCache.filter(r => String(r.id) !== String(reviewId));
+        renderReviewsAndStats();
 
+        try {
+            localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(reviewsCache));
+            if (isCloudConfigured() && !String(reviewId).startsWith('seed_') && !String(reviewId).startsWith('local_')) {
+                await fetch(`${cleanDbUrl()}/reviews/${encodeURIComponent(reviewId)}.json`, {
+                    method: 'DELETE'
+                });
+            }
+        } catch (e) {
+            console.warn('Không thể xóa trên Cloud:', e);
+        }
+    }
+
+    function renderReviewsAndStats() {
+        const total = reviewsCache.length;
+        const sum = reviewsCache.reduce((acc, r) => acc + Number(r.rating || 5), 0);
+        const avg = total ? (sum / total).toFixed(1) : '5.0';
+
+        document.getElementById('avgScoreText').textContent = avg;
+        document.getElementById('totalReviewsCount').textContent = total;
+
+        const barsContainer = document.getElementById('ratingBarsContainer');
+        barsContainer.innerHTML = [5, 4, 3, 2, 1].map(star => {
+            const count = reviewsCache.filter(r => Number(r.rating) === star).length;
+            const percent = total ? Math.round((count / total) * 100) : 0;
+            return `
+                <div class="flex items-center gap-3 text-xs">
+                    <span class="w-12 font-semibold text-slate-300 flex items-center gap-1">${star} <i class="fas fa-star text-amber-400"></i></span>
+                    <div class="flex-grow progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                    </div>
+                    <span class="w-14 text-right text-slate-400 font-mono">${count} (${percent}%)</span>
+                </div>
+            `;
+        }).join('');
+
+        const filtered = currentFilterStar === 'all'
+            ? reviewsCache
+            : reviewsCache.filter(r => String(r.rating) === String(currentFilterStar));
+
+        const listEl = document.getElementById('reviewsList');
+        if (filtered.length === 0) {
+            listEl.innerHTML = `
+                <div class="cyber-card p-8 text-center text-slate-400">
+                    <i class="fas fa-comment-slash text-3xl text-indigo-400 mb-2"></i>
+                    <p class="text-sm">Chưa có đánh giá nào ở mức sao này.</p>
+                </div>
+            `;
+            return;
         }
 
+        const likedMap = getLikedMap();
 
-        if (
-          event.key ===
-          "Escape"
-        ) {
+        listEl.innerHTML = filtered.map(item => {
+            const starsHtml = Array.from({ length: 5 }, (_, idx) => 
+                `<i class="fas fa-star ${idx < item.rating ? 'text-amber-400' : 'text-slate-700'}"></i>`
+            ).join('');
+            const avatarChar = escapeHTML(item.name.trim().charAt(0).toUpperCase() || 'U');
+            const isLiked = Boolean(likedMap[item.id]) || (isAdmin && item.authorLiked);
 
-          closeLightbox();
+            const authorLikedHtml = item.authorLiked ? `
+                <div class="author-liked-badge" title="Tác giả Nguyễn Thanh Sang đã yêu thích đánh giá này">
+                    <span class="w-5 h-5 rounded-full bg-gradient-to-br from-rose-500 to-purple-600 flex items-center justify-center text-[10px] text-white shadow">
+                        <i class="fas fa-crown"></i>
+                    </span>
+                    <span>${escapeHTML(t('author.liked'))}</span>
+                    <i class="fas fa-heart text-rose-400 text-[11px]"></i>
+                </div>
+            ` : '<div></div>';
 
+            const adminReplyTriggerHtml = isAdmin ? `
+                <button type="button" class="reply-trigger-btn" data-open-reply="${escapeHTML(item.id)}">
+                    <i class="fas fa-reply"></i>
+                    <span>${escapeHTML(item.adminReply ? t('admin.editReplyBtn') : t('admin.replyBtn'))}</span>
+                </button>
+            ` : '';
+
+            const adminDeleteBtnHtml = isAdmin ? `
+                <button type="button" class="text-xs text-slate-500 hover:text-rose-400 px-2 py-1 rounded transition-colors" data-delete-id="${escapeHTML(item.id)}" title="Xóa bài đánh giá này">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            ` : '';
+
+            const roleBadgeHtml = item.isAdminPost ? `
+                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-300 bg-amber-500/15 border border-amber-400/30 px-2 py-0.5 rounded-md">
+                    <i class="fas fa-crown text-amber-400"></i> Tác giả
+                </span>
+            ` : `
+                <span class="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                    <i class="fas fa-check-circle"></i> Verified
+                </span>
+            `;
+
+            // Khung hiển thị câu trả lời của Admin (nếu có)
+            const existingReplyHtml = item.adminReply ? `
+                <div class="admin-reply-box">
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-slate-950 text-xs font-bold shadow">
+                                <i class="fas fa-crown"></i>
+                            </span>
+                            <span class="text-xs font-bold text-amber-300 tracking-wide">Nguyễn Thanh Sang</span>
+                            <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">
+                                ${escapeHTML(t('author.replyBadge'))}
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${item.adminReplyTime ? `<time class="text-[10px] text-slate-400 font-mono">${escapeHTML(formatTime(item.adminReplyTime))}</time>` : ''}
+                            ${isAdmin ? `
+                                <button type="button" class="text-slate-400 hover:text-rose-400 text-xs transition-colors" data-clear-reply="${escapeHTML(item.id)}" title="Xóa phản hồi">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <p class="text-slate-200 text-xs sm:text-sm leading-relaxed pl-8 whitespace-pre-line">${escapeHTML(item.adminReply)}</p>
+                </div>
+            ` : '';
+
+            // Khung nhập câu trả lời dành cho Admin khi bấm nút "Trả lời"
+            const replyEditorHtml = (isAdmin && String(activeReplyId) === String(item.id)) ? `
+                <div class="mt-3 pt-3 border-t border-indigo-500/20 space-y-2.5">
+                    <textarea id="replyInput_${escapeHTML(item.id)}" rows="2" class="cyber-input text-xs resize-none" maxlength="400" placeholder="${escapeHTML(t('admin.replyPlaceholder'))}">${escapeHTML(item.adminReply || '')}</textarea>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-300 transition-colors" data-cancel-reply>
+                            ${escapeHTML(t('admin.cancelReply'))}
+                        </button>
+                        <button type="button" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white shadow-md transition-all flex items-center gap-1.5" data-save-reply="${escapeHTML(item.id)}">
+                            <i class="fas fa-paper-plane text-[10px]"></i>
+                            <span>${escapeHTML(t('admin.sendReply'))}</span>
+                        </button>
+                    </div>
+                </div>
+            ` : '';
+
+            return `
+                <article class="cyber-card review-item p-5">
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                                ${avatarChar}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h3 class="font-bold text-white text-sm leading-tight">${escapeHTML(item.name)}</h3>
+                                    ${roleBadgeHtml}
+                                </div>
+                                <span class="inline-block text-[11px] text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md mt-1">
+                                    ${escapeHTML(getTopicBadgeLabel(item.topic))}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex gap-1 text-xs mb-1 justify-end">${starsHtml}</div>
+                            <time class="text-[11px] text-slate-500 font-mono">${escapeHTML(formatTime(item.timestamp))}</time>
+                        </div>
+                    </div>
+                    <p class="text-slate-200 text-sm leading-relaxed pl-1 mb-3 whitespace-pre-line">${escapeHTML(item.comment)}</p>
+
+                    ${existingReplyHtml}
+                    ${replyEditorHtml}
+
+                    <div class="flex items-center justify-between border-t border-white/5 pt-3 mt-3 gap-2 flex-wrap">
+                        ${authorLikedHtml}
+                        <div class="flex items-center gap-2 ml-auto">
+                            ${adminDeleteBtnHtml}
+                            ${adminReplyTriggerHtml}
+                            <button type="button" class="like-btn ${isLiked ? 'liked' : ''}" data-like-id="${escapeHTML(item.id)}" title="${isAdmin ? 'Thả tim với tư cách Tác giả' : 'Thả tim đánh giá này'}">
+                                <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
+                                <span>${Number(item.likes) || 0}</span>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join('');
+    }
+
+    function applyLanguage() {
+        currentLang = getSavedLang();
+        document.documentElement.lang = currentLang;
+        document.title = t('page.title');
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.textContent = t(el.dataset.i18n);
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.setAttribute('placeholder', t(el.dataset.i18nPlaceholder));
+        });
+
+        const checkedStar = document.querySelector('input[name="rating"]:checked')?.value || '5';
+        const moodEl = document.getElementById('ratingMoodText');
+        if (moodEl) moodEl.textContent = t(`mood.${checkedStar}`);
+
+        renderReviewsAndStats();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        isAdmin = checkAdminSession();
+        updateAdminHeaderUI();
+        applyLanguage();
+        fetchReviewsFromServer(true);
+
+        if (isCloudConfigured()) {
+            setInterval(() => {
+                if (!document.hidden && !activeReplyId) fetchReviewsFromServer(false);
+            }, 15000);
         }
 
+        // Xử lý đóng/mở Modal Đăng nhập Admin
+        const adminModal = document.getElementById('adminModal');
+        const adminToggleBtn = document.getElementById('adminToggleBtn');
+        const closeAdminModal = document.getElementById('closeAdminModal');
+        const adminLoginForm = document.getElementById('adminLoginForm');
 
-        if (
-          event.key ===
-          "ArrowLeft"
-        ) {
+        adminToggleBtn.addEventListener('click', () => {
+            if (isAdmin) {
+                setAdminSession(false);
+                showToast(t('admin.logoutSuccess'), true);
+            } else {
+                adminModal.classList.add('is-open');
+                adminModal.setAttribute('aria-hidden', 'false');
+                document.getElementById('adminUsername').focus();
+            }
+        });
 
-          prevPhoto();
+        const hideModal = () => {
+            adminModal.classList.remove('is-open');
+            adminModal.setAttribute('aria-hidden', 'true');
+        };
 
+        closeAdminModal.addEventListener('click', hideModal);
+        adminModal.addEventListener('click', e => {
+            if (e.target === adminModal) hideModal();
+        });
+
+        adminLoginForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const u = document.getElementById('adminUsername').value.trim();
+            const p = document.getElementById('adminPassword').value;
+
+            if (u === ADMIN_ACCOUNT.user && p === ADMIN_ACCOUNT.pass) {
+                setAdminSession(true);
+                adminLoginForm.reset();
+                hideModal();
+                showToast(t('admin.loginSuccess'), true);
+            } else {
+                showToast(t('admin.loginFail'), false);
+            }
+        });
+
+        document.getElementById('refreshReviewsBtn').addEventListener('click', () => {
+            fetchReviewsFromServer(true);
+        });
+
+        // Sự kiện tương tác trên danh sách đánh giá (Thả tim, Trả lời, Lưu trả lời, Xóa bài)
+        document.getElementById('reviewsList').addEventListener('click', async e => {
+            const likeBtn = e.target.closest('[data-like-id]');
+            if (likeBtn) {
+                toggleLikeReview(likeBtn.dataset.likeId);
+                return;
+            }
+
+            const openReplyBtn = e.target.closest('[data-open-reply]');
+            if (openReplyBtn && isAdmin) {
+                const targetId = openReplyBtn.dataset.openReply;
+                activeReplyId = (String(activeReplyId) === String(targetId)) ? null : targetId;
+                renderReviewsAndStats();
+                if (activeReplyId) {
+                    const inputEl = document.getElementById(`replyInput_${activeReplyId}`);
+                    if (inputEl) inputEl.focus();
+                }
+                return;
+            }
+
+            const cancelReplyBtn = e.target.closest('[data-cancel-reply]');
+            if (cancelReplyBtn) {
+                activeReplyId = null;
+                renderReviewsAndStats();
+                return;
+            }
+
+            const saveReplyBtn = e.target.closest('[data-save-reply]');
+            if (saveReplyBtn && isAdmin) {
+                const reviewId = saveReplyBtn.dataset.saveReply;
+                const inputEl = document.getElementById(`replyInput_${reviewId}`);
+                if (inputEl) {
+                    await saveAdminReply(reviewId, inputEl.value);
+                    showToast(t('admin.replySaved'), true);
+                }
+                return;
+            }
+
+            const clearReplyBtn = e.target.closest('[data-clear-reply]');
+            if (clearReplyBtn && isAdmin) {
+                await saveAdminReply(clearReplyBtn.dataset.clearReply, '');
+                showToast(t('admin.replyDeleted'), true);
+                return;
+            }
+
+            const delBtn = e.target.closest('[data-delete-id]');
+            if (delBtn && isAdmin) {
+                deleteReviewByAdmin(delBtn.dataset.deleteId);
+            }
+        });
+
+        document.querySelectorAll('input[name="rating"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const moodEl = document.getElementById('ratingMoodText');
+                if (moodEl) moodEl.textContent = t(`mood.${radio.value}`);
+            });
+        });
+
+        document.querySelectorAll('#starFilterTabs .filter-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#starFilterTabs .filter-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilterStar = btn.dataset.star;
+                renderReviewsAndStats();
+            });
+        });
+
+        const form = document.getElementById('reviewForm');
+        const submitBtn = document.getElementById('submitReviewBtn');
+        const submitBtnText = document.getElementById('submitBtnText');
+
+        form.addEventListener('submit', async e => {
+            e.preventDefault();
+            const name = document.getElementById('reviewerName').value.trim();
+            const topic = document.getElementById('reviewTopic').value;
+            const comment = document.getElementById('reviewComment').value.trim();
+            const rating = Number(document.querySelector('input[name="rating"]:checked')?.value || 5);
+
+            if (!name || !comment) return;
+
+            submitBtn.disabled = true;
+            submitBtnText.textContent = t('form.submitting');
+
+            try {
+                await publishNewReview({
+                    name,
+                    rating,
+                    topic,
+                    comment,
+                    likes: isAdmin ? 1 : 0,
+                    authorLiked: isAdmin,
+                    isAdminPost: isAdmin,
+                    adminReply: '',
+                    adminReplyTime: 0,
+                    timestamp: Date.now()
+                });
+
+                form.reset();
+                document.getElementById('star5').checked = true;
+                document.getElementById('ratingMoodText').textContent = t('mood.5');
+                renderReviewsAndStats();
+                showToast(t('toast.success'), true);
+            } catch (err) {
+                showToast('Có lỗi kết nối, vui lòng thử lại!', false);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtnText.textContent = t('form.submit');
+            }
+        });
+
+        const toast = document.getElementById('sourceGuardToast');
+        const toastMsg = toast.querySelector('.source-guard-toast__message');
+        let toastTimer = 0;
+
+        function showToast(message, isSuccess = false) {
+            toastMsg.textContent = message;
+            toastMsg.style.borderColor = isSuccess ? 'rgba(52, 211, 153, 0.5)' : 'rgba(239, 68, 68, 0.4)';
+            toast.classList.add('is-visible');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2800);
         }
 
+        document.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            showToast(t('security.notice'), false);
+        });
 
-        if (
-          event.key ===
-          "ArrowRight"
-        ) {
+        document.addEventListener('keydown', e => {
+            const k = String(e.key || '').toLowerCase();
+            const ctrlOrMeta = e.ctrlKey || e.metaKey;
+            const winDev = e.ctrlKey && e.shiftKey && ['i', 'j', 'c', 'k'].includes(k);
+            const macDev = e.metaKey && e.altKey && ['i', 'j', 'c', 'u'].includes(k);
+            if (k === 'f12' || winDev || macDev || (ctrlOrMeta && ['u', 's'].includes(k))) {
+                e.preventDefault();
+                showToast(t('security.notice'), false);
+            }
+        }, true);
 
-          nextPhoto();
-
-        }
-
-      }
-    );
-
-
-    /* =========================================
-       PREVENT IMAGE DRAG
-    ========================================= */
-
-    mainPhoto.addEventListener(
-      "dragstart",
-      (event) => {
-
-        event.preventDefault();
-
-      }
-    );
-
-
-    /* =========================================
-       PRELOAD IMAGES
-    ========================================= */
-
-    images.forEach(
-      (image) => {
-
-        const preload =
-          new Image();
-
-
-        preload.src =
-          image.src;
-
-      }
-    );
-
-  </script>
-
+        window.addEventListener('storage', e => {
+            if (e.key === 'siteLang') applyLanguage();
+        });
+    });
+    </script>
 </body>
 </html>
