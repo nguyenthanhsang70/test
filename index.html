@@ -276,7 +276,15 @@ button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.
   .app{display:flex;flex-direction:column}
   .app > .topbar{order:1}
   .app > .hero{order:2;width:100%;margin-top:0;margin-bottom:12px}
-  .app > .game-layout{order:3;width:100%;min-width:0}
+  .app > .game-layout{
+    order:3;width:100%;min-width:0;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+  /* Mobile: title -> both player cards -> game mode -> board and controls. */
+  .game-layout > #player1Card{grid-column:1;grid-row:1;min-width:0}
+  .game-layout #player2Card{grid-column:2;grid-row:1;min-width:0}
+  .game-layout > .center-panel{grid-column:1/-1;grid-row:2;min-width:0}
   .mobile-chat-toggle:not(.hidden){display:grid}
   .mobile-chat-backdrop.show{display:block}
   .online-chat{
