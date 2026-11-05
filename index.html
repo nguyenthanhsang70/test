@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Caro - Avatar đồng bộ 100 triệu mẫu</title>
+<title>Caro </title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
 :root{
@@ -225,66 +225,6 @@ button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.
 }
 /* ===== KET THUC CSS CHAT ===== */
 
-/* Mobile floating chat: keep original desktop layout and live sync. */
-.mobile-chat-fab,.mobile-chat-close,.mobile-chat-backdrop{display:none}
-@media(max-width:600px){
-  /* The page wrapper must not trap the fixed chat below its backdrop. */
-  .app{z-index:auto}
-  .mobile-chat-fab{
-    position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom, 0px));
-    z-index:47;width:60px;height:60px;display:flex;align-items:center;justify-content:center;
-    padding:0;border:1px solid rgba(255,255,255,.25);border-radius:50%;
-    background:linear-gradient(140deg,#0891b2 0%,#2563eb 58%,#6747d4 100%);
-    color:#fff;box-shadow:0 13px 36px rgba(8,47,105,.52),inset 0 1px rgba(255,255,255,.26);
-    cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-    transition:transform .18s ease, box-shadow .18s ease;
-  }
-  .mobile-chat-fab:active{transform:scale(.94)}
-  .mobile-chat-fab i{font-size:25px}
-  .mobile-chat-fab.has-unread{box-shadow:0 0 0 4px rgba(56,189,248,.14),0 13px 36px rgba(8,47,105,.52)}
-  .mobile-chat-unread{
-    position:absolute;top:-5px;right:-5px;min-width:23px;height:23px;padding:0 5px;
-    border:2px solid #081629;border-radius:999px;background:#fb4666;color:white;
-    display:grid;place-items:center;font-size:11px;font-weight:900;line-height:1;
-  }
-  .mobile-chat-backdrop{
-    position:fixed;inset:0;z-index:48;display:block;width:100%;height:100%;
-    border:0;border-radius:0;background:rgba(3,9,22,.56);
-    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);cursor:default;
-  }
-  .online-chat{
-    position:fixed;z-index:49;
-    right:12px;bottom:calc(12px + env(safe-area-inset-bottom, 0px) + var(--mobile-chat-keyboard-offset, 0px));
-    margin:0;width:min(390px,calc(100vw - 24px));
-    height:min(530px,70dvh);min-height:240px;
-    max-height:calc(100dvh - 24px - env(safe-area-inset-bottom, 0px) - var(--mobile-chat-keyboard-offset, 0px));
-    border-radius:22px;
-    opacity:0;visibility:hidden;pointer-events:none;
-    transform:translateY(17px) scale(.985);transform-origin:bottom right;
-    transition:transform .22s ease,opacity .22s ease,visibility .22s;
-    box-shadow:0 26px 70px rgba(0,0,0,.65),0 0 0 1px rgba(125,211,252,.12);
-  }
-  .online-chat.mobile-open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
-  .mobile-chat-close{
-    flex:0 0 32px;width:32px;height:32px;padding:0;margin-left:2px;
-    display:grid;place-items:center;border:1px solid rgba(255,255,255,.16);border-radius:10px;
-    background:rgba(255,255,255,.09);color:#fff;font-size:14px;cursor:pointer;
-  }
-  .online-chat-header{gap:8px}
-  .online-chat-title{font-size:15px}
-  .chat-input{font-size:16px} /* Prevent Safari iOS zoom on input focus. */
-  .chat-messages{overscroll-behavior:contain}
-}
-@media(max-width:370px){
-  .online-chat{right:8px;width:calc(100vw - 16px)}
-  .online-chat-count{font-size:10px}
-  .online-chat-title{font-size:14px}
-}
-@media(prefers-reduced-motion:reduce){
-  .online-chat,.mobile-chat-fab{transition:none!important}
-}
-
-
 /* Generated avatar portraits: one stable ID per player, shared by all clients. */
 .avatar{
   border-radius:50%!important; overflow:hidden; padding:3px;
@@ -312,6 +252,62 @@ button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.
 .room-host-name{min-width:0;overflow-wrap:anywhere}
 @media(max-width:600px){.avatar{border-radius:50%!important}}
 
+
+
+/* ===== CARO MOBILE: GAME FIRST + FLOATING ONLINE CHAT ===== */
+.online-chat-header-actions{display:flex;align-items:center;gap:9px;min-width:0}
+.chat-mobile-close{display:none;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:11px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.09);color:#fff;cursor:pointer}
+.mobile-chat-toggle,.mobile-chat-backdrop{display:none}
+.mobile-chat-toggle{
+  position:fixed;right:17px;bottom:calc(20px + env(safe-area-inset-bottom));
+  z-index:46;width:62px;height:62px;place-items:center;border-radius:50%;
+  border:1px solid rgba(255,255,255,.35);color:white;cursor:pointer;
+  background:linear-gradient(140deg,#0ea5e9 0%,#2563eb 55%,#6d28d9 100%);
+  box-shadow:0 13px 34px rgba(14,165,233,.32),0 5px 18px rgba(0,0,0,.36),inset 0 2px rgba(255,255,255,.25);
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.mobile-chat-toggle svg{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.17))}
+.chat-mobile-close span{font-size:26px;font-weight:400;line-height:1}
+.mobile-chat-toggle:after{content:"";position:absolute;inset:-5px;border:1px solid rgba(56,189,248,.24);border-radius:50%;pointer-events:none}
+.mobile-chat-unread{position:absolute;top:-5px;right:-5px;min-width:23px;height:23px;padding:0 5px;display:grid;place-items:center;border-radius:999px;border:2px solid #07111f;background:#f43f5e;color:white;font-size:11px;font-weight:900;font-variant-numeric:tabular-nums;box-shadow:0 4px 12px rgba(244,63,94,.38)}
+.mobile-chat-backdrop{position:fixed;inset:0;z-index:43;background:rgba(2,6,23,.58)}
+@media(max-width:768px){
+  /* Keep the game and its player cards ABOVE the "Choi Caro" introduction. */
+  .app{display:flex;flex-direction:column}
+  .app > .topbar{order:1}
+  .app > .game-layout{order:2;width:100%;min-width:0}
+  .app > .hero{order:3;margin-top:18px;margin-bottom:5px}
+  .mobile-chat-toggle:not(.hidden){display:grid}
+  .mobile-chat-backdrop.show{display:block}
+  .online-chat{
+    display:none;position:fixed;z-index:45;
+    left:auto;top:auto;right:10px;
+    bottom:calc(92px + env(safe-area-inset-bottom) + var(--chat-keyboard-inset,0px));
+    width:min(420px,calc(100vw - 20px));max-width:calc(100vw - 20px);
+    height:min(520px,calc(100dvh - 116px - env(safe-area-inset-bottom) - var(--chat-keyboard-inset,0px)));
+    min-height:0;margin:0;grid-column:auto;grid-row:auto;
+    border:1px solid rgba(125,211,252,.45);border-radius:23px;
+    background:linear-gradient(150deg,#12263e,#081629 70%);
+    box-shadow:0 26px 70px rgba(0,0,0,.67),0 0 0 1px rgba(255,255,255,.045);
+  }
+  .online-chat.chat-mobile-open:not(.hidden){display:flex;animation:chatMobileAppear .18s ease-out both}
+  .chat-mobile-close{display:grid}
+  .online-chat-header{padding:12px 13px}
+  .online-chat-title{font-size:15px}
+  .online-chat-count{font-size:10px}
+  .chat-messages{padding:13px 11px;gap:12px}
+  .chat-bubble{font-size:13px}
+  .chat-compose{padding:10px}
+  .chat-input{font-size:16px}/* iOS: prevents zooming while typing. */
+  body.mobile-chat-open{overflow:hidden}
+}
+@keyframes chatMobileAppear{from{opacity:0;transform:translateY(13px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-height:480px) and (max-width:768px){
+  .online-chat{right:8px;bottom:calc(10px + var(--chat-keyboard-inset,0px));width:min(420px,calc(100vw - 16px));height:calc(100dvh - 20px - var(--chat-keyboard-inset,0px))}
+  .mobile-chat-toggle{bottom:calc(12px + env(safe-area-inset-bottom))}
+}
+@media(prefers-reduced-motion:reduce){.online-chat.chat-mobile-open:not(.hidden){animation:none}}
+/* ===== END CARO MOBILE ADAPTATIONS ===== */
 
 </style>
 </head>
@@ -384,29 +380,31 @@ button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.
     <!-- Chat chi xuat hien khi dang o trong phong online. -->
     <section class="online-chat hidden" id="onlineChat" aria-label="Tin nhan cua phong online">
       <div class="online-chat-header">
-        <div class="online-chat-title"><span class="online-chat-title-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8.5 8.5 0 0 1-12.5 7.5L2 21l2-5.5A8.5 8.5 0 1 1 20 11.5Z"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke-width="3"/></svg></span> Chat</div>
-        <div class="online-chat-count" id="chatOnlineCount"><span class="online-dot"></span><span id="chatOnlineLabel">Trực tuyến: 1</span></div>
-        <button type="button" class="mobile-chat-close" id="mobileChatClose" title="Thu gọn đoạn chat" aria-label="Thu gọn đoạn chat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <div class="online-chat-title"><span class="online-chat-title-icon"><i class="fa-solid fa-comments"></i></span> Chat</div>
+        <div class="online-chat-header-actions">
+          <div class="online-chat-count" id="chatOnlineCount"><span class="online-dot"></span><span id="chatOnlineLabel">Trực tuyến: 1</span></div>
+          <button class="chat-mobile-close" id="mobileChatClose" type="button" aria-label="Đóng đoạn chat" title="Đóng đoạn chat"><span aria-hidden="true">&times;</span></button>
+        </div>
       </div>
       <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-relevant="additions text">
         <div class="chat-empty"><i class="fa-regular fa-comments"></i>Chưa có tin nhắn.<br>Hãy gửi lời chào để bắt đầu!</div>
       </div>
       <form class="chat-compose" id="chatForm" autocomplete="off">
         <input class="chat-input" id="chatInput" maxlength="400" aria-label="Nhap tin nhan online" placeholder="Nhập tin nhắn..." type="text">
-        <button class="chat-send" id="chatSend" type="submit" title="Gửi tin nhắn" aria-label="Gửi tin nhắn"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+        <button class="chat-send" id="chatSend" type="submit" title="Gửi tin nhắn" aria-label="Gửi tin nhắn"><i class="fa-solid fa-paper-plane"></i></button>
       </form>
     </section>
     </div>
   </section>
 </div>
 
-<!-- Only visible in mobile online rooms; opens the same chat as desktop. -->
-<button type="button" class="mobile-chat-fab hidden" id="mobileChatFab"
-        aria-label="Mở chat online" aria-controls="onlineChat" aria-expanded="false" title="Mở đoạn chat">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8.5 8.5 0 0 1-12.5 7.5L2 21l2-5.5A8.5 8.5 0 1 1 20 11.5Z"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke-width="3"/></svg>
-  <span class="mobile-chat-unread hidden" id="mobileChatUnread" aria-hidden="true">0</span>
+<!-- Mobile only: dimmer and a floating chat button. Desktop chat remains in the right column. -->
+<div class="mobile-chat-backdrop" id="mobileChatBackdrop" aria-hidden="true"></div>
+<button class="mobile-chat-toggle hidden" id="mobileChatToggle" type="button" aria-controls="onlineChat" aria-expanded="false" aria-label="Mở đoạn chat phòng online" title="Mở đoạn chat">
+  <svg class="mobile-chat-icon-open" aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5c-1.4 0-2.73-.39-3.84-1.07L4 19l1.1-4.4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" stroke-width="3.1"/></svg>
+  <svg class="mobile-chat-icon-close hidden" aria-hidden="true" viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 5 19 19M19 5 5 19"/></svg>
+  <span class="mobile-chat-unread hidden" id="mobileChatUnread" aria-live="polite"></span>
 </button>
-<button type="button" class="mobile-chat-backdrop hidden" id="mobileChatBackdrop" aria-label="Đóng đoạn chat"></button>
 
 <div class="modal show" id="setupModal">
   <div class="modal-card">
@@ -564,6 +562,9 @@ const MAX_CHAT_LENGTH = 400;
 let chatMessages = [];
 let chatMessageIds = new Set();
 let lastChatSentAt = 0;
+let mobileChatOpen = false;
+let mobileChatUnread = 0;
+const MOBILE_CHAT_MEDIA = window.matchMedia('(max-width: 768px)');
 let lastWarningSecond = null;
 let intentionalOnlineExit = '';
 let roomDissolvingCode = '';
@@ -788,95 +789,6 @@ const $ = id => document.getElementById(id);
 const boardEl = $('board');
 const message = $('message');
 /* ===== ONLINE ROOM CHAT ===== */
-const mobileChatMedia = window.matchMedia('(max-width: 600px)');
-let mobileChatOpen = false;
-let mobileChatUnread = 0;
-
-function mobileChatIsInRoom(){
-  return gameMode === 'online' && Boolean(onlineRole && currentOnlineRoomCode);
-}
-
-function updateMobileChatBadge(){
-  const count = Math.max(0,mobileChatUnread);
-  const badge = $('mobileChatUnread');
-  const fab = $('mobileChatFab');
-  if(!badge || !fab) return;
-  badge.textContent = count > 99 ? '99+' : String(count);
-  badge.classList.toggle('hidden', count === 0);
-  fab.classList.toggle('has-unread', count > 0);
-  fab.setAttribute('aria-label', count ? `Mở chat online, ${count} tin nhắn chưa đọc` : 'Mở chat online');
-}
-
-function adjustMobileChatKeyboard(){
-  const root = document.documentElement;
-  const viewport = window.visualViewport;
-  if(!mobileChatMedia.matches || !mobileChatOpen || document.activeElement !== $('chatInput') || !viewport){
-    root.style.removeProperty('--mobile-chat-keyboard-offset');
-    return;
-  }
-  // On iOS the visual viewport can shrink without resizing the layout viewport.
-  const blocked = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
-  root.style.setProperty('--mobile-chat-keyboard-offset', Math.round(blocked > 110 ? blocked : 0) + 'px');
-}
-
-function syncMobileChatUI(){
-  const inRoom = mobileChatIsInRoom();
-  const mobile = mobileChatMedia.matches;
-  const expanded = inRoom && mobile && mobileChatOpen;
-  const panel = $('onlineChat');
-  const fab = $('mobileChatFab');
-  const backdrop = $('mobileChatBackdrop');
-  if(!panel || !fab || !backdrop) return;
-  fab.classList.toggle('hidden', !inRoom || !mobile || expanded);
-  fab.setAttribute('aria-expanded', String(expanded));
-  backdrop.classList.toggle('hidden', !expanded);
-  panel.classList.toggle('mobile-open', expanded);
-  panel.inert = !inRoom || (mobile && !expanded);
-  panel.setAttribute('aria-hidden', String(!inRoom || (mobile && !expanded)));
-  if(!expanded) document.documentElement.style.removeProperty('--mobile-chat-keyboard-offset');
-  updateMobileChatBadge();
-}
-
-function setMobileChatOpen(nextOpen){
-  const next = Boolean(nextOpen && mobileChatMedia.matches && mobileChatIsInRoom());
-  const changed = mobileChatOpen !== next;
-  mobileChatOpen = next;
-  if(next) mobileChatUnread = 0;
-  else if(document.activeElement === $('chatInput')) $('chatInput').blur();
-  syncMobileChatUI();
-  adjustMobileChatKeyboard();
-  if(next && changed){
-    requestAnimationFrame(() => {
-      const list = $('chatMessages');
-      if(list) list.scrollTop = list.scrollHeight;
-      $('mobileChatClose').focus({preventScroll:true});
-    });
-  }
-}
-
-$('mobileChatFab').addEventListener('click', () => setMobileChatOpen(true));
-$('mobileChatClose').addEventListener('click', () => {setMobileChatOpen(false);$('mobileChatFab').focus({preventScroll:true});});
-$('mobileChatBackdrop').addEventListener('click', () => setMobileChatOpen(false));
-document.addEventListener('keydown',event => {
-  if(event.key === 'Escape' && mobileChatOpen){
-    event.preventDefault();
-    setMobileChatOpen(false);
-    $('mobileChatFab').focus({preventScroll:true});
-  }
-});
-const handleMobileMediaChange = () => {
-  if(!mobileChatMedia.matches) mobileChatOpen = false;
-  syncMobileChatUI();
-};
-if(typeof mobileChatMedia.addEventListener === 'function') mobileChatMedia.addEventListener('change',handleMobileMediaChange);
-else mobileChatMedia.addListener(handleMobileMediaChange);
-$('chatInput').addEventListener('focus',adjustMobileChatKeyboard);
-$('chatInput').addEventListener('blur',adjustMobileChatKeyboard);
-if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',adjustMobileChatKeyboard,{passive:true});
-  window.visualViewport.addEventListener('scroll',adjustMobileChatKeyboard,{passive:true});
-}
-
 function resetOnlineChat(){
   chatMessages = [];
   chatMessageIds = new Set();
@@ -902,9 +814,88 @@ function updateOnlineChatUI(){
   $('chatSend').disabled = !canWrite;
   $('chatInput').placeholder = canWrite ? 'Nhập tin nhắn...' : 'Đang kết nối người chơi...';
   if(inRoom && chatMessages.length === 0 && !$('chatMessages').firstElementChild) renderOnlineChat(false);
-  if(!inRoom && mobileChatOpen) mobileChatOpen = false;
-  syncMobileChatUI();
+  updateMobileChatUI();
 }
+
+function updateMobileChatUnread(){
+  const badge = $('mobileChatUnread');
+  if(!badge) return;
+  badge.textContent = mobileChatUnread > 99 ? '99+' : String(mobileChatUnread);
+  badge.classList.toggle('hidden',mobileChatUnread === 0);
+}
+
+function setMobileChatOpen(shouldOpen){
+  const inRoom = gameMode === 'online' && Boolean(onlineRole && currentOnlineRoomCode);
+  mobileChatOpen = Boolean(shouldOpen && MOBILE_CHAT_MEDIA.matches && inRoom);
+  const panel = $('onlineChat');
+  const button = $('mobileChatToggle');
+  const backdrop = $('mobileChatBackdrop');
+  if(panel) panel.classList.toggle('chat-mobile-open',mobileChatOpen);
+  if(button){
+    button.setAttribute('aria-expanded',String(mobileChatOpen));
+    button.setAttribute('aria-label',mobileChatOpen ? 'Đóng đoạn chat phòng online' : 'Mở đoạn chat phòng online');
+    button.title = mobileChatOpen ? 'Đóng đoạn chat' : 'Mở đoạn chat';
+    const openIcon = button.querySelector('.mobile-chat-icon-open');
+    const closeIcon = button.querySelector('.mobile-chat-icon-close');
+    if(openIcon) openIcon.classList.toggle('hidden',mobileChatOpen);
+    if(closeIcon) closeIcon.classList.toggle('hidden',!mobileChatOpen);
+  }
+  if(backdrop){
+    backdrop.classList.toggle('show',mobileChatOpen);
+    backdrop.setAttribute('aria-hidden',String(!mobileChatOpen));
+  }
+  document.body.classList.toggle('mobile-chat-open',mobileChatOpen);
+  if(mobileChatOpen){
+    mobileChatUnread = 0;
+    requestAnimationFrame(() => {
+      const list = $('chatMessages');
+      if(list) list.scrollTop = list.scrollHeight;
+    });
+  }else if(document.activeElement === $('chatInput')){
+    $('chatInput').blur();
+  }
+  updateMobileChatUnread();
+}
+
+function updateMobileChatUI(){
+  const button = $('mobileChatToggle');
+  const panel = $('onlineChat');
+  const desktopParent = document.querySelector('.right-column');
+  if(!button || !panel) return;
+  // Escape the .app stacking context on mobile so the panel stays ABOVE its dimmer.
+  // Return the very same chat node (and event listeners) to its desktop column on resize.
+  if(MOBILE_CHAT_MEDIA.matches){
+    if(panel.parentElement !== document.body) document.body.appendChild(panel);
+  }else if(desktopParent && panel.parentElement !== desktopParent){
+    desktopParent.appendChild(panel);
+  }
+  const inRoom = gameMode === 'online' && Boolean(onlineRole && currentOnlineRoomCode);
+  button.classList.toggle('hidden',!inRoom);
+  if(!inRoom || !MOBILE_CHAT_MEDIA.matches){
+    if(mobileChatOpen) setMobileChatOpen(false);
+  }
+  updateMobileChatUnread();
+}
+
+function updateMobileKeyboardInset(){
+  const viewport = window.visualViewport;
+  if(!viewport) return;
+  const inset = Math.max(0,Math.round(window.innerHeight - viewport.height - viewport.offsetTop));
+  document.documentElement.style.setProperty('--chat-keyboard-inset',inset+'px');
+}
+
+$('mobileChatToggle').addEventListener('click',() => setMobileChatOpen(!mobileChatOpen));
+$('mobileChatClose').addEventListener('click',() => setMobileChatOpen(false));
+$('mobileChatBackdrop').addEventListener('click',() => setMobileChatOpen(false));
+window.addEventListener('resize',updateMobileChatUI);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',updateMobileKeyboardInset);
+  window.visualViewport.addEventListener('scroll',updateMobileKeyboardInset);
+}
+document.addEventListener('keydown',event => {
+  if(event.key === 'Escape' && mobileChatOpen) setMobileChatOpen(false);
+});
+updateMobileKeyboardInset();
 
 function chatSenderName(){
   const supplied = $('name1Input').value.trim();
@@ -963,14 +954,14 @@ function appendChatMessage(raw, render = true){
   const chronological = !last || item.time >= last.time;
   chatMessages.push(item);
   chatMessageIds.add(item.id);
-  if(render && item.role !== onlineRole && mobileChatMedia.matches && !mobileChatOpen && mobileChatIsInRoom()){
-    mobileChatUnread = Math.min(999, mobileChatUnread + 1);
-    updateMobileChatBadge();
-  }
   if(!chronological) chatMessages.sort((a,b) => a.time - b.time);
   if(chatMessages.length > MAX_CHAT_MESSAGES){
     const removed = chatMessages.splice(0,chatMessages.length - MAX_CHAT_MESSAGES);
     for(const old of removed) chatMessageIds.delete(old.id);
+  }
+  if(render && item.role !== onlineRole && MOBILE_CHAT_MEDIA.matches && !mobileChatOpen){
+    mobileChatUnread = Math.min(999,mobileChatUnread+1);
+    updateMobileChatUnread();
   }
   if(render){
     const list = $('chatMessages');
