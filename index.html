@@ -254,7 +254,7 @@ button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.
 
 
 
-/* ===== CARO MOBILE: GAME FIRST + FLOATING ONLINE CHAT ===== */
+/* ===== CARO MOBILE: HERO ABOVE GAME + FLOATING ONLINE CHAT ===== */
 .online-chat-header-actions{display:flex;align-items:center;gap:9px;min-width:0}
 .chat-mobile-close{display:none;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:11px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.09);color:#fff;cursor:pointer}
 .mobile-chat-toggle,.mobile-chat-backdrop{display:none}
@@ -272,11 +272,11 @@ button,input,select{font:inherit}button,.cell,.choice,.control-btn,.wizard-btn,.
 .mobile-chat-unread{position:absolute;top:-5px;right:-5px;min-width:23px;height:23px;padding:0 5px;display:grid;place-items:center;border-radius:999px;border:2px solid #07111f;background:#f43f5e;color:white;font-size:11px;font-weight:900;font-variant-numeric:tabular-nums;box-shadow:0 4px 12px rgba(244,63,94,.38)}
 .mobile-chat-backdrop{position:fixed;inset:0;z-index:43;background:rgba(2,6,23,.58)}
 @media(max-width:768px){
-  /* Keep the game and its player cards ABOVE the "Choi Caro" introduction. */
+  /* The "Choi Caro" introduction stays ABOVE the game board on mobile. */
   .app{display:flex;flex-direction:column}
   .app > .topbar{order:1}
-  .app > .game-layout{order:2;width:100%;min-width:0}
-  .app > .hero{order:3;margin-top:18px;margin-bottom:5px}
+  .app > .hero{order:2;width:100%;margin-top:0;margin-bottom:12px}
+  .app > .game-layout{order:3;width:100%;min-width:0}
   .mobile-chat-toggle:not(.hidden){display:grid}
   .mobile-chat-backdrop.show{display:block}
   .online-chat{
